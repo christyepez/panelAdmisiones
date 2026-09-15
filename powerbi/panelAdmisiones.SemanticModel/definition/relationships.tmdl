@@ -1,0 +1,39 @@
+relationship 68055f4f-d265-5cd0-b5f4-3d036605fbed
+	fromColumn: FactB26.CarreraKey
+	toColumn: DimCarrera.CarreraKey
+
+relationship 04485b51-2f32-5a48-abc1-67413c57fc4a
+	fromColumn: FactB25.CarreraKey
+	toColumn: DimCarrera.CarreraKey
+
+relationship cd2fe331-c2c0-51f6-af4d-9cce1f02b2a4
+	fromColumn: FactMetasCarrera.CarreraKey
+	toColumn: DimCarrera.CarreraKey
+
+relationship 670c8fce-01c3-5ede-bb64-f44ade75cb43
+	fromColumn: FactMetasSede.CarreraKey
+	toColumn: DimCarrera.CarreraKey
+
+relationship 3a7f5cea-9c29-524d-aff9-142f0dd838e7
+	fromColumn: FactB26.Sede
+	toColumn: DimSede.Sede
+
+relationship acbb5fdb-1c31-53da-b5e0-e304c0865460
+	fromColumn: FactB25.Sede
+	toColumn: DimSede.Sede
+
+relationship 335cee2c-f3bf-53a2-9036-47362270ebf6
+	fromColumn: FactMetasSede.Sede
+	toColumn: DimSede.Sede
+
+relationship 92562133-ab16-58a9-9518-26b8b80c3bdc
+	fromColumn: FactB26.Modalidad
+	toColumn: DimModalidad.Modalidad
+
+relationship fcba2c95-be38-5dc1-bf65-3f07ea039587
+	fromColumn: FactB25.Modalidad
+	toColumn: DimModalidad.Modalidad
+
+relationship 15a7809c-5187-5021-b0ac-ca7c9b02e448
+	fromColumn: FactMetasSede.Modalidad
+	toColumn: DimModalidad.Modalidad

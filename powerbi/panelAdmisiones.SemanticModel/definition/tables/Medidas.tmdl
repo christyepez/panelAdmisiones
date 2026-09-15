@@ -1,0 +1,91 @@
+table Medidas
+	measure 'Dia corte' = VAR MaxDatos = CALCULATE(MAX(FactB26[DiaPeriodo]),REMOVEFILTERS(DimDiaPeriodo),FactB26[EnPeriodo]=TRUE(),FactB26[TieneMeta]=TRUE()) RETURN MIN(MAX(DimDiaPeriodo[DiaPeriodo]),MaxDatos)
+		formatString: 0
+
+	measure '2025 Total' = CALCULATE(COUNTROWS(FactB25),FactB25[TieneMeta]=TRUE())
+		formatString: #,0
+
+	measure '2025 YTD' = VAR D=[Dia corte] RETURN CALCULATE(COUNTROWS(FactB25),FactB25[TieneMeta]=TRUE(),FactB25[EnPeriodo]=TRUE(),FILTER(ALL(FactB25[DiaPeriodo]),FactB25[DiaPeriodo]<=D))
+		formatString: #,0
+
+	measure '2025 Real %' = DIVIDE([2025 YTD],[2025 Total])
+		formatString: 0.0%
+
+	measure '2025 Delta %' = BLANK()
+		formatString: 0.0%
+
+	measure '2026 Budget' = IF(ISFILTERED(DimSede[Sede]) || ISFILTERED(DimModalidad[Modalidad]),COALESCE(SUM(FactMetasSede[Meta]),0),COALESCE(SUM(FactMetasCarrera[MetaAjustada]),0))
+		formatString: #,0
+
+	measure '2026 YTD' = ROUND([2026 Budget]*[2025 Real %],0)
+		formatString: #,0
+
+	measure '2026 Real' = VAR D=[Dia corte] RETURN CALCULATE(COUNTROWS(FactB26),FactB26[TieneMeta]=TRUE(),FactB26[EnPeriodo]=TRUE(),FILTER(ALL(FactB26[DiaPeriodo]),FactB26[DiaPeriodo]<=D))
+		formatString: #,0
+
+	measure '2026 Real %' = DIVIDE([2026 Real],[2026 YTD])
+		formatString: 0.0%
+
+	measure 'Delta Budget' = [2026 Real]-[2026 YTD]
+		formatString: #,0;[Red]-#,0
+
+	measure 'Completion' = DIVIDE([2026 Real],[2026 Budget])
+		formatString: 0.0%
+
+	measure 'Real vs LY' = DIVIDE([2026 Real],[2025 YTD])
+		formatString: 0.0%
+
+	measure 'Variance' = [2026 Real]-[2025 YTD]
+		formatString: #,0;[Red]-#,0
+
+	measure 'Brecha cierre' = [2026 Budget]-[2026 Real]
+		formatString: #,0
+
+	measure 'Dias periodo' = 153
+		formatString: 0
+
+	measure 'Ritmo diario' = DIVIDE([2026 Real],[Dia corte])
+		formatString: 0.0
+
+	measure 'Ritmo requerido' = DIVIDE([Brecha cierre],[Dias periodo]-[Dia corte])
+		formatString: 0.0
+
+	measure 'Proyeccion lineal' = DIVIDE([2026 Real],[Dia corte])*[Dias periodo]
+		formatString: #,0
+
+	measure 'B26 acumulado' = VAR D=MAX(DimDiaPeriodo[DiaPeriodo]) RETURN IF(D>[Dia corte],BLANK(),CALCULATE(COUNTROWS(FactB26),FactB26[TieneMeta]=TRUE(),FactB26[EnPeriodo]=TRUE(),FILTER(ALL(FactB26[DiaPeriodo]),FactB26[DiaPeriodo]<=D)))
+		formatString: #,0
+
+	measure 'B25 acumulado' = VAR D=MAX(DimDiaPeriodo[DiaPeriodo]) RETURN CALCULATE(COUNTROWS(FactB25),FactB25[TieneMeta]=TRUE(),FactB25[EnPeriodo]=TRUE(),FILTER(ALL(FactB25[DiaPeriodo]),FactB25[DiaPeriodo]<=D))
+		formatString: #,0
+
+	measure 'Meta lineal' = DIVIDE([2026 Budget],[Dias periodo])*MAX(DimDiaPeriodo[DiaPeriodo])
+		formatString: #,0
+
+	measure 'Registros 615' = MAX(FactCalidad[Registros615])
+		formatString: #,0
+
+	measure 'Candidatos B26' = MAX(FactCalidad[CandidatosB26])
+		formatString: #,0
+
+	measure 'Registros B25' = MAX(FactCalidad[HistoricoB25])
+		formatString: #,0
+
+	measure 'Identificaciones duplicadas' = MAX(FactCalidad[DuplicadosIdentificacion])
+		formatString: #,0
+
+	measure 'B26 fuera de periodo' = MAX(FactCalidad[FueraPeriodoB26])
+		formatString: #,0
+
+	measure 'Metas sin sede' = MAX(FactCalidad[MetasSinSede])
+		formatString: #,0
+
+	column Clave
+		dataType: int64
+		formatString: 0
+		sourceColumn: Clave
+
+	partition Medidas = m
+		mode: import
+		source =
+				#table(type table [Clave=Int64.Type],{{1}})

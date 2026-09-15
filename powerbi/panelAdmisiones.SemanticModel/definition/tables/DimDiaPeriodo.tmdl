@@ -1,0 +1,24 @@
+table DimDiaPeriodo
+	column DiaPeriodo
+		dataType: int64
+		formatString: 0
+		sourceColumn: DiaPeriodo
+
+	column FechaB26
+		dataType: dateTime
+		formatString: Short Date
+		sourceColumn: FechaB26
+
+	column FechaB25
+		dataType: dateTime
+		formatString: Short Date
+		sourceColumn: FechaB25
+
+	column Etiqueta
+		dataType: string
+		sourceColumn: Etiqueta
+
+	partition DimDiaPeriodo = m
+		mode: import
+		source =
+				let D=Table.FromList({1..153},Splitter.SplitByNothing(),{"DiaPeriodo"}), A=Table.AddColumn(D,"FechaB26",each Date.AddDays(#date(2026,5,1),[DiaPeriodo]-1),type date), B=Table.AddColumn(A,"FechaB25",each Date.AddDays(#date(2025,5,1),[DiaPeriodo]-1),type date), C=Table.AddColumn(B,"Etiqueta",each Date.ToText([FechaB26],"dd-MMM"),type text) in C

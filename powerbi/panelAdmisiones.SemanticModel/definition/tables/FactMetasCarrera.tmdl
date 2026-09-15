@@ -1,0 +1,42 @@
+table FactMetasCarrera
+	column CarreraKey
+		dataType: string
+		sourceColumn: CarreraKey
+
+	column Carrera
+		dataType: string
+		sourceColumn: Carrera
+
+	column MetaOriginal
+		dataType: double
+		formatString: #,0
+		sourceColumn: MetaOriginal
+
+	column MetaAjustada
+		dataType: int64
+		formatString: #,0
+		sourceColumn: MetaAjustada
+
+	partition FactMetasCarrera = m
+		mode: import
+		source =
+				let
+				    Wb = Excel.Workbook(File.Contents(SourceFolder & "\Metas.xlsx"), null, true),
+				    Raw = Wb{[Item="Hoja1",Kind="Sheet"]}[Data],
+				    Promoted = Table.PromoteHeaders(Table.Skip(Raw,1), [PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted,{"CARRERAS ","MODALIDAD","BUDGET"},MissingField.UseNull),
+				    Renamed = Table.RenameColumns(Selected,{{"CARRERAS ","Carrera"},{"MODALIDAD","Modalidad"},{"BUDGET","MetaOriginal"}}),
+				    Clean = Table.TransformColumns(Renamed,{{"Carrera",FxCleanText,type text},{"Modalidad",FxNormalize,type text},{"MetaOriginal",each try Number.From(_) otherwise null,type number}}),
+				    AddKey = Table.AddColumn(Clean,"CarreraKey",each FxCareerKey([Carrera]),type text),
+				    Filtered = Table.SelectRows(AddKey, each [CarreraKey] <> "" and [CarreraKey] <> "GENERAL" and [Modalidad] = "GENERAL" and [MetaOriginal] <> null),
+				    TotalOriginal = List.Sum(Filtered[MetaOriginal]),
+				    AddExact = Table.AddColumn(Filtered,"MetaExacta",each [MetaOriginal] * 2400 / TotalOriginal,type number),
+				    AddBase = Table.AddColumn(AddExact,"MetaBase",each Number.RoundDown([MetaExacta]),Int64.Type),
+				    AddRemainder = Table.AddColumn(AddBase,"Resto",each [MetaExacta]-[MetaBase],type number),
+				    Missing = 2400 - List.Sum(AddRemainder[MetaBase]),
+				    Sorted = Table.Sort(AddRemainder,{{"Resto",Order.Descending},{"CarreraKey",Order.Ascending}}),
+				    Indexed = Table.AddIndexColumn(Sorted,"OrdenResto",1,1,Int64.Type),
+				    AddTarget = Table.AddColumn(Indexed,"MetaAjustada",each [MetaBase] + (if [OrdenResto] <= Missing then 1 else 0),Int64.Type),
+				    Result = Table.SelectColumns(AddTarget,{"CarreraKey","Carrera","MetaOriginal","MetaAjustada"})
+				in
+				    Result

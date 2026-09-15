@@ -1,0 +1,73 @@
+table FactB25
+	column RegistroId
+		dataType: int64
+		formatString: 0
+		sourceColumn: RegistroId
+
+	column Periodo
+		dataType: string
+		sourceColumn: Periodo
+
+	column Sede
+		dataType: string
+		sourceColumn: Sede
+
+	column Carrera
+		dataType: string
+		sourceColumn: Carrera
+
+	column CarreraKey
+		dataType: string
+		sourceColumn: CarreraKey
+
+	column Modalidad
+		dataType: string
+		sourceColumn: Modalidad
+
+	column FechaMatricula
+		dataType: dateTime
+		formatString: Short Date
+		sourceColumn: FechaMatricula
+
+	column DiaPeriodo
+		dataType: int64
+		formatString: 0
+		sourceColumn: DiaPeriodo
+
+	column TipoPrograma
+		dataType: string
+		sourceColumn: TipoPrograma
+
+	column TieneMeta
+		dataType: boolean
+		sourceColumn: TieneMeta
+
+	column EsFormalizado
+		dataType: boolean
+		sourceColumn: EsFormalizado
+
+	column EnPeriodo
+		dataType: boolean
+		sourceColumn: EnPeriodo
+
+	partition FactB25 = m
+		mode: import
+		source =
+				let
+				    Wb = Excel.Workbook(File.Contents(SourceFolder & "\Datoshistoricob25.xlsx"), null, true),
+				    Raw = Wb{[Item="Hoja2",Kind="Sheet"]}[Data],
+				    Promoted = Table.PromoteHeaders(Raw,[PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted,{"PERIODO","SEDE","MODALIDAD","CARRERA","FECHA DE MATRICULA","FORMALIZADA"},MissingField.UseNull),
+				    Renamed = Table.RenameColumns(Selected,{{"PERIODO","Periodo"},{"SEDE","Sede"},{"MODALIDAD","Modalidad"},{"CARRERA","Carrera"},{"FECHA DE MATRICULA","FechaMatricula"},{"FORMALIZADA","Formalizado"}}),
+				    Clean = Table.TransformColumns(Renamed,{{"Periodo",FxNormalize,type text},{"Sede",FxNormalize,type text},{"Carrera",FxCleanText,type text},{"Modalidad",FxNormalize,type text},{"Formalizado",FxNormalize,type text},{"FechaMatricula",each try Date.From(_) otherwise null,type date}}),
+				    Candidates = Table.SelectRows(Clean,each [Periodo]="B25"),
+				    AddKey = Table.AddColumn(Candidates,"CarreraKey",each FxCareerKey([Carrera]),type text),
+				    AddType = Table.AddColumn(AddKey,"TipoPrograma",each FxTipoPrograma([CarreraKey]),type text),
+				    AddTarget = Table.AddColumn(AddType,"TieneMeta",each List.Contains(FactMetasCarrera[CarreraKey],[CarreraKey]),type logical),
+				    AddFormal = Table.AddColumn(AddTarget,"EsFormalizado",each [Formalizado]="SI",type logical),
+				    AddPeriod = Table.AddColumn(AddFormal,"EnPeriodo",each [FechaMatricula]<>null and [FechaMatricula]>=#date(2025,5,1) and [FechaMatricula]<=#date(2025,9,30),type logical),
+				    AddDay = Table.AddColumn(AddPeriod,"DiaPeriodo",each if [EnPeriodo] then Duration.Days([FechaMatricula]-#date(2025,5,1))+1 else null,Int64.Type),
+				    AddId = Table.AddIndexColumn(AddDay,"RegistroId",1,1,Int64.Type),
+				    Result = Table.RemoveColumns(AddId,{"Formalizado"})
+				in
+				    Result

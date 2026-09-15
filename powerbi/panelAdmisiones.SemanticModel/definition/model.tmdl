@@ -1,0 +1,23 @@
+model Model
+	culture: es-EC
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: es-EC
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["FactMetasCarrera","FactB26","FactB25","FactMetasSede","FactCalidad","DimCarrera","DimSede","DimModalidad","DimDiaPeriodo","Medidas","SourceFolder","FxCleanText","FxNormalize","FxCareerKey","FxTipoPrograma"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table FactMetasCarrera
+ref table FactB26
+ref table FactB25
+ref table FactMetasSede
+ref table FactCalidad
+ref table DimCarrera
+ref table DimSede
+ref table DimModalidad
+ref table DimDiaPeriodo
+ref table Medidas

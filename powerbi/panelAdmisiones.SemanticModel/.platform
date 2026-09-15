@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "panelAdmisiones"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "e04f1824-c9ef-5a2e-9e92-0ec0c6570b1c"
+  }
+}

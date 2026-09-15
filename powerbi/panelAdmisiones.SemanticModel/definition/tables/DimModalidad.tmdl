@@ -1,0 +1,9 @@
+table DimModalidad
+	column Modalidad
+		dataType: string
+		sourceColumn: Modalidad
+
+	partition DimModalidad = m
+		mode: import
+		source =
+				let C=Table.Combine({Table.SelectColumns(FactB26,{"Modalidad"}),Table.SelectColumns(FactB25,{"Modalidad"})}), F=Table.SelectRows(C,each [Modalidad]<>null and [Modalidad]<>""), D=Table.Distinct(F) in D

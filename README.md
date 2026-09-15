@@ -40,6 +40,15 @@ node scripts/validate-dashboard.cjs
 - `dax/` — documented measure specifications.
 - `dist/` — panel web navegable y datos agregados.
 - `scripts/` — extracción reproducible y controles automáticos.
-- `powerbi/` — artefactos PBIP; el modelo semántico sigue pendiente.
+- `powerbi/` — proyecto PBIP, informe de cuatro páginas y modelo semántico TMDL.
 
-> La página Power BI existente es todavía un esqueleto. El panel navegable es la implementación funcional actual.
+## Power BI
+
+Abra `powerbi/panelAdmisiones.pbip` en Power BI Desktop y pulse **Actualizar**. El parámetro `SourceFolder` apunta a la carpeta de los tres Excel y puede cambiarse desde **Transformar datos > Administrar parámetros**.
+
+El proyecto incluye las páginas **Resumen ejecutivo**, **Matriz comparativa 2025–2026**, **Proyección** y **Calidad y trazabilidad**. Para regenerar y validar sus archivos:
+
+```powershell
+python scripts/build_powerbi_project.py
+python scripts/validate_powerbi_project.py
+```

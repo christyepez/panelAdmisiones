@@ -1,0 +1,49 @@
+table FactCalidad
+	column Registros615
+		dataType: int64
+		formatString: #,0
+		sourceColumn: Registros615
+
+	column CandidatosB26
+		dataType: int64
+		formatString: #,0
+		sourceColumn: CandidatosB26
+
+	column HistoricoB25
+		dataType: int64
+		formatString: #,0
+		sourceColumn: HistoricoB25
+
+	column DuplicadosIdentificacion
+		dataType: int64
+		formatString: #,0
+		sourceColumn: DuplicadosIdentificacion
+
+	column FueraPeriodoB26
+		dataType: int64
+		formatString: #,0
+		sourceColumn: FueraPeriodoB26
+
+	column MetasSinSede
+		dataType: int64
+		formatString: #,0
+		sourceColumn: MetasSinSede
+
+	partition FactCalidad = m
+		mode: import
+		source =
+				let
+				    Wb26 = Excel.Workbook(File.Contents(SourceFolder & "\615.xlsx"), null, true),
+				    R26 = Table.PromoteHeaders(Wb26{[Item="reporte",Kind="Sheet"]}[Data],[PromoteAllScalars=true]),
+				    C26 = Table.TransformColumns(Table.SelectColumns(R26,{"Periodo","IDENTIFICACION","FECHA MATRICULA","HOMOLOGA","MATRICULA EN PRIMERO"},MissingField.UseNull),{{"Periodo",FxNormalize,type text},{"IDENTIFICACION",FxCleanText,type text},{"HOMOLOGA",FxNormalize,type text},{"MATRICULA EN PRIMERO",FxNormalize,type text},{"FECHA MATRICULA",each try Date.From(_) otherwise null,type date}}),
+				    Cand26 = Table.SelectRows(C26,each [Periodo]="B26" and [HOMOLOGA]="NO" and [MATRICULA EN PRIMERO]="SI"),
+				    Groups = Table.Group(Table.SelectRows(C26,each [IDENTIFICACION]<>null),{"IDENTIFICACION"},{{"N",each Table.RowCount(_),Int64.Type}}),
+				    Duplicados = Table.RowCount(Table.SelectRows(Groups,each [N]>1)),
+				    FueraPeriodo = Table.RowCount(Table.SelectRows(Cand26,each [FECHA MATRICULA]=null or [FECHA MATRICULA]<#date(2026,5,1) or [FECHA MATRICULA]>#date(2026,9,30))),
+				    Wb25 = Excel.Workbook(File.Contents(SourceFolder & "\Datoshistoricob25.xlsx"), null, true),
+				    R25 = Table.PromoteHeaders(Wb25{[Item="Hoja2",Kind="Sheet"]}[Data],[PromoteAllScalars=true]),
+				    Hist25 = Table.RowCount(Table.SelectRows(R25,each FxNormalize([PERIODO])="B25")),
+				    Unassigned = Table.RowCount(Table.SelectRows(FactMetasSede,each [Sede]=null)),
+				    Result = #table(type table [Registros615=Int64.Type,CandidatosB26=Int64.Type,HistoricoB25=Int64.Type,DuplicadosIdentificacion=Int64.Type,FueraPeriodoB26=Int64.Type,MetasSinSede=Int64.Type],{{Table.RowCount(R26),Table.RowCount(Cand26),Hist25,Duplicados,FueraPeriodo,Unassigned}})
+				in
+				    Result

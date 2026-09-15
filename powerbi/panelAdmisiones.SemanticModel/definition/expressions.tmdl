@@ -1,0 +1,32 @@
+expression SourceFolder = "C:\Users\ChristianYepez\Universidad Tecnologica Indoamerica\Andres Leonardo Alvear Cosios - Analisis comercial  leads" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+
+expression FxCleanText =
+		(v as any) as nullable text =>
+		let
+		    T = if v = null then null else Text.Trim(Text.From(v))
+		in
+		    if T = null or T = "" or Text.Lower(T) = "null" then null else T
+
+expression FxNormalize =
+		(v as any) as text =>
+		let
+		    S0 = Text.Upper(Text.Trim(if v = null then "" else Text.From(v))),
+		    S1 = Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(S0,"Á","A"),"É","E"),"Í","I"),"Ó","O"),"Ú","U"),"Ü","U"),
+		    S2 = Text.Replace(S1,"Ñ","N"),
+		    S3 = Text.Combine(List.Select(Text.SplitAny(S2," "), each _ <> ""), " ")
+		in
+		    S3
+
+expression FxCareerKey =
+		(v as any) as text =>
+		let
+		    N0 = FxNormalize(v),
+		    N1 = if Text.StartsWith(N0,"INGENIERIA EN ") then Text.Range(N0,14) else if Text.StartsWith(N0,"INGENIERIA DE ") then Text.Range(N0,14) else if Text.StartsWith(N0,"INGENIERIA ") then Text.Range(N0,11) else N0,
+		    N2 = if N1 = "PSICOLOGIA" then "PSICOLOGIA GENERAL" else if N1 = "ELECTRICIDAD" then "ELECTRICA" else if N1 = "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEPORTE" then "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEL DEPORTE" else if N1 = "COMUNICACION, PERIODISMO Y PRODUCCION AUDIVISUAL" then "COMUNICACION, PERIODISMO Y PRODUCCION AUDIOVISUAL" else N1
+		in
+		    N2
+
+expression FxTipoPrograma =
+		(v as any) as text =>
+		let N = FxNormalize(v)
+		in if Text.Contains(N,"MAESTRIA") or Text.Contains(N,"ESPECIALIZACION") or Text.Contains(N,"DOCTORADO") or Text.Contains(N,"POSGRADO") or Text.Contains(N,"MASTER") or Text.Contains(N,"PHD") then "POSGRADO" else "GRADO"

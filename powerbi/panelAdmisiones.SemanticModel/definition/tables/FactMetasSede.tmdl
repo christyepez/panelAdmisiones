@@ -1,0 +1,43 @@
+table FactMetasSede
+	column CarreraKey
+		dataType: string
+		sourceColumn: CarreraKey
+
+	column Carrera
+		dataType: string
+		sourceColumn: Carrera
+
+	column Sede
+		dataType: string
+		sourceColumn: Sede
+
+	column Modalidad
+		dataType: string
+		sourceColumn: Modalidad
+
+	column ModalidadMeta
+		dataType: string
+		sourceColumn: ModalidadMeta
+
+	column Meta
+		dataType: double
+		formatString: #,0
+		sourceColumn: Meta
+
+	partition FactMetasSede = m
+		mode: import
+		source =
+				let
+				    Wb = Excel.Workbook(File.Contents(SourceFolder & "\Metas.xlsx"), null, true),
+				    Raw = Wb{[Item="Hoja1",Kind="Sheet"]}[Data],
+				    Promoted = Table.PromoteHeaders(Table.Skip(Raw,1),[PromoteAllScalars=true]),
+				    Selected = Table.SelectColumns(Promoted,{"CARRERAS ","MODALIDAD","BUDGET"},MissingField.UseNull),
+				    Renamed = Table.RenameColumns(Selected,{{"CARRERAS ","Carrera"},{"MODALIDAD","ModalidadMeta"},{"BUDGET","Meta"}}),
+				    Clean = Table.TransformColumns(Renamed,{{"Carrera",FxCleanText,type text},{"ModalidadMeta",FxNormalize,type text},{"Meta",each try Number.From(_) otherwise null,type number}}),
+				    AddKey = Table.AddColumn(Clean,"CarreraKey",each FxCareerKey([Carrera]),type text),
+				    Detail = Table.SelectRows(AddKey,each [CarreraKey]<>"" and [CarreraKey]<>"GENERAL" and [ModalidadMeta]<>"GENERAL" and [Meta]<>null),
+				    AddSede = Table.AddColumn(Detail,"Sede",each if Text.Contains([ModalidadMeta],"AMB") then "MATRIZ" else if Text.Contains([ModalidadMeta],"UIO") then "QUITO" else if Text.Contains([ModalidadMeta],"LTG") then "LATACUNGA" else null,type text),
+				    AddModality = Table.AddColumn(AddSede,"Modalidad",each if Text.StartsWith([ModalidadMeta],"PRESENCIAL") then "PRESENCIAL" else if Text.StartsWith([ModalidadMeta],"EN LINEA") then "EN LINEA" else if Text.StartsWith([ModalidadMeta],"SEMIPRESENCIAL") then "SEMIPRESENCIAL" else if Text.StartsWith([ModalidadMeta],"HIBRIDA") then "HIBRIDA" else null,type text),
+				    Result = Table.SelectColumns(AddModality,{"CarreraKey","Carrera","Sede","Modalidad","ModalidadMeta","Meta"})
+				in
+				    Result

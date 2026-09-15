@@ -3,3 +3,5 @@
 *.xls
 data-quality/generated/
 .sites-runtime/
+__pycache__/
+*.pyc
