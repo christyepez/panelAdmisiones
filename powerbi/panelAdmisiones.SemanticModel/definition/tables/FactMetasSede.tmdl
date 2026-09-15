@@ -30,9 +30,9 @@ table FactMetasSede
 				let
 				    Wb = Excel.Workbook(File.Contents(SourceFolder & "\Metas.xlsx"), null, true),
 				    Raw = Wb{[Item="Hoja1",Kind="Sheet"]}[Data],
-				    Promoted = Table.PromoteHeaders(Table.Skip(Raw,1),[PromoteAllScalars=true]),
-				    Selected = Table.SelectColumns(Promoted,{"CARRERAS ","MODALIDAD","BUDGET"},MissingField.UseNull),
-				    Renamed = Table.RenameColumns(Selected,{{"CARRERAS ","Carrera"},{"MODALIDAD","ModalidadMeta"},{"BUDGET","Meta"}}),
+				    Rows = Table.Skip(Raw,2),
+				    Selected = Table.SelectColumns(Rows,{"Column1","Column2","Column3"}),
+				    Renamed = Table.RenameColumns(Selected,{{"Column1","Carrera"},{"Column2","ModalidadMeta"},{"Column3","Meta"}}),
 				    Clean = Table.TransformColumns(Renamed,{{"Carrera",FxCleanText,type text},{"ModalidadMeta",FxNormalize,type text},{"Meta",each try Number.From(_) otherwise null,type number}}),
 				    AddKey = Table.AddColumn(Clean,"CarreraKey",each FxCareerKey([Carrera]),type text),
 				    Detail = Table.SelectRows(AddKey,each [CarreraKey]<>"" and [CarreraKey]<>"GENERAL" and [ModalidadMeta]<>"GENERAL" and [Meta]<>null),
