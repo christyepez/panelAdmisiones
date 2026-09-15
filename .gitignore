@@ -1,0 +1,5 @@
+.pbi/
+*.xlsx
+*.xls
+data-quality/generated/
+.sites-runtime/

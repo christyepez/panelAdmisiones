@@ -1,6 +1,27 @@
 # Panel Admisiones — Universidad Indoamérica
 
-Power BI project for admissions trend, progress, targets and projection analysis.
+Panel navegable y proyecto Power BI para analizar tendencias, avance, metas y proyección de admisiones B25/B26.
+
+## Panel navegable
+
+La implementación funcional está en `dist/` y se abre con cualquier servidor HTTP estático. Incluye:
+
+- resumen ejecutivo;
+- comparación B25/B26 al mismo día transcurrido del período;
+- cuadro por carrera, sede y modalidad;
+- proyección lineal de cierre;
+- filtro de formalización;
+- separación entre carreras cubiertas por la meta B26 y programas sin meta; y
+- controles de calidad y exportación CSV.
+
+El panel usa solamente datos agregados. No almacena identificaciones, nombres, correos ni teléfonos.
+
+Para actualizar `dist/data.json` desde los Excel:
+
+```powershell
+python scripts/extract_admissions.py --source-dir "RUTA_A_LA_CARPETA_DE_EXCEL"
+node scripts/validate-dashboard.cjs
+```
 
 ## Current implementation gates
 
@@ -10,14 +31,15 @@ Power BI project for admissions trend, progress, targets and projection analysis
 4. B26 projection based on elapsed days and observed run rate.
 5. B26 institutional target: 2,400 admissions, allocated proportionally by career.
 6. Missing campus target values remain 0, preserving the source Excel rule.
-7. Visual layer and storytelling only after quality gates pass.
+7. El avance institucional usa únicamente carreras cubiertas por `Metas.xlsx`; los programas sin meta se analizan aparte.
 
 ## Repository structure
 
 - `docs/` — scope, business rules, data dictionary and validation criteria.
 - `data-quality/` — reconciliation and quality rules.
 - `dax/` — documented measure specifications.
-- `PanelAdmisiones.Report/` — Power BI report project artifacts.
-- `PanelAdmisiones.SemanticModel/` — semantic model artifacts.
+- `dist/` — panel web navegable y datos agregados.
+- `scripts/` — extracción reproducible y controles automáticos.
+- `powerbi/` — artefactos PBIP; el modelo semántico sigue pendiente.
 
-> Source data must be validated before measures and visuals are considered final.
+> La página Power BI existente es todavía un esqueleto. El panel navegable es la implementación funcional actual.
