@@ -1,0 +1,70 @@
+table DimPeriodo
+	column Periodo
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: Periodo
+
+	column Ciclo
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Ciclo
+
+	column Anio
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Anio
+
+	column FechaInicio
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: FechaInicio
+
+	column FechaFin
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: FechaFin
+
+	column Orden
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Orden
+
+	column EsPeriodoActivo
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: EsPeriodoActivo
+
+	column FechaFinFiltro
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: FechaFinFiltro
+
+	column OrigenFechaFin
+		dataType: string
+		summarizeBy: none
+		sourceColumn: OrigenFechaFin
+
+	partition DimPeriodo = m
+		mode: import
+		source =
+				let
+				    Hist = FxLoad387(),
+				    HistDates = List.RemoveNulls(Hist[FechaMatricula]),
+				    FinB25 = if List.Count(HistDates)=0 then #date(2025,12,2) else List.Max(HistDates),
+				    FinB26 = Date.AddYears(FinB25,1),
+				    Today = Date.From(DateTime.LocalNow()),
+				    Base = #table(
+				        type table [Periodo=text,Ciclo=text,Anio=Int64.Type,FechaInicio=date,FechaFin=date,Orden=Int64.Type,OrigenFechaFin=text],
+				        {
+				            {"B25","B",2025,#date(2025,5,1),FinB25,20252,"MAX_FECHA_MATRICULA_B25"},
+				            {"B26","B",2026,#date(2026,5,1),FinB26,20262,"B25_ALINEADO_+1_ANIO"}
+				        }
+				    ),
+				    AddActive = Table.AddColumn(Base,"EsPeriodoActivo", each Today >= [FechaInicio] and Today <= [FechaFin], type logical),
+				    AddCut = Table.AddColumn(AddActive,"FechaFinFiltro", each if [EsPeriodoActivo] then Today else [FechaFin], type date)
+				in
+				    AddCut

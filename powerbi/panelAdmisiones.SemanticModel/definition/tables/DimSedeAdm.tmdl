@@ -1,0 +1,22 @@
+table DimSedeAdm
+	lineageTag: f03b4e10-0a68-4730-82e0-a5e9517499b8
+
+	column Sede
+		dataType: string
+		isKey
+		lineageTag: 680abf87-4a82-4541-a39c-13bc27391ced
+		sourceColumn: Sede
+
+	partition DimSedeAdm = m
+		mode: import
+		source =
+				let
+				    A = Table.SelectColumns(FxLoad615(), {"Sede"}, MissingField.UseNull),
+				    H = Table.SelectColumns(FxLoad387(), {"Sede"}, MissingField.UseNull),
+				    M = Table.SelectColumns(FxLoadMetas(), {"Sede"}, MissingField.UseNull),
+				    U = Table.Combine({A,H,M}),
+				    Clean = Table.SelectRows(U, each [Sede] <> null and Text.Trim(Text.From([Sede])) <> ""),
+				    R = Table.Sort(Table.Distinct(Clean), {{"Sede",Order.Ascending}})
+				in
+				    R
+

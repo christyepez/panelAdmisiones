@@ -1,0 +1,13 @@
+table DimTipoCarrera
+	lineageTag: 7b05c1b1-2026-4a42-9f12-1e2dc6d13232
+
+	column TipoCarrera
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: TipoCarrera
+
+	partition DimTipoCarrera = m
+		mode: import
+		source =
+				#table(type table [TipoCarrera = text], {{"Grado"},{"Maestría"}})

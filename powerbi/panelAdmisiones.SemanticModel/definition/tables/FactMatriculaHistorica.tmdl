@@ -1,0 +1,651 @@
+table FactMatriculaHistorica
+	measure 'Total Matriculas Historicas' = COUNTROWS(FactMatriculaHistorica)
+		formatString: #,0
+
+	measure 'Inicio Periodo B26' = CALCULATE(MIN(DimPeriodo[FechaInicio]), FILTER(ALL(DimPeriodo), DimPeriodo[Periodo] = "B26"))
+		formatString: yyyy-MM-dd
+
+	measure 'Fin Periodo B26' = CALCULATE(MAX(DimPeriodo[FechaFin]), FILTER(ALL(DimPeriodo), DimPeriodo[Periodo] = "B26"))
+		formatString: yyyy-MM-dd
+
+	measure 'Inicio Periodo B25' = CALCULATE(MIN(DimPeriodo[FechaInicio]), FILTER(ALL(DimPeriodo), DimPeriodo[Periodo] = "B25"))
+		formatString: yyyy-MM-dd
+
+	measure 'Fin Periodo B25' = CALCULATE(MAX(DimPeriodo[FechaFin]), FILTER(ALL(DimPeriodo), DimPeriodo[Periodo] = "B25"))
+		formatString: yyyy-MM-dd
+
+	measure 'Dias Totales B26' = DATEDIFF([Inicio Periodo B26], [Fin Periodo B26], DAY) + 1
+		formatString: #,0
+
+	measure 'Fecha Corte Datos B26' = ```
+				VAR MaxFecha =
+				    CALCULATE(
+				        MAX(FactAdmision615[FechaMatriculaDay]),
+				        REMOVEFILTERS(DimFecha),
+				        REMOVEFILTERS(DimMesPeriodo),
+				        REMOVEFILTERS(DimPeriodo),
+				        REMOVEFILTERS(DimCarreraAdm),
+				        REMOVEFILTERS(DimSedeAdm),
+				        REMOVEFILTERS(DimModalidadAdm),
+				        REMOVEFILTERS(DimTipoCarrera),
+				        FactAdmision615[Periodo] = "B26"
+				    )
+				RETURN MIN([Fin Periodo B26], DATEVALUE(MaxFecha))
+			```
+		formatString: yyyy-MM-dd
+
+	measure 'Hay Filtro Mes' = IF(ISFILTERED(DimMesPeriodo[MesNumero]) || ISFILTERED(DimMesPeriodo[Mes]), 1, 0)
+		formatString: 0
+
+	measure 'Dias Objetivo B26 Contexto' = ```
+				VAR Inicio = [Inicio Periodo B26]
+				VAR Fin = [Fin Periodo B26]
+				VAR HayMes = [Hay Filtro Mes] = 1
+				VAR Meses = VALUES(DimMesPeriodo[MesNumero])
+				RETURN
+				IF(
+				    NOT HayMes,
+				    [Dias Totales B26],
+				    SUMX(
+				        Meses,
+				        VAR M = DimMesPeriodo[MesNumero]
+				        VAR D1 = MAX(Inicio, DATE(YEAR(Inicio), M, 1))
+				        VAR D2 = MIN(Fin, EOMONTH(DATE(YEAR(Inicio), M, 1), 0))
+				        RETURN IF(D1 <= D2, DATEDIFF(D1,D2,DAY)+1, 0)
+				    )
+				)
+			```
+		formatString: #,0
+
+	measure 'Dias Transcurridos B26 Contexto' = ```
+				VAR Inicio = [Inicio Periodo B26]
+				VAR Fin = [Fin Periodo B26]
+				VAR CorteDatos = MIN([Fecha Corte Datos B26], Fin)
+				VAR HayMes = [Hay Filtro Mes] = 1
+				VAR Meses = VALUES(DimMesPeriodo[MesNumero])
+				RETURN
+				IF(
+				    CorteDatos < Inicio,
+				    0,
+				    IF(
+				        NOT HayMes,
+				        DATEDIFF(Inicio, CorteDatos, DAY)+1,
+				        SUMX(
+				            Meses,
+				            VAR M = DimMesPeriodo[MesNumero]
+				            VAR D1 = MAX(Inicio, DATE(YEAR(Inicio), M, 1))
+				            VAR D2 = MIN(CorteDatos, MIN(Fin, EOMONTH(DATE(YEAR(Inicio), M, 1), 0)))
+				            RETURN IF(D1 <= D2, DATEDIFF(D1,D2,DAY)+1, 0)
+				        )
+				    )
+				)
+			```
+		formatString: #,0
+
+	measure 'Dias Transcurridos B26' = [Dias Transcurridos B26 Contexto]
+		formatString: #,0
+
+	measure 'Dias Restantes B26' = MAX(0, [Dias Objetivo B26 Contexto] - [Dias Transcurridos B26 Contexto])
+		formatString: #,0
+
+	measure 'Matriculas B26 Mismo Dia' = ```
+				VAR Corte = [Inicio Periodo B26] + [Dias Transcurridos B26] - 1
+				RETURN
+				    CALCULATE(
+				        FactAdmision615[Total Matriculas],
+				        REMOVEFILTERS(DimPeriodo),
+				        REMOVEFILTERS(DimFecha),
+				        FactAdmision615[Periodo] = "B26",
+				        FILTER(ALL(FactAdmision615[FechaMatriculaDay]), FactAdmision615[FechaMatriculaDay] <= Corte)
+				    )
+			```
+		formatString: #,0
+
+	measure 'Matriculas B25 Mismo Dia' = ```
+				VAR Corte = MIN([Fin Periodo B25], [Inicio Periodo B25] + [Dias Transcurridos B26] - 1)
+				RETURN
+				    CALCULATE(
+				        [Total Matriculas Historicas],
+				        REMOVEFILTERS(DimPeriodo),
+				        REMOVEFILTERS(DimFecha),
+				        FactMatriculaHistorica[Periodo] = "B25",
+				        FILTER(ALL(FactMatriculaHistorica[FechaMatricula]), FactMatriculaHistorica[FechaMatricula] <= Corte)
+				    )
+			```
+		formatString: #,0
+
+	measure 'Variacion B26 vs B25 Mismo Dia' = [Matriculas B26 Mismo Dia] - [Matriculas B25 Mismo Dia]
+		formatString: +#,0;-#,0;0
+
+	measure '% Variacion B26 vs B25 Mismo Dia' = DIVIDE([Variacion B26 vs B25 Mismo Dia], [Matriculas B25 Mismo Dia])
+		formatString: +0.0%;-0.0%;0.0%
+
+	measure 'Ritmo Diario B26' = DIVIDE([Matriculas B26 Mismo Dia], [Dias Transcurridos B26])
+		formatString: 0.00
+
+	measure 'Ritmo Diario Requerido B26' = ```
+				VAR MetaContexto = [Meta B26 Contexto Panel]
+				VAR Faltante = MAX(0, MetaContexto - [Matriculas B26 Mismo Dia])
+				RETURN IF([Dias Restantes B26] = 0, 0, DIVIDE(Faltante, [Dias Restantes B26]))
+			```
+		formatString: 0.00
+
+	measure 'Proyeccion Cierre B26' = ROUND([Matriculas B26 Mismo Dia] + [Ritmo Diario B26] * [Dias Restantes B26], 0)
+		formatString: #,0
+
+	measure 'Brecha Proyectada B26' = [Proyeccion Cierre B26] - [Meta B26 Contexto Panel]
+		formatString: +#,0;-#,0;0
+
+	measure 'B26 Acumulado Dia Periodo' = ```
+				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
+				VAR FechaPunto = [Inicio Periodo B26] + D - 1
+				VAR CorteDatos = [Fecha Corte Datos B26]
+				VAR HayMes = [Hay Filtro Mes] = 1
+				VAR MesVisible = NOT HayMes || CONTAINS(VALUES(DimMesPeriodo[MesNumero]), DimMesPeriodo[MesNumero], MONTH(FechaPunto))
+				VAR V =
+				    IF(
+				        ISBLANK(D) || FechaPunto > CorteDatos || D > [Dias Totales B26] || NOT MesVisible,
+				        BLANK(),
+				        CALCULATE(
+				            FactAdmision615[Total Matriculas],
+				            REMOVEFILTERS(DimPeriodo), REMOVEFILTERS(DimFecha), REMOVEFILTERS(DimMesPeriodo),
+				            FactAdmision615[Periodo]="B26",
+				            FILTER(ALL(FactAdmision615[FechaMatriculaDay]), FactAdmision615[FechaMatriculaDay] >= [Inicio Periodo B26] && FactAdmision615[FechaMatriculaDay] <= FechaPunto)
+				        )
+				    )
+				RETURN IF(V=0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'B25 Acumulado Dia Periodo' = ```
+				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
+				VAR FechaB26 = [Inicio Periodo B26] + D - 1
+				VAR FechaB25 = [Inicio Periodo B25] + D - 1
+				VAR CorteB25 = MIN([Fin Periodo B25], FechaB25)
+				VAR HayMes = [Hay Filtro Mes] = 1
+				VAR MesVisible = NOT HayMes || CONTAINS(VALUES(DimMesPeriodo[MesNumero]), DimMesPeriodo[MesNumero], MONTH(FechaB26))
+				VAR V =
+				    IF(
+				        ISBLANK(D) || FechaB26 > [Fecha Corte Datos B26] || FechaB25 > [Fin Periodo B25] || NOT MesVisible,
+				        BLANK(),
+				        CALCULATE(
+				            [Total Matriculas Historicas],
+				            REMOVEFILTERS(DimPeriodo), REMOVEFILTERS(DimFecha), REMOVEFILTERS(DimMesPeriodo),
+				            FactMatriculaHistorica[Periodo]="B25",
+				            FILTER(ALL(FactMatriculaHistorica[FechaMatricula]), FactMatriculaHistorica[FechaMatricula] >= [Inicio Periodo B25] && FactMatriculaHistorica[FechaMatricula] <= CorteB25)
+				        )
+				    )
+				RETURN IF(V=0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Meta Lineal B26 Dia Periodo' = ```
+				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
+				RETURN IF(ISBLANK(D) || D > [Dias Totales B26], BLANK(), [Meta B26 Contexto Panel] * DIVIDE(D,[Dias Totales B26]))
+			```
+		formatString: #,0
+
+	measure 'B26 Acumulado Mes' = ```
+				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
+				VAR Inicio = [Inicio Periodo B26]
+				VAR CorteDatos = [Fecha Corte Datos B26]
+				VAR FinPunto = IF(NOT ISBLANK(M), MIN(CorteDatos, EOMONTH(DATE(YEAR(Inicio), M, 1), 0)))
+				VAR V =
+				    IF(
+				        ISBLANK(M) || ISBLANK(FinPunto) || FinPunto < Inicio,
+				        BLANK(),
+				        CALCULATE(
+				            FactAdmision615[Total Matriculas],
+				            REMOVEFILTERS(DimMesPeriodo),
+				            REMOVEFILTERS(DimFecha),
+				            REMOVEFILTERS(FactAdmision615[MesNumero]),
+				            FactAdmision615[FechaMatriculaDay] >= Inicio,
+				            FactAdmision615[FechaMatriculaDay] <= FinPunto
+				        )
+				    )
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'B25 Acumulado Mes' = ```
+				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
+				VAR Inicio25 = [Inicio Periodo B25]
+				VAR Fin25 = [Fin Periodo B25]
+				VAR Corte26 = [Fecha Corte Datos B26]
+				VAR MesCorte = MONTH(Corte26)
+				VAR DiaCorte = DAY(Corte26)
+				VAR InicioMes25 = IF(NOT ISBLANK(M), DATE(YEAR(Inicio25), M, 1))
+				VAR FinNatural25 = IF(NOT ISBLANK(M), EOMONTH(InicioMes25, 0))
+				VAR FinComparable25 =
+				    IF(
+				        ISBLANK(M),
+				        BLANK(),
+				        IF(M = MesCorte, MIN(FinNatural25, InicioMes25 + MIN(DiaCorte, DAY(FinNatural25)) - 1), FinNatural25)
+				    )
+				VAR FinPunto = IF(NOT ISBLANK(M), MIN(Fin25, FinComparable25))
+				VAR V =
+				    IF(
+				        ISBLANK(M) || M > MesCorte || ISBLANK(FinPunto) || FinPunto < Inicio25,
+				        BLANK(),
+				        CALCULATE(
+				            [Total Matriculas Historicas],
+				            REMOVEFILTERS(DimMesPeriodo),
+				            REMOVEFILTERS(DimFecha),
+				            REMOVEFILTERS(FactMatriculaHistorica[MesNumero]),
+				            FactMatriculaHistorica[Periodo] = "B25",
+				            FactMatriculaHistorica[FechaMatricula] >= Inicio25,
+				            FactMatriculaHistorica[FechaMatricula] <= FinPunto
+				        )
+				    )
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Meta B26 Mes' = ```
+				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
+				VAR Inicio = [Inicio Periodo B26]
+				VAR Fin = [Fin Periodo B26]
+				VAR InicioMes = DATE(YEAR(Inicio), M, 1)
+				VAR Corte = MIN(Fin, EOMONTH(InicioMes,0))
+				VAR Dias = DATEDIFF(Inicio, Corte, DAY) + 1
+				RETURN IF(
+				    ISBLANK(M) || InicioMes > Fin || EOMONTH(InicioMes,0) < Inicio,
+				    BLANK(),
+				    [Meta B26 Base Contexto] * DIVIDE(Dias,[Dias Totales B26])
+				)
+			```
+		formatString: #,0
+
+	measure 'Proyeccion B26 Mes' = ```
+				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
+				VAR Inicio = [Inicio Periodo B26]
+				VAR Fin = [Fin Periodo B26]
+				VAR InicioMes = DATE(YEAR(Inicio), M, 1)
+				VAR Corte = MIN(Fin, EOMONTH(InicioMes,0))
+				VAR DiasObjetivo = DATEDIFF(Inicio, Corte, DAY) + 1
+				RETURN IF(
+				    ISBLANK(M) || InicioMes > Fin || EOMONTH(InicioMes,0) < Inicio || Corte <= [Fecha Corte Datos B26],
+				    BLANK(),
+				    ROUND([Matriculas B26 Mismo Dia] + [Ritmo Diario B26] * (DiasObjetivo - [Dias Transcurridos B26]), 0)
+				)
+			```
+		formatString: #,0
+
+	measure 'Matriculas B26 Mes' = ```
+				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
+				VAR Inicio = [Inicio Periodo B26]
+				VAR CorteDatos = [Fecha Corte Datos B26]
+				VAR D1 = IF(NOT ISBLANK(M), MAX(Inicio, DATE(YEAR(Inicio), M, 1)))
+				VAR D2 = IF(NOT ISBLANK(M), MIN(CorteDatos, EOMONTH(DATE(YEAR(Inicio), M, 1), 0)))
+				VAR V =
+				    IF(
+				        ISBLANK(M) || ISBLANK(D1) || ISBLANK(D2) || D2 < D1,
+				        BLANK(),
+				        CALCULATE(
+				            FactAdmision615[Total Matriculas],
+				            REMOVEFILTERS(DimMesPeriodo),
+				            REMOVEFILTERS(DimFecha),
+				            REMOVEFILTERS(FactAdmision615[MesNumero]),
+				            FactAdmision615[FechaMatriculaDay] >= D1,
+				            FactAdmision615[FechaMatriculaDay] <= D2
+				        )
+				    )
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Matriculas B25 Mes' = ```
+				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
+				VAR Inicio25 = [Inicio Periodo B25]
+				VAR Fin25 = [Fin Periodo B25]
+				VAR Corte26 = [Fecha Corte Datos B26]
+				VAR MesCorte = MONTH(Corte26)
+				VAR DiaCorte = DAY(Corte26)
+				VAR InicioMes25 = IF(NOT ISBLANK(M), DATE(YEAR(Inicio25), M, 1))
+				VAR FinNatural25 = IF(NOT ISBLANK(M), EOMONTH(InicioMes25, 0))
+				VAR FinComparable25 =
+				    IF(
+				        ISBLANK(M),
+				        BLANK(),
+				        IF(
+				            M = MesCorte,
+				            MIN(FinNatural25, InicioMes25 + MIN(DiaCorte, DAY(FinNatural25)) - 1),
+				            FinNatural25
+				        )
+				    )
+				VAR D1 = IF(NOT ISBLANK(M), MAX(Inicio25, InicioMes25))
+				VAR D2 = IF(NOT ISBLANK(M), MIN(Fin25, FinComparable25))
+				VAR V =
+				    IF(
+				        ISBLANK(M) || M > MesCorte || ISBLANK(D1) || ISBLANK(D2) || D2 < D1,
+				        BLANK(),
+				        CALCULATE(
+				            [Total Matriculas Historicas],
+				            REMOVEFILTERS(DimMesPeriodo),
+				            REMOVEFILTERS(DimFecha),
+				            REMOVEFILTERS(FactMatriculaHistorica[MesNumero]),
+				            FactMatriculaHistorica[Periodo] = "B25",
+				            FactMatriculaHistorica[FechaMatricula] >= D1,
+				            FactMatriculaHistorica[FechaMatricula] <= D2
+				        )
+				    )
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Total B25 Final' = ```
+				CALCULATE(
+				    [Total Matriculas Historicas],
+				    REMOVEFILTERS(DimPeriodo),
+				    REMOVEFILTERS(DimFecha),
+				    FactMatriculaHistorica[Periodo] = "B25"
+				)
+			```
+		formatString: #,0
+
+	measure '% Real B25 YTD' = DIVIDE([Matriculas B25 Mismo Dia], [Total B25 Final])
+		formatString: 0.0%
+
+	measure 'Delta B25' = [Meta Excel B26 Matriz] - [Total B25 Final]
+		formatString: +#,0;-#,0;0
+
+	measure 'Delta B25 %' = ```
+				VAR Meta = [Meta Excel B26 Matriz]
+				VAR B25 = [Total B25 Final]
+				RETURN
+				    IF(
+				        ISBLANK(Meta) && ISBLANK(B25),
+				        BLANK(),
+				        DIVIDE(Meta, B25) - 1
+				    )
+			```
+		formatString: +0.0%;-0.0%;0.0%
+
+	measure 'Total B26 Actual' = ```
+				CALCULATE(
+				    FactAdmision615[Total Matriculas B26],
+				    REMOVEFILTERS(DimFecha),
+				    REMOVEFILTERS(DimPeriodo)
+				)
+			```
+		formatString: #,0
+
+	measure '% Real B26 Budget' = DIVIDE([Total B26 Actual], [YTD Objetivo B26])
+		formatString: 0.0%
+
+	measure 'Delta Budget B26' = [Total B26 Actual] - [YTD Objetivo B26]
+		formatString: +#,0;-#,0;0
+
+	measure 'Completion B26' = DIVIDE([Total B26 Actual], [Meta Excel B26 Matriz])
+		formatString: 0.0%
+
+	measure 'Real B26 vs LY %' = DIVIDE([Total B26 Actual], [Matriculas B25 Mismo Dia])
+		formatString: 0.0%
+
+	measure 'Varianza B26 vs LY' = [Total B26 Actual] - [Matriculas B25 Mismo Dia]
+		formatString: +#,0;-#,0;0
+
+	measure 'Meta B26 vs Total B25 %' = DIVIDE([Meta Excel B26 Matriz], [Total B25 Final])
+		formatString: 0.0%
+
+	measure 'Real B26 vs YTD B26 %' = DIVIDE([Total B26 Actual], [YTD Objetivo B26])
+		formatString: 0.0%
+
+	measure 'YTD B26 vs YTD B25 %' = DIVIDE([Matriculas B26 Mismo Dia], [Matriculas B25 Mismo Dia])
+		formatString: 0.0%
+
+	measure 'Delta YTD B26 vs B25' = [Matriculas B26 Mismo Dia] - [Matriculas B25 Mismo Dia]
+		formatString: +#,0;-#,0;0
+
+	measure 'YTD Objetivo B26' = ```
+			VAR Meta = [Meta Excel B26 Matriz]
+			VAR AvanceB25 = DIVIDE([Matriculas B25 Mismo Dia], [Total B25 Final])
+			VAR V = ROUND(Meta * AvanceB25, 0)
+			RETURN IF(ISBLANK(Meta) || ISBLANK(AvanceB25), BLANK(), V)
+		```
+		formatString: #,0
+
+	measure 'YTD Objetivo B26 Vis' = ```
+			VAR V = [YTD Objetivo B26]
+			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+		```
+		formatString: #,0
+
+	measure '% Variacion B26 vs B25 Mismo Dia Vis' = ```
+				VAR V = [% Variacion B26 vs B25 Mismo Dia]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: +0.0%;-0.0%;0.0%
+
+	measure 'Ritmo Diario B26 Vis' = ```
+				VAR V = [Ritmo Diario B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.00
+
+	measure 'Matriculas B25 Mismo Dia Vis' = ```
+				VAR V = [Matriculas B25 Mismo Dia]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Brecha Proyectada B26 Vis' = ```
+				VAR V = [Brecha Proyectada B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: +#,0;-#,0;0
+
+	measure 'B26 Acumulado Mes Vis' = ```
+				VAR V = [B26 Acumulado Mes]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'B25 Acumulado Mes Vis' = ```
+				VAR V = [B25 Acumulado Mes]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Proyeccion B26 Mes Vis' = ```
+				VAR V = [Proyeccion B26 Mes]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Meta B26 Mes Vis' = ```
+				VAR V = [Meta B26 Mes]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Matriculas B26 Mes Vis' = ```
+				VAR V = [Matriculas B26 Mes]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Matriculas B25 Mes Vis' = ```
+				VAR V = [Matriculas B25 Mes]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Matriculas B26 Mismo Dia Vis' = ```
+				VAR V = [Matriculas B26 Mismo Dia]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Ritmo Diario Requerido B26 Vis' = ```
+				VAR V = [Ritmo Diario Requerido B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.00
+
+	measure 'Proyeccion Cierre B26 Vis' = ```
+				VAR V = [Proyeccion Cierre B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Total B25 Final Vis' = ```
+				VAR V = [Total B25 Final]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure '% Real B25 YTD Vis' = ```
+				VAR V = [% Real B25 YTD]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.0%
+
+	measure 'Delta B25 % Vis' = ```
+			VAR V = [Delta B25 %]
+			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+		```
+		formatString: +0.0%;-0.0%;0.0%
+
+	measure 'Total B26 Actual Vis' = ```
+				VAR V = [Total B26 Actual]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure '% Real B26 Budget Vis' = ```
+				VAR V = [% Real B26 Budget]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.0%
+
+	measure 'Delta Budget B26 Vis' = ```
+				VAR V = [Delta Budget B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: +#,0;-#,0;0
+
+	measure 'Completion B26 Vis' = ```
+				VAR V = [Completion B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.0%
+
+	measure 'Real B26 vs LY % Vis' = ```
+				VAR V = [Real B26 vs LY %]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.0%
+
+	measure 'Varianza B26 vs LY Vis' = ```
+				VAR V = [Varianza B26 vs LY]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: +#,0;-#,0;0
+
+	measure 'Meta B26 vs Total B25 % Vis' = ```
+				VAR V = [Meta B26 vs Total B25 %]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.0%
+
+	measure 'Real B26 vs YTD B26 % Vis' = ```
+				VAR V = [Real B26 vs YTD B26 %]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.0%
+
+	measure 'YTD B26 vs YTD B25 % Vis' = ```
+				VAR V = [YTD B26 vs YTD B25 %]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: 0.0%
+
+	measure 'Delta YTD B26 vs B25 Vis' = ```
+				VAR V = [Delta YTD B26 vs B25]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: +#,0;-#,0;0
+
+	measure 'Dias Restantes B26 Vis' = ```
+		VAR v = [Dias Restantes B26]
+		RETURN IF(ISBLANK(v) || v = 0, BLANK(), v)
+		```
+		formatString: 0
+
+	column Periodo
+		dataType: string
+		sourceColumn: Periodo
+
+	column Sede
+		dataType: string
+		sourceColumn: Sede
+
+	column Modalidad
+		dataType: string
+		sourceColumn: Modalidad
+
+	column Carrera
+		dataType: string
+		sourceColumn: Carrera
+
+	column Identificacion
+		dataType: string
+		isHidden
+		sourceColumn: Identificacion
+
+	column FechaMatricula
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: FechaMatricula
+
+	column AnioMatricula
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: AnioMatricula
+
+	column MesNumero
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: MesNumero
+
+	column AnioMesKey
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: AnioMesKey
+
+	column Formalizada
+		dataType: string
+		sourceColumn: Formalizada
+
+	column TipoPrograma
+		dataType: string
+		sourceColumn: TipoPrograma
+
+	column TipoCarrera
+		dataType: string
+		sourceColumn: TipoCarrera
+
+	column ArchivoOrigen
+		dataType: string
+		isHidden
+		sourceColumn: ArchivoOrigen
+
+	partition FactMatriculaHistorica = m
+		mode: import
+		source =
+				let
+				    S0 = FxLoad387(),
+				    K = Table.SelectColumns(S0,{"Periodo","Sede","Modalidad","Carrera","Identificacion","FechaMatricula","Formalizada","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
+				    D = Table.TransformColumns(K,{{"FechaMatricula", each try DateTime.From(Date.From(_)) otherwise null, type nullable datetime}}),
+				    AddAnio = Table.AddColumn(D,"AnioMatricula", each if [FechaMatricula]=null then null else Date.Year(Date.From([FechaMatricula])), Int64.Type),
+				    AddMes = Table.AddColumn(AddAnio,"MesNumero", each if [FechaMatricula]=null then null else Date.Month(Date.From([FechaMatricula])), Int64.Type),
+				    AddYM = Table.AddColumn(AddMes,"AnioMesKey", each if [FechaMatricula]=null then null else Date.Year(Date.From([FechaMatricula]))*100 + Date.Month(Date.From([FechaMatricula])), Int64.Type),
+				    R = Table.TransformColumnTypes(AddYM,{
+				        {"Periodo", type text},{"Sede", type text},{"Modalidad", type text},{"Carrera", type text},{"Identificacion", type text},
+				        {"FechaMatricula", type datetime},{"AnioMatricula", Int64.Type},{"MesNumero", Int64.Type},{"AnioMesKey", Int64.Type},
+				        {"Formalizada", type text},{"TipoPrograma", type text},{"TipoCarrera", type text},{"ArchivoOrigen", type text}
+				    })
+				in
+				    R

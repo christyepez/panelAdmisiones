@@ -1,0 +1,173 @@
+table FactAdmision615
+	measure 'Total Matriculas' = ```
+				CALCULATE(
+				    COUNTROWS(FactAdmision615),
+				    KEEPFILTERS(UPPER(FactAdmision615[MatriculaEnPrimero]) = "SI"),
+				    KEEPFILTERS(NOT ISBLANK(FactAdmision615[FechaMatriculaDay]))
+				)
+			```
+		formatString: #,0
+
+	measure 'Total Matriculas B26' = ```
+				CALCULATE(
+				    [Total Matriculas],
+				    REMOVEFILTERS(DimPeriodo),
+				    FactAdmision615[Periodo] = "B26"
+				)
+			```
+		formatString: #,0
+
+	measure 'Matriculas Formalizadas' = CALCULATE([Total Matriculas], UPPER(FactAdmision615[Formalizado]) = "SI")
+		formatString: #,0
+
+	measure 'Total Matriculas B26 Vis' = ```
+				VAR V = [Total Matriculas B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	column Periodo
+		dataType: string
+		sourceColumn: Periodo
+
+	column Sede
+		dataType: string
+		sourceColumn: Sede
+
+	column Carrera
+		dataType: string
+		sourceColumn: Carrera
+
+	column Modalidad
+		dataType: string
+		sourceColumn: Modalidad
+
+	column Identificacion
+		dataType: string
+		isHidden
+		sourceColumn: Identificacion
+
+	column FechaInscripcionDay
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: FechaInscripcionDay
+
+	column FechaMatriculaDay
+		dataType: dateTime
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: FechaMatriculaDay
+
+	column AnioMatricula
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: AnioMatricula
+
+	column MesNumero
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: MesNumero
+
+	column AnioMesKey
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: AnioMesKey
+
+	column MesInscripcionNumero
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: MesInscripcionNumero
+
+	column MatriculaEnPrimero
+		dataType: string
+		sourceColumn: MatriculaEnPrimero
+
+	column Formalizado
+		dataType: string
+		sourceColumn: Formalizado
+
+	column Fuente
+		dataType: string
+		sourceColumn: Fuente
+
+	column TipoPrograma
+		dataType: string
+		sourceColumn: TipoPrograma
+
+	column TipoCarrera
+		dataType: string
+		sourceColumn: TipoCarrera
+
+	column ArchivoOrigen
+		dataType: string
+		isHidden
+		sourceColumn: ArchivoOrigen
+
+	partition FactAdmision615 = m
+		mode: import
+		source =
+				let
+				    FilePath = AdmisionesFolder & "\\615.xlsx",
+				    Bin = File.Contents(FilePath),
+				    Raw = FxReadNamedSheet(Bin, "reporte"),
+				    Keep = Table.SelectColumns(
+				        Raw,
+				        {"Periodo","Sede","COORDINACION","CARRERA","MODALIDAD","IDENTIFICACION","ESTUDIANTE","CORREO PERSONAL","NUMERO DE TELEFONO",
+				         "CANTON DE RESIDENCIA","FECHA INSCRIPCION","FECHA MATRICULA","ASESOR","RESPONSABLE DEL GRUPO","Prematricula",
+				         "MATRICULA EN PRIMERO","PERSONA MATRICULO","FORMALIZADO","RETIRADO CARRERA","FUENTE","NIVEL MATRICULA","CENTRO","HOMOLOGA"},
+				        MissingField.UseNull
+				    ),
+				    Ren = Table.RenameColumns(Keep,{
+				        {"COORDINACION","Facultad"},{"CARRERA","Carrera"},{"MODALIDAD","Modalidad"},{"IDENTIFICACION","Identificacion"},
+				        {"ESTUDIANTE","Estudiante"},{"CORREO PERSONAL","Email"},{"NUMERO DE TELEFONO","Telefono"},{"CANTON DE RESIDENCIA","CantonResidencia"},
+				        {"FECHA INSCRIPCION","FechaInscripcion"},{"FECHA MATRICULA","FechaMatricula"},{"ASESOR","Asesor"},{"RESPONSABLE DEL GRUPO","ResponsableGrupo"},
+				        {"Prematricula","Prematricula"},{"MATRICULA EN PRIMERO","MatriculaEnPrimero"},{"PERSONA MATRICULO","PersonaMatriculo"},
+				        {"FORMALIZADO","Formalizado"},{"RETIRADO CARRERA","RetiradoCarrera"},{"FUENTE","Fuente"},{"NIVEL MATRICULA","NivelMatricula"},{"CENTRO","Centro"},{"HOMOLOGA","Homologacion"}
+				    }, MissingField.Ignore),
+				    Cleaned = Table.TransformColumns(Ren,{
+				        {"Periodo", FxCleanText, type text},{"Sede", FxCleanText, type text},{"Facultad", FxCleanText, type text},{"Carrera", FxCleanText, type text},{"Modalidad", FxCleanText, type text},
+				        {"Identificacion", FxCleanText, type text},{"Estudiante", FxCleanText, type text},{"Email", FxCleanText, type text},{"Telefono", FxCleanText, type text},
+				        {"CantonResidencia", FxCleanText, type text},{"Asesor", FxCleanText, type text},{"ResponsableGrupo", FxCleanText, type text},{"Prematricula", FxCleanText, type text},
+				        {"MatriculaEnPrimero", FxCleanText, type text},{"PersonaMatriculo", FxCleanText, type text},{"Formalizado", FxCleanText, type text},
+				        {"RetiradoCarrera", FxCleanText, type text},{"Fuente", each FxCanal(_), type text},{"NivelMatricula", FxCleanText, type text},{"Centro", FxCleanText, type text},{"Homologacion", FxCleanText, type text}
+				    }),
+				    Dates = Table.TransformColumns(Cleaned,{
+				        {"FechaInscripcion", each try Date.From(_) otherwise null, type date},
+				        {"FechaMatricula", each try Date.From(_) otherwise null, type date}
+				    }),
+				    Canon = Table.TransformColumns(Dates,{{"Carrera", each FxCarreraCanonica(_), type text}}),
+				    AddAsesor = Table.AddColumn(Canon, "AsesorFinal", each
+				        if [Asesor] <> null then [Asesor]
+				        else if [ResponsableGrupo] <> null then [ResponsableGrupo]
+				        else if [PersonaMatriculo] <> null then [PersonaMatriculo]
+				        else "SIN ASESOR ASIGNADO", type text),
+				    AddTipo = Table.AddColumn(AddAsesor, "TipoPrograma", each FxTipoPrograma([Carrera]), type text),
+				    AddTipoCarrera = Table.AddColumn(AddTipo, "TipoCarrera", each FxTipoCarrera([Carrera]), type text),
+				    BusinessFilter = Table.SelectRows(AddTipoCarrera, each
+				        FxNormalizeName([Periodo]) = "B26" and
+				        FxNormalizeName([Homologacion]) = "NO" and
+				        FxNormalizeName([RetiradoCarrera]) = "NO" and
+				        FxNormalizeName([MatriculaEnPrimero]) = "SI" and
+				        FxNormalizeName([Carrera]) <> "FORMACION CONTINUA" and
+				        [Identificacion] <> null
+				    ),
+				    AddFile = Table.AddColumn(BusinessFilter, "ArchivoOrigen", each "615.xlsx", type text),
+				    Sorted = Table.Sort(AddFile, {{"FechaMatricula", Order.Descending}, {"FechaInscripcion", Order.Descending}}),
+				    Dedup = Table.Distinct(Table.Buffer(Sorted), {"Periodo","Identificacion","Carrera"}),
+				    KeepFact = Table.SelectColumns(Dedup,{"Periodo","Sede","Carrera","Modalidad","Identificacion","FechaInscripcion","FechaMatricula","MatriculaEnPrimero","Formalizado","Fuente","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
+				    I = Table.AddColumn(KeepFact,"FechaInscripcionDay", each try DateTime.From(Date.From([FechaInscripcion])) otherwise null, type nullable datetime),
+				    M = Table.AddColumn(I,"FechaMatriculaDay", each try DateTime.From(Date.From([FechaMatricula])) otherwise null, type nullable datetime),
+				    AddAnio = Table.AddColumn(M,"AnioMatricula", each if [FechaMatriculaDay]=null then null else Date.Year(Date.From([FechaMatriculaDay])), Int64.Type),
+				    AddMes = Table.AddColumn(AddAnio,"MesNumero", each if [FechaMatriculaDay]=null then null else Date.Month(Date.From([FechaMatriculaDay])), Int64.Type),
+				    AddYM = Table.AddColumn(AddMes,"AnioMesKey", each if [FechaMatriculaDay]=null then null else Date.Year(Date.From([FechaMatriculaDay]))*100 + Date.Month(Date.From([FechaMatriculaDay])), Int64.Type),
+				    AddMesIns = Table.AddColumn(AddYM,"MesInscripcionNumero", each if [FechaInscripcionDay]=null then null else Date.Month(Date.From([FechaInscripcionDay])), Int64.Type),
+				    R0 = Table.RemoveColumns(AddMesIns,{"FechaInscripcion","FechaMatricula"}),
+				    R = Table.TransformColumnTypes(R0,{
+				        {"Periodo", type text},{"Sede", type text},{"Carrera", type text},{"Modalidad", type text},{"Identificacion", type text},
+				        {"FechaInscripcionDay", type datetime},{"FechaMatriculaDay", type datetime},
+				        {"AnioMatricula", Int64.Type},{"MesNumero", Int64.Type},{"AnioMesKey", Int64.Type},{"MesInscripcionNumero", Int64.Type},
+				        {"MatriculaEnPrimero", type text},{"Formalizado", type text},{"Fuente", type text},{"TipoPrograma", type text},{"TipoCarrera", type text},{"ArchivoOrigen", type text}
+				    })
+				in
+				    R

@@ -1,8 +1,0 @@
-{
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.3.0/schema.json",
-  "name": "matriz",
-  "displayName": "Matriz comparativa 2025–2026",
-  "displayOption": "FitToWidth",
-  "height": 800,
-  "width": 1400
-}

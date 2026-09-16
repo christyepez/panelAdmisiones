@@ -1,0 +1,56 @@
+table DimFecha
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: Short Date
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Anio
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Anio
+
+	column MesNumero
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: MesNumero
+
+	column Mes
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Mes
+		sortByColumn: MesNumero
+
+	column AnioMes
+		dataType: string
+		summarizeBy: none
+		sourceColumn: AnioMes
+		sortByColumn: AnioMesKey
+
+	column AnioMesKey
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: AnioMesKey
+
+	partition DimFecha = m
+		mode: import
+		source =
+				let
+				    Hist = FxLoad387(),
+				    Current = FxLoad615(),
+				    HistDates = List.RemoveNulls(Hist[FechaMatricula]),
+				    CurrentDates = List.RemoveNulls(Current[FechaMatricula]),
+				    FinB25 = if List.Count(HistDates)=0 then #date(2025,12,2) else List.Max(HistDates),
+				    Fin = Date.AddYears(FinB25,1),
+				    Inicio = List.Min(List.Combine({if List.Count(HistDates)=0 then {#date(2025,5,1)} else HistDates, if List.Count(CurrentDates)=0 then {#date(2026,5,1)} else CurrentDates})),
+				    L = List.Dates(Inicio, Duration.Days(Fin-Inicio)+1, #duration(1,0,0,0)),
+				    T = Table.FromList(L, Splitter.SplitByNothing(), {"Date"}),
+				    A = Table.AddColumn(T,"Anio", each Date.Year([Date]), Int64.Type),
+				    M = Table.AddColumn(A,"MesNumero", each Date.Month([Date]), Int64.Type),
+				    MN = Table.AddColumn(M,"Mes", each Text.Upper(Date.ToText([Date],"MMM","es-EC")), type text),
+				    YM = Table.AddColumn(MN,"AnioMes", each Date.ToText([Date],"yyyy-MM"), type text),
+				    YMKey = Table.AddColumn(YM,"AnioMesKey", each [Anio]*100+[MesNumero], Int64.Type),
+				    R = Table.TransformColumnTypes(YMKey,{{"Date", type date},{"Anio",Int64.Type},{"MesNumero",Int64.Type},{"Mes",type text},{"AnioMes",type text},{"AnioMesKey",Int64.Type}})
+				in
+				    R

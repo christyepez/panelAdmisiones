@@ -1,0 +1,29 @@
+table DimCarreraAdm
+	lineageTag: c1bc81f1-fc1a-432c-beda-a8d3a14e43f8
+
+	column Carrera
+		dataType: string
+		isKey
+		lineageTag: 10397c0f-9299-47ca-a76d-ab00f8e6fa4c
+		sourceColumn: Carrera
+
+	column TipoPrograma
+		dataType: string
+		lineageTag: efc489c2-f600-4a2e-b412-df949c8b71a7
+		sourceColumn: TipoPrograma
+
+	partition DimCarreraAdm = m
+		mode: import
+		source =
+				let
+				    A = Table.SelectColumns(FxLoad615(), {"Carrera","TipoPrograma"}, MissingField.UseNull),
+				    H = Table.SelectColumns(FxLoad387(), {"Carrera","TipoPrograma"}, MissingField.UseNull),
+				    M0 = Table.SelectRows(FxLoadMetas(), each [Carrera] <> null),
+				    M = Table.SelectColumns(M0, {"Carrera","TipoPrograma"}, MissingField.UseNull),
+				    U = Table.Combine({A,H,M}),
+				    Clean = Table.SelectRows(U, each [Carrera] <> null and Text.Trim(Text.From([Carrera])) <> ""),
+				    Sorted = Table.Sort(Clean, {{"Carrera",Order.Ascending}}),
+				    R = Table.Distinct(Sorted, {"Carrera"})
+				in
+				    R
+

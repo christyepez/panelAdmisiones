@@ -1,9 +1,0 @@
-table DimSede
-	column Sede
-		dataType: string
-		sourceColumn: Sede
-
-	partition DimSede = m
-		mode: import
-		source =
-				let T=#table(type table [Sede=text],{{"MATRIZ"},{"QUITO"},{"LATACUNGA"}}) in T

@@ -1,39 +1,80 @@
-relationship 68055f4f-d265-5cd0-b5f4-3d036605fbed
-	fromColumn: FactB26.CarreraKey
-	toColumn: DimCarrera.CarreraKey
+relationship rel-current-period
+	fromColumn: FactAdmision615.Periodo
+	toColumn: DimPeriodo.Periodo
 
-relationship 04485b51-2f32-5a48-abc1-67413c57fc4a
-	fromColumn: FactB25.CarreraKey
-	toColumn: DimCarrera.CarreraKey
+relationship rel-current-sede
+	fromColumn: FactAdmision615.Sede
+	toColumn: DimSedeAdm.Sede
 
-relationship cd2fe331-c2c0-51f6-af4d-9cce1f02b2a4
-	fromColumn: FactMetasCarrera.CarreraKey
-	toColumn: DimCarrera.CarreraKey
+relationship rel-current-modalidad
+	fromColumn: FactAdmision615.Modalidad
+	toColumn: DimModalidadAdm.Modalidad
 
-relationship 670c8fce-01c3-5ede-bb64-f44ade75cb43
-	fromColumn: FactMetasSede.CarreraKey
-	toColumn: DimCarrera.CarreraKey
+relationship rel-current-carrera
+	fromColumn: FactAdmision615.Carrera
+	toColumn: DimCarreraAdm.Carrera
 
-relationship 3a7f5cea-9c29-524d-aff9-142f0dd838e7
-	fromColumn: FactB26.Sede
-	toColumn: DimSede.Sede
+relationship rel-current-matricula-date
+	fromColumn: FactAdmision615.FechaMatriculaDay
+	toColumn: DimFecha.Date
 
-relationship acbb5fdb-1c31-53da-b5e0-e304c0865460
-	fromColumn: FactB25.Sede
-	toColumn: DimSede.Sede
+relationship rel-current-inscripcion-date
+	isActive: false
+	fromColumn: FactAdmision615.FechaInscripcionDay
+	toColumn: DimFecha.Date
 
-relationship 335cee2c-f3bf-53a2-9036-47362270ebf6
-	fromColumn: FactMetasSede.Sede
-	toColumn: DimSede.Sede
+relationship rel-hist-period
+	fromColumn: FactMatriculaHistorica.Periodo
+	toColumn: DimPeriodo.Periodo
 
-relationship 92562133-ab16-58a9-9518-26b8b80c3bdc
-	fromColumn: FactB26.Modalidad
-	toColumn: DimModalidad.Modalidad
+relationship rel-hist-sede
+	fromColumn: FactMatriculaHistorica.Sede
+	toColumn: DimSedeAdm.Sede
 
-relationship fcba2c95-be38-5dc1-bf65-3f07ea039587
-	fromColumn: FactB25.Modalidad
-	toColumn: DimModalidad.Modalidad
+relationship rel-hist-modalidad
+	fromColumn: FactMatriculaHistorica.Modalidad
+	toColumn: DimModalidadAdm.Modalidad
 
-relationship 15a7809c-5187-5021-b0ac-ca7c9b02e448
-	fromColumn: FactMetasSede.Modalidad
-	toColumn: DimModalidad.Modalidad
+relationship rel-hist-carrera
+	fromColumn: FactMatriculaHistorica.Carrera
+	toColumn: DimCarreraAdm.Carrera
+
+relationship rel-hist-date
+	fromColumn: FactMatriculaHistorica.FechaMatricula
+	toColumn: DimFecha.Date
+
+relationship rel-meta-period
+	fromColumn: FactMetaAdmision.Periodo
+	toColumn: DimPeriodo.Periodo
+
+relationship rel-meta-sede
+	fromColumn: FactMetaAdmision.Sede
+	toColumn: DimSedeAdm.Sede
+
+relationship rel-meta-modalidad
+	fromColumn: FactMetaAdmision.Modalidad
+	toColumn: DimModalidadAdm.Modalidad
+
+relationship rel-meta-carrera
+	fromColumn: FactMetaAdmision.Carrera
+	toColumn: DimCarreraAdm.Carrera
+
+relationship rel-current-tipo-carrera
+	fromColumn: FactAdmision615.TipoCarrera
+	toColumn: DimTipoCarrera.TipoCarrera
+
+relationship rel-hist-tipo-carrera
+	fromColumn: FactMatriculaHistorica.TipoCarrera
+	toColumn: DimTipoCarrera.TipoCarrera
+
+relationship rel-meta-tipo-carrera
+	fromColumn: FactMetaAdmision.TipoCarrera
+	toColumn: DimTipoCarrera.TipoCarrera
+
+relationship rel-current-month
+	fromColumn: FactAdmision615.MesNumero
+	toColumn: DimMesPeriodo.MesNumero
+
+relationship rel-hist-month
+	fromColumn: FactMatriculaHistorica.MesNumero
+	toColumn: DimMesPeriodo.MesNumero

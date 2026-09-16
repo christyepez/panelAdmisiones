@@ -7,17 +7,18 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation PBI_QueryOrder = ["FactMetasCarrera","FactB26","FactB25","FactMetasSede","FactCalidad","DimCarrera","DimSede","DimModalidad","DimDiaPeriodo","Medidas","SourceFolder","FxCleanText","FxNormalize","FxCareerKey","FxTipoPrograma"]
-
+annotation PBI_QueryOrder = ["AdmisionesFolder","FxCleanText","FxReadNamedSheet","FxNormalizeName","FxCarreraCanonica","FxCanal","FxFindColumn","FxTipoPrograma","FxTipoCarrera","FxLoad387","FxLoad615","FxLoadMetas","DimPeriodo","DimDiaPeriodo","DimMesPeriodo","DimFecha","DimCarreraAdm","DimSedeAdm","DimModalidadAdm","DimTipoCarrera","FactAdmision615","FactMatriculaHistorica","FactMetaAdmision"]
 annotation __PBI_TimeIntelligenceEnabled = 0
+annotation PBI_ProTooling = ["DevMode"]
 
-ref table FactMetasCarrera
-ref table FactB26
-ref table FactB25
-ref table FactMetasSede
-ref table FactCalidad
-ref table DimCarrera
-ref table DimSede
-ref table DimModalidad
+ref table DimPeriodo
 ref table DimDiaPeriodo
-ref table Medidas
+ref table DimMesPeriodo
+ref table DimFecha
+ref table DimCarreraAdm
+ref table DimSedeAdm
+ref table DimModalidadAdm
+ref table DimTipoCarrera
+ref table FactAdmision615
+ref table FactMatriculaHistorica
+ref table FactMetaAdmision

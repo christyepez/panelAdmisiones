@@ -1,24 +1,29 @@
 table DimDiaPeriodo
 	column DiaPeriodo
 		dataType: int64
-		formatString: 0
+		summarizeBy: none
 		sourceColumn: DiaPeriodo
 
 	column FechaB26
 		dataType: dateTime
-		formatString: Short Date
+		formatString: dd-MMM
+		summarizeBy: none
 		sourceColumn: FechaB26
 
-	column FechaB25
-		dataType: dateTime
-		formatString: Short Date
-		sourceColumn: FechaB25
-
-	column Etiqueta
+	column EtiquetaDia
 		dataType: string
-		sourceColumn: Etiqueta
+		summarizeBy: none
+		sourceColumn: EtiquetaDia
+		sortByColumn: DiaPeriodo
 
 	partition DimDiaPeriodo = m
 		mode: import
 		source =
-				let D=Table.FromList({1..153},Splitter.SplitByNothing(),{"DiaPeriodo"}), A=Table.AddColumn(D,"FechaB26",each Date.AddDays(#date(2026,5,1),[DiaPeriodo]-1),type date), B=Table.AddColumn(A,"FechaB25",each Date.AddDays(#date(2025,5,1),[DiaPeriodo]-1),type date), C=Table.AddColumn(B,"Etiqueta",each Date.ToText([FechaB26],"dd-MMM"),type text) in C
+				let
+				    InicioB26 = #date(2026,5,1),
+				    T = Table.FromList({1..260}, Splitter.SplitByNothing(), {"DiaPeriodo"}, null, ExtraValues.Error),
+				    Types = Table.TransformColumnTypes(T, {{"DiaPeriodo", Int64.Type}}),
+				    AddFecha = Table.AddColumn(Types, "FechaB26", each Date.AddDays(InicioB26, [DiaPeriodo]-1), type date),
+				    AddEtiqueta = Table.AddColumn(AddFecha, "EtiquetaDia", each Date.ToText([FechaB26], "dd-MMM", "es-ES"), type text)
+				in
+				    AddEtiqueta

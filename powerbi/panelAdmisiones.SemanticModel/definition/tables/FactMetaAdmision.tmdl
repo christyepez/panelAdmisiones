@@ -1,0 +1,147 @@
+table FactMetaAdmision
+	measure 'Meta Oficial B26 Panel' = 2400
+		formatString: #,0
+
+	measure 'Meta Oficial Carrera B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[MetaOficial]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="CARRERA_GENERAL"),0)
+		formatString: #,0
+
+	measure 'Meta Sede Excel B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE", NOT ISBLANK(FactMetaAdmision[Sede])),0)
+		formatString: #,0
+
+	measure 'Meta Modalidad Excel B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE", NOT ISBLANK(FactMetaAdmision[Modalidad])),0)
+		formatString: #,0
+
+	measure 'Meta B26 Base Contexto' = ```
+				VAR HaySede = ISFILTERED(DimSedeAdm[Sede]) || ISINSCOPE(DimSedeAdm[Sede])
+				VAR HayModalidad = ISFILTERED(DimModalidadAdm[Modalidad]) || ISINSCOPE(DimModalidadAdm[Modalidad])
+				VAR HayCarrera = ISFILTERED(DimCarreraAdm[Carrera]) || ISINSCOPE(DimCarreraAdm[Carrera])
+				VAR HayTipoCarrera = ISFILTERED(DimTipoCarrera[TipoCarrera]) || ISINSCOPE(DimTipoCarrera[TipoCarrera])
+				VAR MetaTipo = CALCULATE(SUM(FactMetaAdmision[MetaOficial]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="CARRERA_GENERAL")
+				RETURN SWITCH(TRUE(), HayModalidad, [Meta Modalidad Excel B26], HaySede, [Meta Sede Excel B26], HayCarrera, [Meta Oficial Carrera B26], HayTipoCarrera, MetaTipo, [Meta Oficial B26 Panel])
+			```
+		formatString: #,0
+
+	measure 'Meta B26 Contexto Panel' = ```
+				VAR BaseMeta = [Meta B26 Base Contexto]
+				VAR FactorMes = IF([Hay Filtro Mes]=1, DIVIDE([Dias Objetivo B26 Contexto],[Dias Totales B26]), 1)
+				RETURN BaseMeta * FactorMes
+			```
+		formatString: #,0
+
+	measure 'Meta Excel B26 Matriz' = ```
+				VAR MetaDetalle =
+				    CALCULATE(
+				        SUM(FactMetaAdmision[Meta]),
+				        FactMetaAdmision[Periodo] = "B26",
+				        FactMetaAdmision[NivelMeta] = "DETALLE_FUENTE"
+				    )
+				VAR MetaCarreraFuente =
+				    CALCULATE(
+				        SUM(FactMetaAdmision[Meta]),
+				        FactMetaAdmision[Periodo] = "B26",
+				        FactMetaAdmision[NivelMeta] = "CARRERA_GENERAL"
+				    )
+				VAR EnModalidad = ISINSCOPE(DimModalidadAdm[Modalidad])
+				VAR EnSede = ISINSCOPE(DimSedeAdm[Sede])
+				VAR EnCarrera = ISINSCOPE(DimCarreraAdm[Carrera])
+				VAR HayFiltroDetalle =
+				    ISFILTERED(DimCarreraAdm[Carrera]) ||
+				    ISFILTERED(DimSedeAdm[Sede]) ||
+				    ISFILTERED(DimModalidadAdm[Modalidad])
+				VAR V =
+				    SWITCH(
+				        TRUE(),
+				        EnModalidad, MetaDetalle,
+				        EnSede, MetaDetalle,
+				        EnCarrera, COALESCE(MetaDetalle, MetaCarreraFuente),
+				        HayFiltroDetalle, COALESCE(MetaDetalle, MetaCarreraFuente),
+				        [Meta Oficial B26 Panel]
+				    )
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Meta Oficial Carrera B26 Vis' = ```
+				VAR V = [Meta Oficial Carrera B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Meta Sede Excel B26 Vis' = ```
+				VAR V = [Meta Sede Excel B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Meta Modalidad Excel B26 Vis' = ```
+				VAR V = [Meta Modalidad Excel B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Meta B26 Contexto Panel Vis' = ```
+				VAR V = [Meta B26 Contexto Panel]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Meta Excel B26 Matriz Vis' = ```
+				VAR V = [Meta Excel B26 Matriz]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	column Periodo
+		dataType: string
+		sourceColumn: Periodo
+
+	column TipoPrograma
+		dataType: string
+		sourceColumn: TipoPrograma
+
+	column TipoCarrera
+		dataType: string
+		sourceColumn: TipoCarrera
+
+	column Carrera
+		dataType: string
+		sourceColumn: Carrera
+
+	column Sede
+		dataType: string
+		sourceColumn: Sede
+
+	column Modalidad
+		dataType: string
+		sourceColumn: Modalidad
+
+	column ModalidadMeta
+		dataType: string
+		sourceColumn: ModalidadMeta
+
+	column NivelMeta
+		dataType: string
+		sourceColumn: NivelMeta
+
+	column Meta
+		dataType: double
+		sourceColumn: Meta
+
+	column MetaOficial
+		dataType: double
+		formatString: #,0
+		sourceColumn: MetaOficial
+
+	column ArchivoOrigen
+		dataType: string
+		isHidden
+		sourceColumn: ArchivoOrigen
+
+	partition FactMetaAdmision = m
+		mode: import
+		source =
+				let
+				    S0 = FxLoadMetas(),
+				    R = Table.SelectColumns(S0,{"Periodo","TipoPrograma","TipoCarrera","Carrera","Sede","Modalidad","ModalidadMeta","NivelMeta","Meta","MetaOficial","ArchivoOrigen"},MissingField.UseNull)
+				in
+				    R

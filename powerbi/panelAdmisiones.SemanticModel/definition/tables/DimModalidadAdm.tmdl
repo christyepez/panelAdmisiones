@@ -1,0 +1,22 @@
+table DimModalidadAdm
+	lineageTag: aa220f33-9485-4903-8b7e-5419afaf2c53
+
+	column Modalidad
+		dataType: string
+		isKey
+		lineageTag: 5f406eb4-02a5-49d9-a920-683248031de4
+		sourceColumn: Modalidad
+
+	partition DimModalidadAdm = m
+		mode: import
+		source =
+				let
+				    A = Table.SelectColumns(FxLoad615(), {"Modalidad"}, MissingField.UseNull),
+				    H = Table.SelectColumns(FxLoad387(), {"Modalidad"}, MissingField.UseNull),
+				    M = Table.SelectColumns(FxLoadMetas(), {"Modalidad"}, MissingField.UseNull),
+				    U = Table.Combine({A,H,M}),
+				    Clean = Table.SelectRows(U, each [Modalidad] <> null and Text.Trim(Text.From([Modalidad])) <> ""),
+				    R = Table.Sort(Table.Distinct(Clean), {{"Modalidad",Order.Ascending}})
+				in
+				    R
+
