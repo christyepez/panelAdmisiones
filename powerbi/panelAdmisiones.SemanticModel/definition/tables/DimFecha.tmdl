@@ -22,6 +22,54 @@ table DimFecha
 		sourceColumn: Mes
 		sortByColumn: MesNumero
 
+	column QuincenaNumero
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: QuincenaNumero
+
+	column Quincena
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Quincena
+		sortByColumn: QuincenaKey
+
+	column QuincenaKey
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: QuincenaKey
+
+	column SemanaMesNumero
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: SemanaMesNumero
+
+	column Semana
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Semana
+		sortByColumn: SemanaKey
+
+	column SemanaKey
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: SemanaKey
+
+	column DiaMes
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: DiaMes
+
+	column Dia
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Dia
+		sortByColumn: DiaKey
+
+	column DiaKey
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: DiaKey
+
 	column AnioMes
 		dataType: string
 		summarizeBy: none
@@ -49,8 +97,17 @@ table DimFecha
 				    A = Table.AddColumn(T,"Anio", each Date.Year([Date]), Int64.Type),
 				    M = Table.AddColumn(A,"MesNumero", each Date.Month([Date]), Int64.Type),
 				    MN = Table.AddColumn(M,"Mes", each Text.Upper(Date.ToText([Date],"MMM","es-EC")), type text),
-				    YM = Table.AddColumn(MN,"AnioMes", each Date.ToText([Date],"yyyy-MM"), type text),
+				    QN = Table.AddColumn(MN,"QuincenaNumero", each if Date.Day([Date]) <= 15 then 1 else 2, Int64.Type),
+				    Q = Table.AddColumn(QN,"Quincena", each [Mes] & " Q" & Text.From([QuincenaNumero]), type text),
+				    QK = Table.AddColumn(Q,"QuincenaKey", each [MesNumero]*10+[QuincenaNumero], Int64.Type),
+				    SN = Table.AddColumn(QK,"SemanaMesNumero", each Number.IntegerDivide(Date.Day([Date])-1,7)+1, Int64.Type),
+				    S = Table.AddColumn(SN,"Semana", each [Mes] & " S" & Text.From([SemanaMesNumero]), type text),
+				    SK = Table.AddColumn(S,"SemanaKey", each [MesNumero]*10+[SemanaMesNumero], Int64.Type),
+				    DN = Table.AddColumn(SK,"DiaMes", each Date.Day([Date]), Int64.Type),
+				    D = Table.AddColumn(DN,"Dia", each [Mes] & " " & Text.PadStart(Text.From([DiaMes]),2,"0"), type text),
+				    DK = Table.AddColumn(D,"DiaKey", each [MesNumero]*100+[DiaMes], Int64.Type),
+				    YM = Table.AddColumn(DK,"AnioMes", each Date.ToText([Date],"yyyy-MM"), type text),
 				    YMKey = Table.AddColumn(YM,"AnioMesKey", each [Anio]*100+[MesNumero], Int64.Type),
-				    R = Table.TransformColumnTypes(YMKey,{{"Date", type date},{"Anio",Int64.Type},{"MesNumero",Int64.Type},{"Mes",type text},{"AnioMes",type text},{"AnioMesKey",Int64.Type}})
+				    R = Table.TransformColumnTypes(YMKey,{{"Date", type date},{"Anio",Int64.Type},{"MesNumero",Int64.Type},{"Mes",type text},{"QuincenaNumero",Int64.Type},{"Quincena",type text},{"QuincenaKey",Int64.Type},{"SemanaMesNumero",Int64.Type},{"Semana",type text},{"SemanaKey",Int64.Type},{"DiaMes",Int64.Type},{"Dia",type text},{"DiaKey",Int64.Type},{"AnioMes",type text},{"AnioMesKey",Int64.Type}})
 				in
 				    R
