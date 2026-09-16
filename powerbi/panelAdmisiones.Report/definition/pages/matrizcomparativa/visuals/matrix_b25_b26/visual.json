@@ -1,1 +1,561 @@
-{"$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json","name":"matrix_b25_b26","position":{"x":20,"y":115,"z":10,"width":1560,"height":845,"tabOrder":4},"visual":{"visualType":"pivotTable","query":{"queryState":{"Rows":{"projections":[{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"DimCarreraAdm"}},"Property":"Carrera"}},"queryRef":"DimCarreraAdm.Carrera","nativeQueryRef":"Carrera","active":true},{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"DimSedeAdm"}},"Property":"Sede"}},"queryRef":"DimSedeAdm.Sede","nativeQueryRef":"Sede","active":true},{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"DimModalidadAdm"}},"Property":"Modalidad"}},"queryRef":"DimModalidadAdm.Modalidad","nativeQueryRef":"Modo","active":true}]},"Values":{"projections":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Total B25 Final Vis"}},"queryRef":"FactMatriculaHistorica.Total B25 Final Vis","nativeQueryRef":"TOTAL B25"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Matriculas B25 Mismo Dia Vis"}},"queryRef":"FactMatriculaHistorica.Matriculas B25 Mismo Dia Vis","nativeQueryRef":"YTD B25"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"% Real B25 YTD Vis"}},"queryRef":"FactMatriculaHistorica.% Real B25 YTD Vis","nativeQueryRef":"REAL B25"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Delta B25 % Vis"}},"queryRef":"FactMatriculaHistorica.Delta B25 % Vis","nativeQueryRef":"DELTA B25"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMetaAdmision"}},"Property":"Meta Excel B26 Matriz Vis"}},"queryRef":"FactMetaAdmision.Meta Excel B26 Matriz Vis","nativeQueryRef":"BUDGET B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"YTD Objetivo B26 Vis"}},"queryRef":"FactMatriculaHistorica.YTD Objetivo B26 Vis","nativeQueryRef":"YTD B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Total B26 Actual Vis"}},"queryRef":"FactMatriculaHistorica.Total B26 Actual Vis","nativeQueryRef":"REAL B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"% Real B26 Budget Vis"}},"queryRef":"FactMatriculaHistorica.% Real B26 Budget Vis","nativeQueryRef":"REAL % B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Delta Budget B26 Vis"}},"queryRef":"FactMatriculaHistorica.Delta Budget B26 Vis","nativeQueryRef":"DELTA BUDGET B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Completion B26 Vis"}},"queryRef":"FactMatriculaHistorica.Completion B26 Vis","nativeQueryRef":"COMPLETION B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Real B26 vs LY % Vis"}},"queryRef":"FactMatriculaHistorica.Real B26 vs LY % Vis","nativeQueryRef":"REAL VS LY B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Varianza B26 vs LY Vis"}},"queryRef":"FactMatriculaHistorica.Varianza B26 vs LY Vis","nativeQueryRef":"VARIANZA B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Meta B26 vs Total B25 % Vis"}},"queryRef":"FactMatriculaHistorica.Meta B26 vs Total B25 % Vis","nativeQueryRef":"META B26 / TOTAL B25"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Real B26 vs YTD B26 % Vis"}},"queryRef":"FactMatriculaHistorica.Real B26 vs YTD B26 % Vis","nativeQueryRef":"REAL B26 / YTD B26"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"YTD B26 vs YTD B25 % Vis"}},"queryRef":"FactMatriculaHistorica.YTD B26 vs YTD B25 % Vis","nativeQueryRef":"YTD B26 / YTD B25"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMatriculaHistorica"}},"Property":"Delta YTD B26 vs B25 Vis"}},"queryRef":"FactMatriculaHistorica.Delta YTD B26 vs B25 Vis","nativeQueryRef":"DELTA YTD B26 VS B25"}]}},"sortDefinition":{"sort":[{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"DimCarreraAdm"}},"Property":"Carrera"}},"direction":"Ascending"}],"isDefaultSort":true}},"expansionStates":[{"roles":["Rows"],"levels":[{"queryRefs":["DimCarreraAdm.Carrera"],"identityKeys":[{"Column":{"Expression":{"SourceRef":{"Entity":"DimCarreraAdm"}},"Property":"Carrera"}}],"isPinned":true},{"queryRefs":["DimSedeAdm.Sede"],"identityKeys":[{"Column":{"Expression":{"SourceRef":{"Entity":"DimSedeAdm"}},"Property":"Sede"}}],"isPinned":true},{"queryRefs":["DimModalidadAdm.Modalidad"],"identityKeys":[{"Column":{"Expression":{"SourceRef":{"Entity":"DimModalidadAdm"}},"Property":"Modalidad"}}],"isCollapsed":true,"isPinned":true}],"root":{}}],"objects":{"subTotals":[{"properties":{"rowSubtotals":{"expr":{"Literal":{"Value":"true"}}},"columnSubtotals":{"expr":{"Literal":{"Value":"false"}}}}}],"columnFormatting":[{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Total B25 Final"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Matriculas B25 Mismo Dia"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.% Real B25 YTD"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Delta B25 %"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMetaAdmision.Meta B26 Contexto Panel"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Matriculas B26 Mismo Dia"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Total B26 Actual"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.% Real B26 Budget"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Delta Budget B26"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Completion B26"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Real B26 vs LY %"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Varianza B26 vs LY"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Meta B26 vs Total B25 % Vis"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Real B26 vs YTD B26 % Vis"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.YTD B26 vs YTD B25 % Vis"}},{"properties":{"alignment":{"expr":{"Literal":{"Value":"'right'"}}}},"selector":{"metadata":"FactMatriculaHistorica.Delta YTD B26 vs B25 Vis"}}]},"visualContainerObjects":{"background":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"color":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"transparency":{"expr":{"Literal":{"Value":"0D"}}}}}],"border":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"color":{"solid":{"color":{"expr":{"Literal":{"Value":"'#D9D9D9'"}}}}},"radius":{"expr":{"Literal":{"Value":"4D"}}}}}],"title":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"text":{"expr":{"Literal":{"Value":"'B25 vs B26'"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#111111'"}}}}}}}]},"drillFilterOtherVisuals":true}}
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "matrix_b25_b26",
+  "position": {
+    "x": 20,
+    "y": 115,
+    "z": 10,
+    "width": 1560,
+    "height": 845,
+    "tabOrder": 4
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimCarreraAdm"
+                    }
+                  },
+                  "Property": "Carrera"
+                }
+              },
+              "queryRef": "DimCarreraAdm.Carrera",
+              "nativeQueryRef": "Carrera",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimSedeAdm"
+                    }
+                  },
+                  "Property": "Sede"
+                }
+              },
+              "queryRef": "DimSedeAdm.Sede",
+              "nativeQueryRef": "Sede",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimModalidadAdm"
+                    }
+                  },
+                  "Property": "Modalidad"
+                }
+              },
+              "queryRef": "DimModalidadAdm.Modalidad",
+              "nativeQueryRef": "Modo",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimFecha"
+                    }
+                  },
+                  "Property": "Mes"
+                }
+              },
+              "queryRef": "DimFecha.Mes",
+              "nativeQueryRef": "Mes",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimFecha"
+                    }
+                  },
+                  "Property": "Dia"
+                }
+              },
+              "queryRef": "DimFecha.Dia",
+              "nativeQueryRef": "Día",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimMatrixColumn"
+                    }
+                  },
+                  "Property": "Valor Matriz Comparativa"
+                }
+              },
+              "queryRef": "DimMatrixColumn.Valor Matriz Comparativa",
+              "nativeQueryRef": "Valor"
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimMatrixColumn"
+                    }
+                  },
+                  "Property": "Anio"
+                }
+              },
+              "queryRef": "DimMatrixColumn.Anio",
+              "nativeQueryRef": "Año",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimMatrixColumn"
+                    }
+                  },
+                  "Property": "Metrica"
+                }
+              },
+              "queryRef": "DimMatrixColumn.Metrica",
+              "nativeQueryRef": "Métrica",
+              "active": true
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimCarreraAdm"
+                  }
+                },
+                "Property": "Carrera"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "objects": {
+      "subTotals": [
+        {
+          "properties": {
+            "rowSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "columnSubtotals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnFormatting": [
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Total B25 Final"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Matriculas B25 Mismo Dia"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.% Real B25 YTD"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Delta B25 %"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMetaAdmision.Meta B26 Contexto Panel"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Matriculas B26 Mismo Dia"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Total B26 Actual"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.% Real B26 Budget"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Delta Budget B26"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Completion B26"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Real B26 vs LY %"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Varianza B26 vs LY"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Meta B26 vs Total B25 % Vis"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Real B26 vs YTD B26 % Vis"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.YTD B26 vs YTD B25 % Vis"
+          }
+        },
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'right'"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "FactMatriculaHistorica.Delta YTD B26 vs B25 Vis"
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "alignment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'center'"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
+                }
+              }
+            },
+            "autoSizeColumnWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "backColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#17365D'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#D9D9D9'"
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "4D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'B25 vs B26'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#111111'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}
