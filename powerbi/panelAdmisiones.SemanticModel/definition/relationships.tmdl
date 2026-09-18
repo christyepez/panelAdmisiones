@@ -78,3 +78,16 @@ relationship rel-current-month
 relationship rel-hist-month
 	fromColumn: FactMatriculaHistorica.MesNumero
 	toColumn: DimMesPeriodo.MesNumero
+
+relationship rel-current-oferta
+	fromColumn: FactAdmision615.OfertaB26
+	toColumn: DimOfertaAdm.Oferta
+
+relationship rel-hist-oferta
+	fromColumn: FactMatriculaHistorica.OfertaB26
+	toColumn: DimOfertaAdm.Oferta
+
+relationship rel-meta-oferta
+	fromColumn: FactMetaAdmision.OfertaB26
+	toColumn: DimOfertaAdm.Oferta
+

@@ -1,12 +1,16 @@
 table DimMesPeriodo
+	lineageTag: f6dc3b9d-dddf-45bc-909e-b3260f0071b5
+
 	column MesNumero
 		dataType: int64
 		isKey
+		lineageTag: a7dab4d3-a3d2-4c67-b320-f1d06bc7c414
 		summarizeBy: none
 		sourceColumn: MesNumero
 
 	column Mes
 		dataType: string
+		lineageTag: 70eeccf4-2fb2-433a-bdd5-b14dcadae079
 		summarizeBy: none
 		sourceColumn: Mes
 		sortByColumn: MesNumero
@@ -21,3 +25,4 @@ table DimMesPeriodo
 				    )
 				in
 				    T
+

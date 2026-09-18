@@ -1,17 +1,24 @@
 table DimDiaPeriodo
+	lineageTag: 1503b3c4-385a-4ebf-8a5c-275b345a6c62
+
 	column DiaPeriodo
 		dataType: int64
+		lineageTag: 0dd7ee1a-eb88-4fb6-8aaf-6c339d13cfd2
 		summarizeBy: none
 		sourceColumn: DiaPeriodo
 
 	column FechaB26
 		dataType: dateTime
 		formatString: dd-MMM
+		lineageTag: 3f680bf6-971e-4a8f-9f5e-abbb4502b8d5
 		summarizeBy: none
 		sourceColumn: FechaB26
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column EtiquetaDia
 		dataType: string
+		lineageTag: f96bc1d9-3749-4dec-8f5e-2ad8faf4fb58
 		summarizeBy: none
 		sourceColumn: EtiquetaDia
 		sortByColumn: DiaPeriodo
@@ -27,3 +34,4 @@ table DimDiaPeriodo
 				    AddEtiqueta = Table.AddColumn(AddFecha, "EtiquetaDia", each Date.ToText([FechaB26], "dd-MMM", "es-ES"), type text)
 				in
 				    AddEtiqueta
+

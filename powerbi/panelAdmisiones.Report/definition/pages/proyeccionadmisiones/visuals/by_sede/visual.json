@@ -1,1 +1,193 @@
-{"$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json","name":"by_sede","position":{"x":720,"y":935,"z":31,"height":300,"width":700,"tabOrder":31},"visual":{"visualType":"clusteredBarChart","query":{"queryState":{"Category":{"projections":[{"field":{"Column":{"Expression":{"SourceRef":{"Entity":"DimSedeAdm"}},"Property":"Sede"}},"queryRef":"DimSedeAdm.Sede","active":true}]},"Y":{"projections":[{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactAdmision615"}},"Property":"Total Matriculas B26 Vis"}},"queryRef":"FactAdmision615.Total Matriculas B26 Vis","nativeQueryRef":"Actual"},{"field":{"Measure":{"Expression":{"SourceRef":{"Entity":"FactMetaAdmision"}},"Property":"Meta Sede Excel B26 Vis"}},"queryRef":"FactMetaAdmision.Meta Sede Excel B26 Vis","nativeQueryRef":"Meta Excel"}]}}},"objects":{"labels":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"labelDisplayUnits":{"expr":{"Literal":{"Value":"1D"}}},"fontSize":{"expr":{"Literal":{"Value":"10D"}}}}}]},"visualContainerObjects":{"background":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"color":{"solid":{"color":{"expr":{"Literal":{"Value":"'#FFFFFF'"}}}}},"transparency":{"expr":{"Literal":{"Value":"0D"}}}}}],"border":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"color":{"solid":{"color":{"expr":{"Literal":{"Value":"'#E6E0EA'"}}}}},"radius":{"expr":{"Literal":{"Value":"8D"}}}}}],"title":[{"properties":{"show":{"expr":{"Literal":{"Value":"true"}}},"text":{"expr":{"Literal":{"Value":"'Sede: real vs meta'"}}},"fontColor":{"solid":{"color":{"expr":{"Literal":{"Value":"'#111111'"}}}}}}}]}}}
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+  "name": "by_sede",
+  "position": {
+    "x": 720,
+    "y": 935,
+    "z": 31,
+    "height": 300,
+    "width": 700,
+    "tabOrder": 31
+  },
+  "visual": {
+    "visualType": "clusteredBarChart",
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimSedeAdm"
+                    }
+                  },
+                  "Property": "Sede"
+                }
+              },
+              "queryRef": "DimSedeAdm.Sede",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactAdmision615"
+                    }
+                  },
+                  "Property": "Total Matriculas B26 Vis"
+                }
+              },
+              "queryRef": "FactAdmision615.Total Matriculas B26 Vis",
+              "nativeQueryRef": "Actual"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMetaAdmision"
+                    }
+                  },
+                  "Property": "Meta Sede Excel B26 Vis"
+                }
+              },
+              "queryRef": "FactMetaAdmision.Meta Sede Excel B26 Vis",
+              "nativeQueryRef": "Meta Excel"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "visualContainerObjects": {
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#FFFFFF'"
+                    }
+                  }
+                }
+              }
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#E6E0EA'"
+                    }
+                  }
+                }
+              }
+            },
+            "radius": {
+              "expr": {
+                "Literal": {
+                  "Value": "8D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sede: real vs meta'"
+                }
+              }
+            },
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#111111'"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

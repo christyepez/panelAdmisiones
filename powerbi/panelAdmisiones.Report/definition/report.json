@@ -1,1 +1,23 @@
-{"$schema":"https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json","themeCollection":{},"settings":{"useEnhancedTooltips":true,"pagesPosition":"Bottom"}}
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {},
+  "objects": {
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "settings": {
+    "useEnhancedTooltips": true,
+    "pagesPosition": "Bottom"
+  }
+}

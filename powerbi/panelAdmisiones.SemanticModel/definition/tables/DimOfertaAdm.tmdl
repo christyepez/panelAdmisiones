@@ -1,0 +1,13 @@
+table DimOfertaAdm
+	lineageTag: 9debe9fe-47be-4180-87cc-25892c008aa0
+
+	column Oferta
+		dataType: string
+		isKey
+		lineageTag: 656f48cd-0eca-481c-9146-83599adc6818
+		sourceColumn: Oferta
+
+	partition DimOfertaAdm = m
+		mode: import
+		source = #table(type table [Oferta = text], {{"SI"},{"NO"}})
+

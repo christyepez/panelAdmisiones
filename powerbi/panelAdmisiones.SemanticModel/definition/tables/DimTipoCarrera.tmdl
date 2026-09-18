@@ -4,10 +4,11 @@ table DimTipoCarrera
 	column TipoCarrera
 		dataType: string
 		isKey
+		lineageTag: fe97cfda-ec2e-43a8-870d-889d49fd4596
 		summarizeBy: none
 		sourceColumn: TipoCarrera
 
 	partition DimTipoCarrera = m
 		mode: import
-		source =
-				#table(type table [TipoCarrera = text], {{"Grado"},{"Maestría"}})
+		source = #table(type table [TipoCarrera = text], {{"Grado"},{"Maestría"}})
+

@@ -1,39 +1,40 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
-  "name": "kpi_days",
+  "name": "slicer_oferta",
   "position": {
-    "x": 1140,
-    "y": 205,
-    "z": 10,
-    "height": 95,
-    "width": 270,
-    "tabOrder": 10
+    "x": 1176.8155506265764,
+    "y": 20.808133508132,
+    "z": 5,
+    "height": 65,
+    "width": 145,
+    "tabOrder": 6
   },
   "visual": {
-    "visualType": "card",
+    "visualType": "slicer",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "FactMatriculaHistorica"
+                      "Entity": "DimOfertaAdm"
                     }
                   },
-                  "Property": "Dias Restantes B26 Vis"
+                  "Property": "Oferta"
                 }
               },
-              "queryRef": "FactMatriculaHistorica.Dias Restantes B26 Vis"
+              "queryRef": "DimOfertaAdm.Oferta",
+              "active": true
             }
           ]
         }
       }
     },
     "objects": {
-      "categoryLabels": [
+      "header": [
         {
           "properties": {
             "show": {
@@ -46,38 +47,87 @@
           }
         }
       ],
-      "labels": [
+      "selection": [
         {
           "properties": {
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": {
-                  "Value": "1D"
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "20D"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#3C235F'"
-                    }
-                  }
-                }
-              }
-            },
-            "bold": {
+            "singleSelect": {
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "selectAllCheckboxEnabled": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "general": [
+        {
+          "properties": {
+            "orientation": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Vertical'"
+                }
+              }
+            },
+            "filter": {
+              "filter": {
+                "Version": 2,
+                "From": [
+                  {
+                    "Name": "d",
+                    "Entity": "DimOfertaAdm",
+                    "Type": 0
+                  }
+                ],
+                "Where": [
+                  {
+                    "Condition": {
+                      "In": {
+                        "Expressions": [
+                          {
+                            "Column": {
+                              "Expression": {
+                                "SourceRef": {
+                                  "Source": "d"
+                                }
+                              },
+                              "Property": "Oferta"
+                            }
+                          }
+                        ],
+                        "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'SI'"
+                              }
+                            }
+                          ]
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
                 }
               }
             }
@@ -161,7 +211,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Días cierre'"
+                  "Value": "'Oferta'"
                 }
               }
             },
@@ -180,5 +230,23 @@
         }
       ]
     }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "oferta_b26_filter",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimOfertaAdm"
+              }
+            },
+            "Property": "Oferta"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

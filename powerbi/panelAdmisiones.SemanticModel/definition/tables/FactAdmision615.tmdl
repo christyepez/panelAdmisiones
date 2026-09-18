@@ -1,4 +1,6 @@
 table FactAdmision615
+	lineageTag: 1b5402f4-1f04-4263-9623-3ef1f15022cc
+
 	measure 'Total Matriculas' = ```
 				CALCULATE(
 				    COUNTROWS(FactAdmision615),
@@ -7,6 +9,7 @@ table FactAdmision615
 				)
 			```
 		formatString: #,0
+		lineageTag: 62a4a229-9edc-4109-8d31-ee0beddd8e4d
 
 	measure 'Total Matriculas B26' = ```
 				CALCULATE(
@@ -16,146 +19,124 @@ table FactAdmision615
 				)
 			```
 		formatString: #,0
+		lineageTag: 670c640a-6fc5-4ac8-8a0c-72cf25ac533b
 
 	measure 'Matriculas Formalizadas' = CALCULATE([Total Matriculas], UPPER(FactAdmision615[Formalizado]) = "SI")
 		formatString: #,0
+		lineageTag: 59c4478d-bf0b-4ed8-8513-d19e5be64765
 
 	measure 'Total Matriculas B26 Vis' = ```
 				VAR V = [Total Matriculas B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 95db7587-4daf-4eba-b05f-99d1dc9ac9ea
 
 	column Periodo
 		dataType: string
+		lineageTag: 119a917c-1e06-4413-9786-c810abea33e7
 		sourceColumn: Periodo
 
 	column Sede
 		dataType: string
+		lineageTag: edc3d2bc-14b0-46e0-9644-af7427d62da6
 		sourceColumn: Sede
 
 	column Carrera
 		dataType: string
+		lineageTag: e008e79f-a58d-4461-9d63-b1ac47cf65ad
 		sourceColumn: Carrera
 
 	column Modalidad
 		dataType: string
+		lineageTag: 6b8f8c52-974a-4e33-a946-8ba7f110a012
 		sourceColumn: Modalidad
 
 	column Identificacion
 		dataType: string
 		isHidden
+		lineageTag: b74c26f4-6bda-4a84-a4c0-715932e4201d
 		sourceColumn: Identificacion
 
 	column FechaInscripcionDay
 		dataType: dateTime
 		formatString: Short Date
+		lineageTag: 2e46865f-bf9d-4a12-8ebb-604b9d6a5911
 		summarizeBy: none
 		sourceColumn: FechaInscripcionDay
 
 	column FechaMatriculaDay
 		dataType: dateTime
 		formatString: Short Date
+		lineageTag: 41c7a175-c6d4-4977-acd0-d8c971a1dd28
 		summarizeBy: none
 		sourceColumn: FechaMatriculaDay
 
 	column AnioMatricula
 		dataType: int64
+		lineageTag: 7fdf0e86-e386-4007-9221-17f690b56662
 		summarizeBy: none
 		sourceColumn: AnioMatricula
 
 	column MesNumero
 		dataType: int64
+		lineageTag: 73d70c54-6636-4ed8-bc77-3a26f99c34eb
 		summarizeBy: none
 		sourceColumn: MesNumero
 
 	column AnioMesKey
 		dataType: int64
+		lineageTag: 24524dd3-990f-4b05-bb94-fe67aa49594c
 		summarizeBy: none
 		sourceColumn: AnioMesKey
 
 	column MesInscripcionNumero
 		dataType: int64
+		lineageTag: 73d2f786-8448-4377-9316-cc7cd7b81beb
 		summarizeBy: none
 		sourceColumn: MesInscripcionNumero
 
 	column MatriculaEnPrimero
 		dataType: string
+		lineageTag: 08e93be3-036a-4ad9-9cc1-ce79a1bb75c7
 		sourceColumn: MatriculaEnPrimero
 
 	column Formalizado
 		dataType: string
+		lineageTag: 90adc741-a3e1-4a53-b212-cb9695e09d56
 		sourceColumn: Formalizado
 
 	column Fuente
 		dataType: string
+		lineageTag: 2002d4b3-a8b2-44cb-ab4f-08ef6a0efe02
 		sourceColumn: Fuente
 
 	column TipoPrograma
 		dataType: string
+		lineageTag: 1a99f755-ef19-4f52-ae11-c5972f44ede4
 		sourceColumn: TipoPrograma
 
 	column TipoCarrera
 		dataType: string
+		lineageTag: 9b32b6ba-7fac-4d3b-9b45-eb6d86e87829
 		sourceColumn: TipoCarrera
 
 	column ArchivoOrigen
 		dataType: string
 		isHidden
+		lineageTag: 63ad20f5-7f27-4486-9d2c-e07814b375a2
 		sourceColumn: ArchivoOrigen
+
+	column OfertaB26 = COALESCE(LOOKUPVALUE(DimOfertaMap[OfertaB26], DimOfertaMap[Carrera], FactAdmision615[Carrera], DimOfertaMap[Sede], FactAdmision615[Sede], DimOfertaMap[Modalidad], FactAdmision615[Modalidad]), "NO")
+		dataType: string
+		lineageTag: 276e45dd-f766-4331-a0f9-36565b76a8c9
 
 	partition FactAdmision615 = m
 		mode: import
 		source =
 				let
-				    FilePath = AdmisionesFolder & "\\615.xlsx",
-				    Bin = File.Contents(FilePath),
-				    Raw = FxReadNamedSheet(Bin, "reporte"),
-				    Keep = Table.SelectColumns(
-				        Raw,
-				        {"Periodo","Sede","COORDINACION","CARRERA","MODALIDAD","IDENTIFICACION","ESTUDIANTE","CORREO PERSONAL","NUMERO DE TELEFONO",
-				         "CANTON DE RESIDENCIA","FECHA INSCRIPCION","FECHA MATRICULA","ASESOR","RESPONSABLE DEL GRUPO","Prematricula",
-				         "MATRICULA EN PRIMERO","PERSONA MATRICULO","FORMALIZADO","RETIRADO CARRERA","FUENTE","NIVEL MATRICULA","CENTRO","HOMOLOGA"},
-				        MissingField.UseNull
-				    ),
-				    Ren = Table.RenameColumns(Keep,{
-				        {"COORDINACION","Facultad"},{"CARRERA","Carrera"},{"MODALIDAD","Modalidad"},{"IDENTIFICACION","Identificacion"},
-				        {"ESTUDIANTE","Estudiante"},{"CORREO PERSONAL","Email"},{"NUMERO DE TELEFONO","Telefono"},{"CANTON DE RESIDENCIA","CantonResidencia"},
-				        {"FECHA INSCRIPCION","FechaInscripcion"},{"FECHA MATRICULA","FechaMatricula"},{"ASESOR","Asesor"},{"RESPONSABLE DEL GRUPO","ResponsableGrupo"},
-				        {"Prematricula","Prematricula"},{"MATRICULA EN PRIMERO","MatriculaEnPrimero"},{"PERSONA MATRICULO","PersonaMatriculo"},
-				        {"FORMALIZADO","Formalizado"},{"RETIRADO CARRERA","RetiradoCarrera"},{"FUENTE","Fuente"},{"NIVEL MATRICULA","NivelMatricula"},{"CENTRO","Centro"},{"HOMOLOGA","Homologacion"}
-				    }, MissingField.Ignore),
-				    Cleaned = Table.TransformColumns(Ren,{
-				        {"Periodo", FxCleanText, type text},{"Sede", FxCleanText, type text},{"Facultad", FxCleanText, type text},{"Carrera", FxCleanText, type text},{"Modalidad", FxCleanText, type text},
-				        {"Identificacion", FxCleanText, type text},{"Estudiante", FxCleanText, type text},{"Email", FxCleanText, type text},{"Telefono", FxCleanText, type text},
-				        {"CantonResidencia", FxCleanText, type text},{"Asesor", FxCleanText, type text},{"ResponsableGrupo", FxCleanText, type text},{"Prematricula", FxCleanText, type text},
-				        {"MatriculaEnPrimero", FxCleanText, type text},{"PersonaMatriculo", FxCleanText, type text},{"Formalizado", FxCleanText, type text},
-				        {"RetiradoCarrera", FxCleanText, type text},{"Fuente", each FxCanal(_), type text},{"NivelMatricula", FxCleanText, type text},{"Centro", FxCleanText, type text},{"Homologacion", FxCleanText, type text}
-				    }),
-				    Dates = Table.TransformColumns(Cleaned,{
-				        {"FechaInscripcion", each try Date.From(_) otherwise null, type date},
-				        {"FechaMatricula", each try Date.From(_) otherwise null, type date}
-				    }),
-				    Canon = Table.TransformColumns(Dates,{{"Carrera", each FxCarreraCanonica(_), type text}}),
-				    AddAsesor = Table.AddColumn(Canon, "AsesorFinal", each
-				        if [Asesor] <> null then [Asesor]
-				        else if [ResponsableGrupo] <> null then [ResponsableGrupo]
-				        else if [PersonaMatriculo] <> null then [PersonaMatriculo]
-				        else "SIN ASESOR ASIGNADO", type text),
-				    AddTipo = Table.AddColumn(AddAsesor, "TipoPrograma", each FxTipoPrograma([Carrera]), type text),
-				    AddTipoCarrera = Table.AddColumn(AddTipo, "TipoCarrera", each FxTipoCarrera([Carrera]), type text),
-				    BusinessFilter = Table.SelectRows(AddTipoCarrera, each
-				        FxNormalizeName([Periodo]) = "B26" and
-				        FxNormalizeName([Homologacion]) = "NO" and
-				        FxNormalizeName([RetiradoCarrera]) = "NO" and
-				        FxNormalizeName([MatriculaEnPrimero]) = "SI" and
-				        FxNormalizeName([Carrera]) <> "FORMACION CONTINUA" and
-				        [Identificacion] <> null
-				    ),
-				    AddFile = Table.AddColumn(BusinessFilter, "ArchivoOrigen", each "615.xlsx", type text),
-				    Sorted = Table.Sort(AddFile, {{"FechaMatricula", Order.Descending}, {"FechaInscripcion", Order.Descending}}),
-				    Dedup = Table.Distinct(Table.Buffer(Sorted), {"Periodo","Identificacion","Carrera"}),
-				    KeepFact = Table.SelectColumns(Dedup,{"Periodo","Sede","Carrera","Modalidad","Identificacion","FechaInscripcion","FechaMatricula","MatriculaEnPrimero","Formalizado","Fuente","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
+				    Base = FxLoad615(),
+				    KeepFact = Table.SelectColumns(Base,{"Periodo","Sede","Carrera","Modalidad","Identificacion","FechaInscripcion","FechaMatricula","MatriculaEnPrimero","Formalizado","Fuente","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
 				    I = Table.AddColumn(KeepFact,"FechaInscripcionDay", each try DateTime.From(Date.From([FechaInscripcion])) otherwise null, type nullable datetime),
 				    M = Table.AddColumn(I,"FechaMatriculaDay", each try DateTime.From(Date.From([FechaMatricula])) otherwise null, type nullable datetime),
 				    AddAnio = Table.AddColumn(M,"AnioMatricula", each if [FechaMatriculaDay]=null then null else Date.Year(Date.From([FechaMatriculaDay])), Int64.Type),
@@ -171,3 +152,4 @@ table FactAdmision615
 				    })
 				in
 				    R
+

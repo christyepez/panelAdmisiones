@@ -1,25 +1,37 @@
 table FactMetaAdmision
+	lineageTag: c536a97e-33a4-4c8f-a350-15076d2266ac
+
 	measure 'Meta Oficial B26 Panel' = 2400
 		formatString: #,0
+		lineageTag: 7ae5d3f6-532f-490c-aed7-fb9fe07d66b0
 
-	measure 'Meta Oficial Carrera B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[MetaOficial]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="CARRERA_GENERAL"),0)
+	measure 'Meta Oferta Excel B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE"),0)
 		formatString: #,0
+		lineageTag: 91ac98d8-6e91-4fdf-83b7-6561ac9863c5
+
+	measure 'Meta Oficial Carrera B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE"),0)
+		formatString: #,0
+		lineageTag: 0a14de4a-a3a6-493b-ab55-8da07f86004d
 
 	measure 'Meta Sede Excel B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE", NOT ISBLANK(FactMetaAdmision[Sede])),0)
 		formatString: #,0
+		lineageTag: 49fe6ecf-df29-40b0-bff8-fb74f28283ec
 
 	measure 'Meta Modalidad Excel B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE", NOT ISBLANK(FactMetaAdmision[Modalidad])),0)
 		formatString: #,0
+		lineageTag: a94e3698-d804-4116-a94d-d7046861fecb
 
 	measure 'Meta B26 Base Contexto' = ```
+				VAR HayOferta = ISFILTERED(DimOfertaAdm[Oferta])
 				VAR HaySede = ISFILTERED(DimSedeAdm[Sede]) || ISINSCOPE(DimSedeAdm[Sede])
 				VAR HayModalidad = ISFILTERED(DimModalidadAdm[Modalidad]) || ISINSCOPE(DimModalidadAdm[Modalidad])
 				VAR HayCarrera = ISFILTERED(DimCarreraAdm[Carrera]) || ISINSCOPE(DimCarreraAdm[Carrera])
 				VAR HayTipoCarrera = ISFILTERED(DimTipoCarrera[TipoCarrera]) || ISINSCOPE(DimTipoCarrera[TipoCarrera])
-				VAR MetaTipo = CALCULATE(SUM(FactMetaAdmision[MetaOficial]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="CARRERA_GENERAL")
-				RETURN SWITCH(TRUE(), HayModalidad, [Meta Modalidad Excel B26], HaySede, [Meta Sede Excel B26], HayCarrera, [Meta Oficial Carrera B26], HayTipoCarrera, MetaTipo, [Meta Oficial B26 Panel])
+				VAR MetaTipo = CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE")
+				RETURN SWITCH(TRUE(), HayOferta, [Meta Oferta Excel B26], HayModalidad, [Meta Modalidad Excel B26], HaySede, [Meta Sede Excel B26], HayCarrera, [Meta Oficial Carrera B26], HayTipoCarrera, MetaTipo, [Meta Oficial B26 Panel])
 			```
 		formatString: #,0
+		lineageTag: f4530fa3-4cac-46db-ad40-0e88964aea90
 
 	measure 'Meta B26 Contexto Panel' = ```
 				VAR BaseMeta = [Meta B26 Base Contexto]
@@ -27,6 +39,7 @@ table FactMetaAdmision
 				RETURN BaseMeta * FactorMes
 			```
 		formatString: #,0
+		lineageTag: 1de7e890-6886-412c-8dc6-510b23793120
 
 	measure 'Meta Excel B26 Matriz' = ```
 				VAR MetaDetalle =
@@ -39,103 +52,126 @@ table FactMetaAdmision
 				    CALCULATE(
 				        SUM(FactMetaAdmision[Meta]),
 				        FactMetaAdmision[Periodo] = "B26",
-				        FactMetaAdmision[NivelMeta] = "CARRERA_GENERAL"
+				        FactMetaAdmision[NivelMeta] = "DETALLE_FUENTE"
 				    )
 				VAR EnModalidad = ISINSCOPE(DimModalidadAdm[Modalidad])
 				VAR EnSede = ISINSCOPE(DimSedeAdm[Sede])
 				VAR EnCarrera = ISINSCOPE(DimCarreraAdm[Carrera])
+				VAR HayOferta = ISFILTERED(DimOfertaAdm[Oferta])
 				VAR HayFiltroDetalle =
 				    ISFILTERED(DimCarreraAdm[Carrera]) ||
 				    ISFILTERED(DimSedeAdm[Sede]) ||
-				    ISFILTERED(DimModalidadAdm[Modalidad])
+				    ISFILTERED(DimModalidadAdm[Modalidad]) ||
+				    HayOferta
 				VAR V =
 				    SWITCH(
 				        TRUE(),
 				        EnModalidad, MetaDetalle,
 				        EnSede, MetaDetalle,
-				        EnCarrera, COALESCE(MetaDetalle, MetaCarreraFuente),
-				        HayFiltroDetalle, COALESCE(MetaDetalle, MetaCarreraFuente),
+				        EnCarrera, IF(HayOferta, MetaDetalle, COALESCE(MetaDetalle, MetaCarreraFuente)),
+				        HayFiltroDetalle, IF(HayOferta, MetaDetalle, COALESCE(MetaDetalle, MetaCarreraFuente)),
 				        [Meta Oficial B26 Panel]
 				    )
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 23208177-7599-4b3b-8592-ddb6a293cf64
 
 	measure 'Meta Oficial Carrera B26 Vis' = ```
 				VAR V = [Meta Oficial Carrera B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 07f93813-fee4-4a5f-a8bf-ef2195b2f882
 
 	measure 'Meta Sede Excel B26 Vis' = ```
 				VAR V = [Meta Sede Excel B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: d999b22f-53d9-41fd-a59e-c8909dc59fd1
 
 	measure 'Meta Modalidad Excel B26 Vis' = ```
 				VAR V = [Meta Modalidad Excel B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 91a248d6-43ba-494d-9b9a-3a4139c4a34c
 
 	measure 'Meta B26 Contexto Panel Vis' = ```
 				VAR V = [Meta B26 Contexto Panel]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: a021abbc-6a11-4f3d-beeb-2c0c27858143
 
 	measure 'Meta Excel B26 Matriz Vis' = ```
 				VAR V = [Meta Excel B26 Matriz]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: a3b41f7b-52cc-457c-b01a-c2dc6a17f212
 
 	column Periodo
 		dataType: string
+		lineageTag: 4b09f2c6-bf4e-4c95-98aa-a65e32e627c7
 		sourceColumn: Periodo
 
 	column TipoPrograma
 		dataType: string
+		lineageTag: 12210dfe-c7c4-4279-8591-1f24e605bf82
 		sourceColumn: TipoPrograma
 
 	column TipoCarrera
 		dataType: string
+		lineageTag: aa0accfd-4ecf-4fce-8a20-88f5b2db3773
 		sourceColumn: TipoCarrera
 
 	column Carrera
 		dataType: string
+		lineageTag: 9b94a2dc-816a-4330-8fe4-f80081f0f992
 		sourceColumn: Carrera
 
 	column Sede
 		dataType: string
+		lineageTag: 15167e0c-1f60-4853-bbf0-139022d28870
 		sourceColumn: Sede
 
 	column Modalidad
 		dataType: string
+		lineageTag: d0c44e83-a7ca-4ffa-bcd9-31cc31e2f855
 		sourceColumn: Modalidad
 
 	column ModalidadMeta
 		dataType: string
+		lineageTag: d76c4fe7-5693-43e7-858c-43e529aaf4fd
 		sourceColumn: ModalidadMeta
 
 	column NivelMeta
 		dataType: string
+		lineageTag: 4f2a30c9-0aee-44c5-b295-b6696ad9a512
 		sourceColumn: NivelMeta
 
 	column Meta
 		dataType: double
+		lineageTag: aed6ac40-79cf-4e18-8d11-688b0e8462a8
 		sourceColumn: Meta
 
 	column MetaOficial
 		dataType: double
 		formatString: #,0
+		lineageTag: 7937169e-4a76-4e28-be6c-28ad997ed3f9
 		sourceColumn: MetaOficial
 
 	column ArchivoOrigen
 		dataType: string
 		isHidden
+		lineageTag: 9f972aad-f0b5-4108-b3c3-81837c023338
 		sourceColumn: ArchivoOrigen
+
+	column OfertaB26 = COALESCE(LOOKUPVALUE(DimOfertaMap[OfertaB26], DimOfertaMap[Carrera], FactMetaAdmision[Carrera], DimOfertaMap[Sede], FactMetaAdmision[Sede], DimOfertaMap[Modalidad], FactMetaAdmision[Modalidad]), "NO")
+		dataType: string
+		lineageTag: a729ec8c-f4c0-478e-b0b5-8be574b6e4b6
 
 	partition FactMetaAdmision = m
 		mode: import
@@ -145,3 +181,4 @@ table FactMetaAdmision
 				    R = Table.SelectColumns(S0,{"Periodo","TipoPrograma","TipoCarrera","Carrera","Sede","Modalidad","ModalidadMeta","NivelMeta","Meta","MetaOficial","ArchivoOrigen"},MissingField.UseNull)
 				in
 				    R
+

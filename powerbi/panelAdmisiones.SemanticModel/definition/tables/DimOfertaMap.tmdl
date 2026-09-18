@@ -1,0 +1,31 @@
+table DimOfertaMap
+	lineageTag: be5d5109-107a-4fa4-83ad-2cfe03507bfd
+
+	column Carrera
+		dataType: string
+		lineageTag: 1b898700-adbd-45db-8191-94813ca2e57e
+		sourceColumn: Carrera
+
+	column Sede
+		dataType: string
+		lineageTag: 0aeff441-36e5-4269-9f86-841713f7d796
+		sourceColumn: Sede
+
+	column Modalidad
+		dataType: string
+		lineageTag: 9da192b9-f779-4e48-8bd8-b881d0f38289
+		sourceColumn: Modalidad
+
+	column OfertaB26
+		dataType: string
+		lineageTag: 0ffb9269-2653-47d4-806e-82e1b0055c85
+		sourceColumn: OfertaB26
+
+	partition DimOfertaMap = m
+		mode: import
+		source =
+				let
+				    R = FxOfertaMap()
+				in
+				    R
+
