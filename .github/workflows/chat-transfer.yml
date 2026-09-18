@@ -1,0 +1,20 @@
+name: Chat transfer
+on:
+  push:
+    branches:
+      - chat-transfer-v160
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rebuild ZIP
+        shell: bash
+        run: |
+          cat tmp/chunk_*.txt | base64 -d > panelAdmisiones_PBIP_v1.60_OFFER_FILTER_FROM_v1.59.zip
+          test "$(stat -c%s panelAdmisiones_PBIP_v1.60_OFFER_FILTER_FROM_v1.59.zip)" = "65261"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: panelAdmisiones-v1.60
+          path: panelAdmisiones_PBIP_v1.60_OFFER_FILTER_FROM_v1.59.zip
+          if-no-files-found: error
