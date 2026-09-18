@@ -1,0 +1,20 @@
+name: Chat ZIP Export
+on:
+  push:
+    branches: [ main ]
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch transfer chunks
+        run: |
+          git fetch origin chat-transfer-v160
+          git checkout origin/chat-transfer-v160 -- tmp/chunk_00.txt tmp/chunk_01.txt tmp/chunk_02.txt tmp/chunk_03.txt tmp/chunk_04.txt tmp/chunk_05.txt tmp/chunk_06.txt tmp/chunk_07.txt
+          cat tmp/chunk_*.txt | base64 -d > panelAdmisiones_PBIP_v1.60_OFFER_FILTER_FROM_v1.59.zip
+          test "$(stat -c%s panelAdmisiones_PBIP_v1.60_OFFER_FILTER_FROM_v1.59.zip)" = "65261"
+          unzip -t panelAdmisiones_PBIP_v1.60_OFFER_FILTER_FROM_v1.59.zip
+      - uses: actions/upload-artifact@v4
+        with:
+          name: panelAdmisiones-v1.60
+          path: panelAdmisiones_PBIP_v1.60_OFFER_FILTER_FROM_v1.59.zip
