@@ -1,16 +1,16 @@
 table DimMesPeriodo
-	lineageTag: f6dc3b9d-dddf-45bc-909e-b3260f0071b5
+	lineageTag: e18f1175-ac63-4cc8-8699-18353e5786c3
 
 	column MesNumero
 		dataType: int64
 		isKey
-		lineageTag: a7dab4d3-a3d2-4c67-b320-f1d06bc7c414
+		lineageTag: f740e420-7bd1-4c1a-bcc0-7839c45e17b2
 		summarizeBy: none
 		sourceColumn: MesNumero
 
 	column Mes
 		dataType: string
-		lineageTag: 70eeccf4-2fb2-433a-bdd5-b14dcadae079
+		lineageTag: a8bbdff5-41eb-494b-851e-19019a62c020
 		summarizeBy: none
 		sourceColumn: Mes
 		sortByColumn: MesNumero

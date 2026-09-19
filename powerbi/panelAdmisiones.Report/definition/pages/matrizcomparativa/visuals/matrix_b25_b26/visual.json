@@ -5,14 +5,48 @@
     "x": 20,
     "y": 115,
     "z": 10,
-    "width": 1560,
     "height": 845,
+    "width": 1560,
     "tabOrder": 4
   },
   "visual": {
     "visualType": "pivotTable",
     "query": {
       "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimMatrixColumn"
+                    }
+                  },
+                  "Property": "Anio"
+                }
+              },
+              "queryRef": "DimMatrixColumn.Anio",
+              "nativeQueryRef": "Año",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "DimMatrixColumn"
+                    }
+                  },
+                  "Property": "Metrica"
+                }
+              },
+              "queryRef": "DimMatrixColumn.Metrica",
+              "nativeQueryRef": "Métrica",
+              "active": true
+            }
+          ]
+        },
         "Rows": {
           "projections": [
             {
@@ -73,7 +107,7 @@
               },
               "queryRef": "DimFecha.Mes",
               "nativeQueryRef": "Mes",
-              "active": true
+              "active": false
             },
             {
               "field": {
@@ -88,7 +122,7 @@
               },
               "queryRef": "DimFecha.Dia",
               "nativeQueryRef": "Día",
-              "active": true
+              "active": false
             }
           ]
         },
@@ -99,48 +133,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimMatrixColumn"
+                      "Entity": "FactMatriculaHistorica"
                     }
                   },
                   "Property": "Valor Matriz Comparativa"
                 }
               },
-              "queryRef": "DimMatrixColumn.Valor Matriz Comparativa",
+              "queryRef": "FactMatriculaHistorica.Valor Matriz Comparativa",
               "nativeQueryRef": "Valor"
-            }
-          ]
-        },
-        "Columns": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimMatrixColumn"
-                    }
-                  },
-                  "Property": "Anio"
-                }
-              },
-              "queryRef": "DimMatrixColumn.Anio",
-              "nativeQueryRef": "Año",
-              "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimMatrixColumn"
-                    }
-                  },
-                  "Property": "Metrica"
-                }
-              },
-              "queryRef": "DimMatrixColumn.Metrica",
-              "nativeQueryRef": "Métrica",
-              "active": true
             }
           ]
         }
@@ -164,6 +164,48 @@
         "isDefaultSort": true
       }
     },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "DimCarreraAdm.Carrera"
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimSedeAdm.Sede"
+            ],
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimModalidadAdm.Modalidad"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimFecha.Mes"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          },
+          {
+            "queryRefs": [
+              "DimFecha.Dia"
+            ],
+            "isCollapsed": true
+          }
+        ],
+        "root": {}
+      }
+    ],
     "objects": {
       "subTotals": [
         {
@@ -557,5 +599,121 @@
       ]
     },
     "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "43978890bb6b1080c744",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimCarreraAdm"
+              }
+            },
+            "Property": "Carrera"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "d8d39ea8016675eb85a2",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimSedeAdm"
+              }
+            },
+            "Property": "Sede"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "9c27a0f4737409dee353",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimModalidadAdm"
+              }
+            },
+            "Property": "Modalidad"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "5c6aa489b95b1a1b7b10",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimFecha"
+              }
+            },
+            "Property": "Mes"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "5953086c67e20a7c38e0",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimFecha"
+              }
+            },
+            "Property": "Dia"
+          }
+        },
+        "type": "Categorical"
+      },
+      {
+        "name": "4c68d4d244cbc8bd60cb",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "FactMatriculaHistorica"
+              }
+            },
+            "Property": "Valor Matriz Comparativa"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "7b2f6f24eec03bd217d5",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimMatrixColumn"
+              }
+            },
+            "Property": "Anio"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "adc5b596cde976b8dbb3",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimMatrixColumn"
+              }
+            },
+            "Property": "Metrica"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

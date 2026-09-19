@@ -1,21 +1,29 @@
 table FactMatriculaHistorica
+	lineageTag: 6b05284f-38a1-4013-bd37-9b5af546840f
+
 	measure 'Total Matriculas Historicas' = COUNTROWS(FactMatriculaHistorica)
 		formatString: #,0
+		lineageTag: 8f9b82ff-09a4-4176-bb86-4c8294a87a09
 
 	measure 'Inicio Periodo B26' = CALCULATE(MIN(DimPeriodo[FechaInicio]), FILTER(ALL(DimPeriodo), DimPeriodo[Periodo] = "B26"))
 		formatString: yyyy-MM-dd
+		lineageTag: 89d7a129-f85d-4a6b-aed1-ce7694f8c848
 
 	measure 'Fin Periodo B26' = CALCULATE(MAX(DimPeriodo[FechaFin]), FILTER(ALL(DimPeriodo), DimPeriodo[Periodo] = "B26"))
 		formatString: yyyy-MM-dd
+		lineageTag: ff47fa56-ba10-4bdc-8bdc-5b218d8dd5ec
 
 	measure 'Inicio Periodo B25' = CALCULATE(MIN(DimPeriodo[FechaInicio]), FILTER(ALL(DimPeriodo), DimPeriodo[Periodo] = "B25"))
 		formatString: yyyy-MM-dd
+		lineageTag: 45530378-79d5-4ad8-855d-580a2dc9d8b4
 
 	measure 'Fin Periodo B25' = CALCULATE(MAX(DimPeriodo[FechaFin]), FILTER(ALL(DimPeriodo), DimPeriodo[Periodo] = "B25"))
 		formatString: yyyy-MM-dd
+		lineageTag: 04093950-5fdd-4e1d-b840-d24a12eab362
 
 	measure 'Dias Totales B26' = DATEDIFF([Inicio Periodo B26], [Fin Periodo B26], DAY) + 1
 		formatString: #,0
+		lineageTag: bfae27be-4a3d-4ab2-a486-507b7596828f
 
 	measure 'Fecha Corte Datos B26' = ```
 				VAR MaxFecha =
@@ -33,9 +41,11 @@ table FactMatriculaHistorica
 				RETURN MIN([Fin Periodo B26], DATEVALUE(MaxFecha))
 			```
 		formatString: yyyy-MM-dd
+		lineageTag: 4256b35b-7cfc-4ccf-a663-9d4ee6158b6d
 
 	measure 'Hay Filtro Mes' = IF(ISFILTERED(DimMesPeriodo[MesNumero]) || ISFILTERED(DimMesPeriodo[Mes]), 1, 0)
 		formatString: 0
+		lineageTag: e71a2878-4cfd-4dca-94a9-a5826245c66e
 
 	measure 'Dias Objetivo B26 Contexto' = ```
 				VAR Inicio = [Inicio Periodo B26]
@@ -56,6 +66,7 @@ table FactMatriculaHistorica
 				)
 			```
 		formatString: #,0
+		lineageTag: 0fe34145-f76a-44c7-8428-b39d4c911a9f
 
 	measure 'Dias Transcurridos B26 Contexto' = ```
 				VAR Inicio = [Inicio Periodo B26]
@@ -81,12 +92,15 @@ table FactMatriculaHistorica
 				)
 			```
 		formatString: #,0
+		lineageTag: 9e40181d-d48c-47e7-b335-b935329e0aa9
 
 	measure 'Dias Transcurridos B26' = [Dias Transcurridos B26 Contexto]
 		formatString: #,0
+		lineageTag: 884badaa-aeb4-4a19-bd61-561ae2d0465a
 
 	measure 'Dias Restantes B26' = MAX(0, [Dias Objetivo B26 Contexto] - [Dias Transcurridos B26 Contexto])
 		formatString: #,0
+		lineageTag: 477956c4-eb0c-4154-acfb-6b2c24d98057
 
 	measure 'Matriculas B26 Mismo Dia' = ```
 				VAR Corte = [Inicio Periodo B26] + [Dias Transcurridos B26] - 1
@@ -100,6 +114,7 @@ table FactMatriculaHistorica
 				    )
 			```
 		formatString: #,0
+		lineageTag: 6ae029da-2916-40ab-bd86-3055ca9c9573
 
 	measure 'Matriculas B25 Mismo Dia' = ```
 				VAR Corte = MIN([Fin Periodo B25], [Inicio Periodo B25] + [Dias Transcurridos B26] - 1)
@@ -113,15 +128,19 @@ table FactMatriculaHistorica
 				    )
 			```
 		formatString: #,0
+		lineageTag: 69f3c622-d24e-40c1-b1da-e1f85cb6248e
 
 	measure 'Variacion B26 vs B25 Mismo Dia' = [Matriculas B26 Mismo Dia] - [Matriculas B25 Mismo Dia]
 		formatString: +#,0;-#,0;0
+		lineageTag: 3f89a42c-0035-4d47-96d6-1c7add5f9c68
 
 	measure '% Variacion B26 vs B25 Mismo Dia' = DIVIDE([Variacion B26 vs B25 Mismo Dia], [Matriculas B25 Mismo Dia])
 		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 0f35bb42-064e-4409-a148-306e9b96a324
 
 	measure 'Ritmo Diario B26' = DIVIDE([Matriculas B26 Mismo Dia], [Dias Transcurridos B26])
 		formatString: 0.00
+		lineageTag: c90b75e6-7d04-4666-bfaf-dd904c3048e3
 
 	measure 'Ritmo Diario Requerido B26' = ```
 				VAR MetaContexto = [Meta B26 Contexto Panel]
@@ -129,15 +148,18 @@ table FactMatriculaHistorica
 				RETURN IF([Dias Restantes B26] = 0, 0, DIVIDE(Faltante, [Dias Restantes B26]))
 			```
 		formatString: 0.00
+		lineageTag: 468a3d98-19b3-410f-82a7-10668f8b2cef
 
 	measure 'Proyeccion Cierre B26' = ROUND([Matriculas B26 Mismo Dia] + [Ritmo Diario B26] * [Dias Restantes B26], 0)
 		formatString: #,0
+		lineageTag: 179df725-c93d-4535-8578-feca51abcfda
 
 	measure 'Brecha Proyectada B26' = [Proyeccion Cierre B26] - [Meta B26 Contexto Panel]
 		formatString: +#,0;-#,0;0
+		lineageTag: cc690693-1aaf-47bb-99c7-4a4b7f5d577a
 
 	measure 'B26 Acumulado Dia Periodo' = ```
-
+			
 				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
 				VAR FechaPunto = [Inicio Periodo B26] + D - 1
 				VAR CorteDatos = [Fecha Corte Datos B26]
@@ -157,9 +179,10 @@ table FactMatriculaHistorica
 				RETURN IF(V=0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: d752dd22-44d1-480e-9bd7-b06ec884d94b
 
 	measure 'B25 Acumulado Dia Periodo' = ```
-
+			
 				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
 				VAR FechaB26 = [Inicio Periodo B26] + D - 1
 				VAR FechaB25 = [Inicio Periodo B25] + D - 1
@@ -180,21 +203,30 @@ table FactMatriculaHistorica
 				RETURN IF(V=0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 22e6d364-39d8-44ba-a58f-e693388c69bf
 
 	measure 'Meta Lineal B26 Dia Periodo' = ```
 				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
 				RETURN IF(ISBLANK(D) || D > [Dias Totales B26], BLANK(), [Meta B26 Contexto Panel] * DIVIDE(D,[Dias Totales B26]))
 			```
 		formatString: #,0
+		lineageTag: 42794983-91a3-40ea-81ec-f795198ec04c
 
 	measure 'B26 Acumulado Mes' = ```
+			
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
 				VAR Inicio = [Inicio Periodo B26]
+				VAR FinPeriodo = [Fin Periodo B26]
 				VAR CorteDatos = [Fecha Corte Datos B26]
-				VAR FinPunto = IF(NOT ISBLANK(M), MIN(CorteDatos, EOMONTH(DATE(YEAR(Inicio), M, 1), 0)))
+				VAR InicioMes = IF(NOT ISBLANK(M), DATE(YEAR(Inicio), M, 1))
+				VAR FinPunto = IF(NOT ISBLANK(M), MIN(CorteDatos, EOMONTH(InicioMes, 0)))
 				VAR V =
 				    IF(
-				        ISBLANK(M) || ISBLANK(FinPunto) || FinPunto < Inicio,
+				        ISBLANK(M) ||
+				        ISBLANK(InicioMes) ||
+				        InicioMes > FinPeriodo ||
+				        ISBLANK(FinPunto) ||
+				        FinPunto < Inicio,
 				        BLANK(),
 				        CALCULATE(
 				            FactAdmision615[Total Matriculas],
@@ -208,6 +240,7 @@ table FactMatriculaHistorica
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: a318f829-48c1-4893-b9ba-8069b8c7b7e3
 
 	measure 'B25 Acumulado Mes' = ```
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
@@ -242,6 +275,7 @@ table FactMatriculaHistorica
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: d0173385-58de-4203-98ad-66841c6051b9
 
 	measure 'Meta B26 Mes' = ```
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
@@ -257,21 +291,24 @@ table FactMatriculaHistorica
 				)
 			```
 		formatString: #,0
+		lineageTag: cab7b8b7-e9cf-474b-9542-4880d209ffa1
 
 	measure 'Proyeccion B26 Mes' = ```
+			
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
 				VAR Inicio = [Inicio Periodo B26]
-				VAR Fin = [Fin Periodo B26]
+				VAR FinProyeccion = DATE(YEAR(Inicio),12,31)
 				VAR InicioMes = DATE(YEAR(Inicio), M, 1)
-				VAR Corte = MIN(Fin, EOMONTH(InicioMes,0))
+				VAR Corte = MIN(FinProyeccion, EOMONTH(InicioMes,0))
 				VAR DiasObjetivo = DATEDIFF(Inicio, Corte, DAY) + 1
 				RETURN IF(
-				    ISBLANK(M) || InicioMes > Fin || EOMONTH(InicioMes,0) < Inicio || Corte <= [Fecha Corte Datos B26],
+				    ISBLANK(M) || InicioMes > FinProyeccion || EOMONTH(InicioMes,0) < Inicio || Corte <= [Fecha Corte Datos B26],
 				    BLANK(),
 				    ROUND([Matriculas B26 Mismo Dia] + [Ritmo Diario B26] * (DiasObjetivo - [Dias Transcurridos B26]), 0)
 				)
 			```
 		formatString: #,0
+		lineageTag: c9be600a-a0b9-46a3-aa69-b0d0f66f8c9a
 
 	measure 'Matriculas B26 Mes' = ```
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
@@ -295,6 +332,7 @@ table FactMatriculaHistorica
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 2a81a105-6776-4643-95da-2a809dad24c9
 
 	measure 'Matriculas B25 Mes' = ```
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
@@ -334,6 +372,7 @@ table FactMatriculaHistorica
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: a9126f4e-e568-470f-8ba6-35558fbb6015
 
 	measure 'Total B25 Final' = ```
 				CALCULATE(
@@ -344,12 +383,15 @@ table FactMatriculaHistorica
 				)
 			```
 		formatString: #,0
+		lineageTag: 244ef930-7819-4adc-b04c-8fefd3024448
 
 	measure '% Real B25 YTD' = DIVIDE([Matriculas B25 Mismo Dia], [Total B25 Final])
 		formatString: 0.0%
+		lineageTag: b26d5e9a-1c79-4b47-be63-951c4d745ce8
 
 	measure 'Delta B25' = [Meta Excel B26 Matriz] - [Total B25 Final]
 		formatString: +#,0;-#,0;0
+		lineageTag: 1a88cd71-528a-41ef-b809-be64d9329d37
 
 	measure 'Delta B25 %' = ```
 				VAR Meta = [Meta Excel B26 Matriz]
@@ -362,6 +404,7 @@ table FactMatriculaHistorica
 				    )
 			```
 		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 9c038e7a-0e52-4ee3-a333-4251c34436f8
 
 	measure 'Total B26 Actual' = ```
 				CALCULATE(
@@ -371,271 +414,550 @@ table FactMatriculaHistorica
 				)
 			```
 		formatString: #,0
+		lineageTag: 8c6cd9f1-e836-4c0d-a20d-e9c7c254c841
 
 	measure '% Real B26 Budget' = DIVIDE([Total B26 Actual], [YTD Objetivo B26])
 		formatString: 0.0%
+		lineageTag: 295b46ac-4474-4e46-b702-1c363993029c
 
 	measure 'Delta Budget B26' = [Total B26 Actual] - [YTD Objetivo B26]
 		formatString: +#,0;-#,0;0
+		lineageTag: dc566620-744b-4fe7-9dfb-a82d378450a2
 
 	measure 'Completion B26' = DIVIDE([Total B26 Actual], [Meta Excel B26 Matriz])
 		formatString: 0.0%
+		lineageTag: e50c06bb-739f-4cfc-bdca-2cf50c4aed3b
 
 	measure 'Real B26 vs LY %' = DIVIDE([Total B26 Actual], [Matriculas B25 Mismo Dia])
 		formatString: 0.0%
+		lineageTag: 8c67cd17-ce44-4514-a1b8-9d0c7729e9f9
 
 	measure 'Varianza B26 vs LY' = [Total B26 Actual] - [Matriculas B25 Mismo Dia]
 		formatString: +#,0;-#,0;0
+		lineageTag: 6a3086c0-4f2a-4397-927f-b86d86d2251f
 
 	measure 'Meta B26 vs Total B25 %' = DIVIDE([Meta Excel B26 Matriz], [Total B25 Final])
 		formatString: 0.0%
+		lineageTag: 428c1de3-5acf-46fd-8ac3-29f851fffd0c
 
 	measure 'Real B26 vs YTD B26 %' = DIVIDE([Total B26 Actual], [YTD Objetivo B26])
 		formatString: 0.0%
+		lineageTag: 77f00583-aec8-486a-95ca-557ac2ca3924
 
 	measure 'YTD B26 vs YTD B25 %' = DIVIDE([Matriculas B26 Mismo Dia], [Matriculas B25 Mismo Dia])
 		formatString: 0.0%
+		lineageTag: fa0bd019-96af-41d4-8012-514771249d15
 
 	measure 'Delta YTD B26 vs B25' = [Matriculas B26 Mismo Dia] - [Matriculas B25 Mismo Dia]
 		formatString: +#,0;-#,0;0
+		lineageTag: e5a1370d-53b7-4ba2-a567-e6d506399e6d
 
 	measure 'YTD Objetivo B26' = ```
-			VAR Meta = [Meta Excel B26 Matriz]
-			VAR AvanceB25 = DIVIDE([Matriculas B25 Mismo Dia], [Total B25 Final])
-			VAR V = ROUND(Meta * AvanceB25, 0)
-			RETURN IF(ISBLANK(Meta) || ISBLANK(AvanceB25), BLANK(), V)
-		```
+				VAR Meta = [Meta Excel B26 Matriz]
+				VAR AvanceB25 = DIVIDE([Matriculas B25 Mismo Dia], [Total B25 Final])
+				VAR V = ROUND(Meta * AvanceB25, 0)
+				RETURN IF(ISBLANK(Meta) || ISBLANK(AvanceB25), BLANK(), V)
+			```
 		formatString: #,0
+		lineageTag: 10fb615d-983f-482b-b23b-7d1163be15a0
 
 	measure 'YTD Objetivo B26 Vis' = ```
-			VAR V = [YTD Objetivo B26]
-			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
-		```
+				VAR V = [YTD Objetivo B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
 		formatString: #,0
+		lineageTag: 7d2abf2f-614e-4ff3-89f9-6febe88833b8
 
 	measure '% Variacion B26 vs B25 Mismo Dia Vis' = ```
 				VAR V = [% Variacion B26 vs B25 Mismo Dia]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: 752a9920-97f3-4f0c-b81c-1776636ecef0
 
 	measure 'Ritmo Diario B26 Vis' = ```
 				VAR V = [Ritmo Diario B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.00
+		lineageTag: f98a6ec1-b2de-4230-af92-2a0ed9159255
 
 	measure 'Matriculas B25 Mismo Dia Vis' = ```
 				VAR V = [Matriculas B25 Mismo Dia]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: af7c800c-9257-4600-9a4c-c2e6105e7bb6
 
 	measure 'Brecha Proyectada B26 Vis' = ```
 				VAR V = [Brecha Proyectada B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: +#,0;-#,0;0
+		lineageTag: 12a8c45f-8e29-4555-b78a-43f132c4740b
 
 	measure 'B26 Acumulado Mes Vis' = ```
 				VAR V = [B26 Acumulado Mes]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 9dfa2562-8330-469d-adc4-7525870c1259
 
 	measure 'B25 Acumulado Mes Vis' = ```
 				VAR V = [B25 Acumulado Mes]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 4354bd61-205f-426c-8a9b-266d6fd099af
 
 	measure 'Proyeccion B26 Mes Vis' = ```
 				VAR V = [Proyeccion B26 Mes]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: b3ad1fcf-f30e-43cc-b358-cb69c285f740
 
 	measure 'Meta B26 Mes Vis' = ```
 				VAR V = [Meta B26 Mes]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: a23a168e-0555-4400-bb91-e34d3f864572
 
 	measure 'Matriculas B26 Mes Vis' = ```
 				VAR V = [Matriculas B26 Mes]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: b94be5a4-4b34-454b-b5ca-537664e04906
 
 	measure 'Matriculas B25 Mes Vis' = ```
 				VAR V = [Matriculas B25 Mes]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 147742f9-54ce-4c1f-887f-8dc06403a170
 
 	measure 'Matriculas B26 Mismo Dia Vis' = ```
 				VAR V = [Matriculas B26 Mismo Dia]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: edb3e835-71bd-48e5-8507-a1131c4f0bd5
 
 	measure 'Ritmo Diario Requerido B26 Vis' = ```
 				VAR V = [Ritmo Diario Requerido B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.00
+		lineageTag: 6ef975c3-5b60-443d-8513-fa6aede81ce9
 
 	measure 'Proyeccion Cierre B26 Vis' = ```
 				VAR V = [Proyeccion Cierre B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 21ccdfd7-9c42-4a0a-9b45-8828705fd757
 
 	measure 'Total B25 Final Vis' = ```
 				VAR V = [Total B25 Final]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 9a3480db-9962-4895-8bd9-a24f3415c17f
 
 	measure '% Real B25 YTD Vis' = ```
 				VAR V = [% Real B25 YTD]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.0%
+		lineageTag: 2fc496c8-4aba-444c-b5dd-d3e7239789c5
 
 	measure 'Delta B25 % Vis' = ```
-			VAR V = [Delta B25 %]
-			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
-		```
+				VAR V = [Delta B25 %]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
 		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: aa6d75e8-b3ad-446d-a652-139ba1b08f88
 
 	measure 'Total B26 Actual Vis' = ```
 				VAR V = [Total B26 Actual]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
+		lineageTag: 360dbc07-21f3-4fc2-b150-207823a5e53c
 
 	measure '% Real B26 Budget Vis' = ```
 				VAR V = [% Real B26 Budget]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.0%
+		lineageTag: acaf1f54-5db3-4be9-a22d-d8da40280d12
 
 	measure 'Delta Budget B26 Vis' = ```
 				VAR V = [Delta Budget B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: +#,0;-#,0;0
+		lineageTag: d4bcc547-a681-475b-8b93-39b1b9c85936
 
 	measure 'Completion B26 Vis' = ```
 				VAR V = [Completion B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.0%
+		lineageTag: 0fb5228e-6fe8-4fa6-9e7b-a206c6a4ffa4
 
 	measure 'Real B26 vs LY % Vis' = ```
 				VAR V = [Real B26 vs LY %]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.0%
+		lineageTag: 72b44694-1e19-4abd-b80d-789b3c8f6c69
 
 	measure 'Varianza B26 vs LY Vis' = ```
 				VAR V = [Varianza B26 vs LY]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: +#,0;-#,0;0
+		lineageTag: 62bd9d69-7178-4bab-bd80-e194a1ed3f9a
 
 	measure 'Meta B26 vs Total B25 % Vis' = ```
 				VAR V = [Meta B26 vs Total B25 %]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.0%
+		lineageTag: da140a0f-b139-4850-9b5c-d297bd4a5ebd
 
 	measure 'Real B26 vs YTD B26 % Vis' = ```
 				VAR V = [Real B26 vs YTD B26 %]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.0%
+		lineageTag: 03343ea2-78fe-4189-b206-ece020c18bec
 
 	measure 'YTD B26 vs YTD B25 % Vis' = ```
 				VAR V = [YTD B26 vs YTD B25 %]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: 0.0%
+		lineageTag: 1d39e68a-46cd-44ef-82ec-fdc3cf22ca2f
 
 	measure 'Delta YTD B26 vs B25 Vis' = ```
 				VAR V = [Delta YTD B26 vs B25]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: +#,0;-#,0;0
+		lineageTag: b48aeb65-b48e-443c-847a-201d0678826a
 
-	measure 'Dias Restantes B26 Vis' = ```
-		VAR v = [Dias Restantes B26]
-		RETURN IF(ISBLANK(v) || v = 0, BLANK(), v)
-		```
+	measure 'Dias Restantes B26 Vis' =
+			VAR v = [Dias Restantes B26]
+			RETURN IF(ISBLANK(v) || v = 0, BLANK(), v)
 		formatString: 0
+		lineageTag: 6e5499bc-8475-4789-8a8a-9ea35d70ee1e
+
+	measure 'Matrix Corte Nivel B26' = ```
+				VAR EnDia = ISINSCOPE(DimFecha[Dia])
+				VAR EnMes = ISINSCOPE(DimFecha[Mes])
+				VAR M = SELECTEDVALUE(DimFecha[MesNumero])
+				VAR D = SELECTEDVALUE(DimFecha[DiaMes])
+				VAR CorteDatos = [Fecha Corte Datos B26]
+				VAR Inicio26 = [Inicio Periodo B26]
+				VAR Fin26 = [Fin Periodo B26]
+				VAR Anio26 = YEAR(Inicio26)
+				VAR MesCorte = MONTH(CorteDatos)
+				VAR DiaCorte = DAY(CorteDatos)
+				VAR FinMes26 = IF(NOT ISBLANK(M), EOMONTH(DATE(Anio26,M,1),0))
+				VAR DiaValido = IF(NOT ISBLANK(D) && NOT ISBLANK(FinMes26), MIN(D,DAY(FinMes26)))
+				VAR CorteSolicitado =
+					SWITCH(
+						TRUE(),
+						EnDia && NOT ISBLANK(M) && NOT ISBLANK(D), DATE(Anio26,M,DiaValido),
+						EnMes && NOT ISBLANK(M) && M = MesCorte, DATE(Anio26,M,MIN(DiaCorte,DAY(FinMes26))),
+						EnMes && NOT ISBLANK(M), FinMes26,
+						CorteDatos
+					)
+				VAR CorteFinal = MIN(Fin26, MIN(CorteDatos,CorteSolicitado))
+				RETURN IF(CorteFinal < Inicio26, BLANK(), CorteFinal)
+			```
+		formatString: yyyy-MM-dd
+		lineageTag: 4b025f15-3c3c-4949-8db3-5663fda617e4
+
+	measure 'Matrix Corte Nivel B25' = ```
+				VAR Corte26 = [Matrix Corte Nivel B26]
+				VAR Inicio25 = [Inicio Periodo B25]
+				VAR Fin25 = [Fin Periodo B25]
+				VAR Inicio26 = [Inicio Periodo B26]
+				VAR DiasDesdeInicio = IF(NOT ISBLANK(Corte26), DATEDIFF(Inicio26,Corte26,DAY))
+				VAR Corte25 = IF(NOT ISBLANK(DiasDesdeInicio), Inicio25 + DiasDesdeInicio)
+				RETURN IF(ISBLANK(Corte25), BLANK(), MIN(Fin25,Corte25))
+			```
+		formatString: yyyy-MM-dd
+		lineageTag: b85cd687-5672-4cb6-a41e-8efd8c1da5bc
+
+	measure 'Matrix B25 Total Contexto' = ```
+				VAR V =
+					CALCULATE(
+						[Total Matriculas Historicas],
+						REMOVEFILTERS(DimPeriodo),
+						REMOVEFILTERS(DimFecha),
+						REMOVEFILTERS(DimMesPeriodo),
+						FactMatriculaHistorica[Periodo] = "B25"
+					)
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: d3575463-1b39-4486-8022-e572d6a8d3c0
+
+	measure 'Matrix B25 YTD Contexto' =
+			
+			VAR Corte25 = [Matrix Corte Nivel B25]
+			VAR V =
+				IF(
+					ISBLANK(Corte25),
+					BLANK(),
+					CALCULATE(
+						[Total Matriculas Historicas],
+						REMOVEFILTERS(DimPeriodo),
+						REMOVEFILTERS(DimFecha),
+						REMOVEFILTERS(DimMesPeriodo),
+						FactMatriculaHistorica[Periodo] = "B25",
+						FILTER(
+							ALL(FactMatriculaHistorica[FechaMatricula]),
+							FactMatriculaHistorica[FechaMatricula] <= Corte25
+						)
+					)
+				)
+			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+		formatString: #,0
+		lineageTag: 689e53bd-eb73-4d57-a4b2-247ceba508ed
+
+	measure 'Matrix B26 Real Contexto' =
+			
+			VAR Corte26 = [Matrix Corte Nivel B26]
+			VAR V =
+				IF(
+					ISBLANK(Corte26),
+					BLANK(),
+					CALCULATE(
+						FactAdmision615[Total Matriculas B26],
+						REMOVEFILTERS(DimPeriodo),
+						REMOVEFILTERS(DimFecha),
+						REMOVEFILTERS(DimMesPeriodo),
+						FactAdmision615[Periodo] = "B26",
+						FILTER(
+							ALL(FactAdmision615[FechaMatriculaDay]),
+							FactAdmision615[FechaMatriculaDay] <= Corte26
+						)
+					)
+				)
+			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+		formatString: #,0
+		lineageTag: 04685e10-8851-4a5a-a760-c6591338ffc3
+
+	measure 'Matrix B25 Real % Contexto' = ```
+				VAR YTD25 = [Matrix B25 YTD Contexto]
+				VAR Total25 = [Matrix B25 Total Contexto]
+				RETURN IF(ISBLANK(YTD25) || ISBLANK(Total25), BLANK(), DIVIDE(YTD25,Total25))
+			```
+		formatString: 0.0%
+		lineageTag: 9e6b73b4-e963-4420-9083-de21d2bfd647
+
+	measure 'Matrix B26 YTD Objetivo Contexto' = ```
+				VAR Meta = [Meta Excel B26 Matriz]
+				VAR YTD25 = [Matrix B25 YTD Contexto]
+				VAR Total25 = [Matrix B25 Total Contexto]
+				VAR Avance25 = DIVIDE(YTD25,Total25)
+				VAR V = ROUND(Meta * Avance25,0)
+				RETURN IF(ISBLANK(Meta) || ISBLANK(Avance25) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: 2a7cdeb7-8bad-412e-a34e-99f32848c46f
+
+	measure 'Matrix B26 Real % Contexto' = ```
+				VAR Real26YTD = [Matrix B26 Real Contexto]
+				VAR Obj26YTD = [Matrix B26 YTD Objetivo Contexto]
+				RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Obj26YTD), BLANK(), DIVIDE(Real26YTD,Obj26YTD))
+			```
+		formatString: 0.0%
+		lineageTag: a3b976f9-04f5-445a-82e4-ed0bc59f4c56
+
+	measure 'Matrix Delta Budget Contexto' = ```
+				VAR Real26YTD = [Matrix B26 Real Contexto]
+				VAR Obj26YTD = [Matrix B26 YTD Objetivo Contexto]
+				RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Obj26YTD), BLANK(), Real26YTD-Obj26YTD)
+			```
+		formatString: +#,0;-#,0;0
+		lineageTag: 260a330d-1189-4a0c-b6c8-4c411fbb5ebf
+
+	measure 'Matrix Completion Contexto' = ```
+				VAR Real26YTD = [Matrix B26 Real Contexto]
+				VAR Meta = [Meta Excel B26 Matriz]
+				RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Meta), BLANK(), DIVIDE(Real26YTD,Meta))
+			```
+		formatString: 0.0%
+		lineageTag: 75a16e3f-12ee-438f-aca8-a37b27fd6ed7
+
+	measure 'Matrix Real vs LY Contexto' = ```
+				VAR Real26YTD = [Matrix B26 Real Contexto]
+				VAR Real25YTD = [Matrix B25 YTD Contexto]
+				RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Real25YTD), BLANK(), DIVIDE(Real26YTD,Real25YTD))
+			```
+		formatString: 0.0%
+		lineageTag: bec750f3-46bd-4a83-af54-bf61b847aec7
+
+	measure 'Matrix Varianza Contexto' = ```
+				VAR Real26YTD = [Matrix B26 Real Contexto]
+				VAR Real25YTD = [Matrix B25 YTD Contexto]
+				RETURN IF(ISBLANK(Real26YTD) && ISBLANK(Real25YTD), BLANK(), COALESCE(Real26YTD,0)-COALESCE(Real25YTD,0))
+			```
+		formatString: +#,0;-#,0;0
+		lineageTag: d359ac28-55a9-476c-8ada-e639370eb9ae
+
+	measure 'Matrix Delta B25 % Contexto' = ```
+				VAR Meta = [Meta Excel B26 Matriz]
+				VAR Total25 = [Matrix B25 Total Contexto]
+				RETURN IF(ISBLANK(Meta) || ISBLANK(Total25), BLANK(), DIVIDE(Meta,Total25)-1)
+			```
+		formatString: +0.0%;-0.0%;0.0%
+		lineageTag: cb04127a-423a-415a-9f76-83dea66afd49
+
+	measure 'Matrix Hay Datos' = ```
+				VAR EnTiempo = ISINSCOPE(DimFecha[Mes]) || ISINSCOPE(DimFecha[Dia])
+				VAR V25Nivel =
+					IF(
+						EnTiempo,
+						CALCULATE(
+							[Total Matriculas Historicas],
+							REMOVEFILTERS(DimPeriodo),
+							FactMatriculaHistorica[Periodo] = "B25"
+						),
+						[Matrix B25 Total Contexto]
+					)
+				VAR V26Nivel =
+					IF(
+						EnTiempo,
+						CALCULATE(
+							FactAdmision615[Total Matriculas B26],
+							REMOVEFILTERS(DimPeriodo),
+							FactAdmision615[Periodo] = "B26"
+						),
+						[Matrix B26 Real Contexto]
+					)
+				RETURN IF(COALESCE(V25Nivel,0)+COALESCE(V26Nivel,0)>0,1,0)
+			```
+		formatString: 0
+		lineageTag: 528fb289-cbe3-42c1-8cf3-323e1298c395
+
+	measure 'Valor Matriz Comparativa' = ```
+				VAR A = SELECTEDVALUE(DimMatrixColumn[Anio])
+				VAR M = SELECTEDVALUE(DimMatrixColumn[Metrica])
+				VAR HayDatos = [Matrix Hay Datos] = 1
+				VAR V =
+					SWITCH(
+						TRUE(),
+						A = 2025 && M = "TOTAL", [Matrix B25 Total Contexto],
+						A = 2025 && M = "YTD", [Matrix B25 YTD Contexto],
+						A = 2025 && M = "REAL", [Matrix B25 Real % Contexto],
+						A = 2025 && M = "Δ%", [Matrix Delta B25 % Contexto],
+						A = 2026 && M = "BUDGET", [Meta Excel B26 Matriz Vis],
+						A = 2026 && M = "YTD", [Matrix B26 YTD Objetivo Contexto],
+						A = 2026 && M = "REAL", [Matrix B26 Real Contexto],
+						A = 2026 && M = "REAL %", [Matrix B26 Real % Contexto],
+						A = 2026 && M = "Δ BUDGET", [Matrix Delta Budget Contexto],
+						A = 2026 && M = "COMPLETION", [Matrix Completion Contexto],
+						A = 2026 && M = "REAL VS LY", [Matrix Real vs LY Contexto],
+						A = 2026 && M = "VARIANZA", [Matrix Varianza Contexto],
+						BLANK()
+					)
+				RETURN
+				IF(
+					NOT HayDatos || ISBLANK(V),
+					BLANK(),
+					IF(
+						(A = 2025 && M = "REAL") || M IN {"Δ%","REAL %","COMPLETION","REAL VS LY"},
+						FORMAT(V, "0.0%"),
+						IF(M IN {"Δ BUDGET","VARIANZA"}, FORMAT(V, "+#,##0;-#,##0;0"), FORMAT(V, "#,##0"))
+					)
+				)
+			```
+		lineageTag: bc2c30b7-8d4f-4713-971e-7fa7456b1ba6
 
 	column Periodo
 		dataType: string
+		lineageTag: 9c6c9156-c7b1-403e-af3b-8f9573762881
 		sourceColumn: Periodo
 
 	column Sede
 		dataType: string
+		lineageTag: f82e15f6-3537-48fb-a91d-1d60aea74940
 		sourceColumn: Sede
 
 	column Modalidad
 		dataType: string
+		lineageTag: bfe7d0ee-cd43-482b-bf27-152e49f9c295
 		sourceColumn: Modalidad
 
 	column Carrera
 		dataType: string
+		lineageTag: d76bd73e-0222-49fc-a04e-3431af000c4d
 		sourceColumn: Carrera
 
 	column Identificacion
 		dataType: string
 		isHidden
+		lineageTag: 21139cc6-b0d0-4197-9511-de8138e83fe7
 		sourceColumn: Identificacion
 
 	column FechaMatricula
 		dataType: dateTime
 		formatString: Short Date
+		lineageTag: 09585892-8f75-4a8a-98a8-3267098a919a
 		summarizeBy: none
 		sourceColumn: FechaMatricula
 
 	column AnioMatricula
 		dataType: int64
+		lineageTag: fd728fac-b589-4ab8-a8aa-e7f166706344
 		summarizeBy: none
 		sourceColumn: AnioMatricula
 
 	column MesNumero
 		dataType: int64
+		lineageTag: 1bd5fee7-04e4-4247-b47b-4eff232b80b7
 		summarizeBy: none
 		sourceColumn: MesNumero
 
 	column AnioMesKey
 		dataType: int64
+		lineageTag: e0fd3197-5373-49c2-a914-5e9f2d3bcc33
 		summarizeBy: none
 		sourceColumn: AnioMesKey
 
 	column Formalizada
 		dataType: string
+		lineageTag: bf736c1d-35e3-4388-8043-f009021fb69e
 		sourceColumn: Formalizada
 
 	column TipoPrograma
 		dataType: string
+		lineageTag: acb393c2-7de8-4cd1-857b-4ea38a7bbc69
 		sourceColumn: TipoPrograma
 
 	column TipoCarrera
 		dataType: string
+		lineageTag: ded97a09-fe68-4b6f-bb2d-1186822d9f09
 		sourceColumn: TipoCarrera
 
 	column ArchivoOrigen
 		dataType: string
 		isHidden
+		lineageTag: 24289b80-f5d9-4d0a-9c92-bd8b08a7d005
 		sourceColumn: ArchivoOrigen
 
 	column OfertaB26 = COALESCE(LOOKUPVALUE(DimOfertaMap[OfertaB26], DimOfertaMap[Carrera], FactMatriculaHistorica[Carrera], DimOfertaMap[Sede], FactMatriculaHistorica[Sede], DimOfertaMap[Modalidad], FactMatriculaHistorica[Modalidad]), "NO")
 		dataType: string
+		lineageTag: f53f9596-7cc7-4447-83bc-5db7ee06fabd
 
 	partition FactMatriculaHistorica = m
 		mode: import
@@ -654,3 +976,4 @@ table FactMatriculaHistorica
 				    })
 				in
 				    R
+

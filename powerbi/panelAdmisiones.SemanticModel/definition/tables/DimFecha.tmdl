@@ -1,83 +1,102 @@
 table DimFecha
+	lineageTag: 139d049f-180a-4fa6-8b85-074b003d68cd
+
 	column Date
 		dataType: dateTime
 		isKey
 		formatString: Short Date
+		lineageTag: 7ddf78a3-fc03-4d3a-b46f-f2ab51c62b90
 		summarizeBy: none
 		sourceColumn: Date
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column Anio
 		dataType: int64
+		lineageTag: fac450fa-ae68-45ad-8e07-39d27d46c38e
 		summarizeBy: none
 		sourceColumn: Anio
 
 	column MesNumero
 		dataType: int64
+		lineageTag: d3e65fad-3f2b-4668-b0a4-391478e00030
 		summarizeBy: none
 		sourceColumn: MesNumero
 
 	column Mes
 		dataType: string
+		lineageTag: e2aa5d48-590d-45c0-aaac-98d90f494e19
 		summarizeBy: none
 		sourceColumn: Mes
 		sortByColumn: MesNumero
 
 	column QuincenaNumero
 		dataType: int64
+		lineageTag: 4679c8b0-f5ba-4e5d-888d-564cb8039918
 		summarizeBy: none
 		sourceColumn: QuincenaNumero
 
 	column Quincena
 		dataType: string
+		lineageTag: 02557f18-efbd-49bd-ae5e-571b1258ea25
 		summarizeBy: none
 		sourceColumn: Quincena
 		sortByColumn: QuincenaKey
 
 	column QuincenaKey
 		dataType: int64
+		lineageTag: 6e778a4c-2067-4c8a-b875-6bb59b35e099
 		summarizeBy: none
 		sourceColumn: QuincenaKey
 
 	column SemanaMesNumero
 		dataType: int64
+		lineageTag: 6fb32784-0555-432e-81bd-543fc2960ddd
 		summarizeBy: none
 		sourceColumn: SemanaMesNumero
 
 	column Semana
 		dataType: string
+		lineageTag: 98f3d94f-0015-4e50-ab8e-24675a6f2a10
 		summarizeBy: none
 		sourceColumn: Semana
 		sortByColumn: SemanaKey
 
 	column SemanaKey
 		dataType: int64
+		lineageTag: ab8cb4f0-8eb0-4d3b-841f-d59bcf4e1bfa
 		summarizeBy: none
 		sourceColumn: SemanaKey
 
 	column DiaMes
 		dataType: int64
+		lineageTag: b8f5f0bf-2397-42e4-9a89-d35eae513b92
 		summarizeBy: none
 		sourceColumn: DiaMes
 
 	column Dia
 		dataType: string
+		lineageTag: f3c2d3c9-abfe-48d6-93ca-82954ea02287
 		summarizeBy: none
 		sourceColumn: Dia
 		sortByColumn: DiaKey
 
 	column DiaKey
 		dataType: int64
+		lineageTag: 138c5cbc-6550-42f5-a56a-63a08307fcf9
 		summarizeBy: none
 		sourceColumn: DiaKey
 
 	column AnioMes
 		dataType: string
+		lineageTag: ddea4f93-f6ab-4f06-96f1-2b1b75d090a9
 		summarizeBy: none
 		sourceColumn: AnioMes
 		sortByColumn: AnioMesKey
 
 	column AnioMesKey
 		dataType: int64
+		lineageTag: be9c00c3-fcac-4140-b107-8888d65a6d36
 		summarizeBy: none
 		sourceColumn: AnioMesKey
 
@@ -110,3 +129,4 @@ table DimFecha
 				    R = Table.TransformColumnTypes(YMKey,{{"Date", type date},{"Anio",Int64.Type},{"MesNumero",Int64.Type},{"Mes",type text},{"QuincenaNumero",Int64.Type},{"Quincena",type text},{"QuincenaKey",Int64.Type},{"SemanaMesNumero",Int64.Type},{"Semana",type text},{"SemanaKey",Int64.Type},{"DiaMes",Int64.Type},{"Dia",type text},{"DiaKey",Int64.Type},{"AnioMes",type text},{"AnioMesKey",Int64.Type}})
 				in
 				    R
+

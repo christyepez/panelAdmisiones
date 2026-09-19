@@ -4,7 +4,7 @@ table DimTipoCarrera
 	column TipoCarrera
 		dataType: string
 		isKey
-		lineageTag: fe97cfda-ec2e-43a8-870d-889d49fd4596
+		lineageTag: b0f2362a-2586-482a-917d-ed4b1c6602c6
 		summarizeBy: none
 		sourceColumn: TipoCarrera
 

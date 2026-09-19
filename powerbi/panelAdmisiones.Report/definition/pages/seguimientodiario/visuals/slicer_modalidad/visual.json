@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "slicer_modalidad",
   "position": {
-    "x": 523.67135995465537,
-    "y": 18.496118673895111,
+    "x": 580,
+    "y": 18,
     "z": 2,
-    "height": 64.736415358632883,
-    "width": 176.869134819122,
+    "height": 65,
+    "width": 270,
     "tabOrder": 2
   },
   "visual": {

@@ -21,8 +21,8 @@ Matrix YTD measures only clear DimFecha / DimMesPeriodo / DimPeriodo when rebuil
 - 2026 BUDGET: target for current Carrera/Sede/Modalidad context; it is intentionally not split by date.
 - 2026 YTD: Budget * (B25 YTD / B25 TOTAL).
 - 2026 REAL: B26 cumulative through the current cutoff.
-- 2026 REAL %: B26 cumulative / B26 YTD objective.
-- Delta Budget: B26 cumulative - B26 YTD objective.
+- 2026 REAL %: B26 cumulative / B26 Real objective.
+- Delta Budget: B26 cumulative - B26 Real objective.
 - Completion: B26 cumulative / Budget.
 - Real vs LY: B26 cumulative / B25 cumulative equivalent.
 - Variance: B26 cumulative - B25 cumulative equivalent.

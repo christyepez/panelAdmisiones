@@ -82,7 +82,7 @@
                 "Version": 2,
                 "From": [
                   {
-                    "Name": "o",
+                    "Name": "d",
                     "Entity": "DimOfertaAdm",
                     "Type": 0
                   }
@@ -96,7 +96,7 @@
                             "Column": {
                               "Expression": {
                                 "SourceRef": {
-                                  "Source": "o"
+                                  "Source": "d"
                                 }
                               },
                               "Property": "Oferta"
@@ -108,6 +108,13 @@
                             {
                               "Literal": {
                                 "Value": "'SI'"
+                              }
+                            }
+                          ],
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'NO'"
                               }
                             }
                           ]

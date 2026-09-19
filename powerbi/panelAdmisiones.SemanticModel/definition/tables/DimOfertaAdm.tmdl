@@ -1,10 +1,10 @@
 table DimOfertaAdm
-	lineageTag: 9debe9fe-47be-4180-87cc-25892c008aa0
+	lineageTag: 775175ac-5be9-496e-95f4-b67cb317b10f
 
 	column Oferta
 		dataType: string
 		isKey
-		lineageTag: 656f48cd-0eca-481c-9146-83599adc6818
+		lineageTag: 65402eaa-a620-4171-b0b2-4b6cd6bcc002
 		sourceColumn: Oferta
 
 	partition DimOfertaAdm = m

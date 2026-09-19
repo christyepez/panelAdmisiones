@@ -1,50 +1,67 @@
 table DimPeriodo
+	lineageTag: 698153f0-7c0b-4b78-b505-d3e464dc0a1f
+
 	column Periodo
 		dataType: string
 		isKey
+		lineageTag: c1383c13-4be9-4627-83a1-138a8ed9ca87
 		summarizeBy: none
 		sourceColumn: Periodo
 
 	column Ciclo
 		dataType: string
+		lineageTag: 813575a7-beef-4a38-8ac2-011d4df461e1
 		summarizeBy: none
 		sourceColumn: Ciclo
 
 	column Anio
 		dataType: int64
+		lineageTag: b528c0a7-a1b7-4d22-8b32-e8dc6ffdec47
 		summarizeBy: none
 		sourceColumn: Anio
 
 	column FechaInicio
 		dataType: dateTime
 		formatString: Short Date
+		lineageTag: d43f991b-3242-4a0f-bc78-ce1b65fae637
 		summarizeBy: none
 		sourceColumn: FechaInicio
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column FechaFin
 		dataType: dateTime
 		formatString: Short Date
+		lineageTag: eb92aae2-f9ac-4c51-9d80-d48b67ad5295
 		summarizeBy: none
 		sourceColumn: FechaFin
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column Orden
 		dataType: int64
+		lineageTag: 7cce197e-5217-4ce7-982f-40ca9ac56331
 		summarizeBy: none
 		sourceColumn: Orden
 
 	column EsPeriodoActivo
 		dataType: boolean
+		lineageTag: d257a230-5891-4e9d-b942-3edd895afdbe
 		summarizeBy: none
 		sourceColumn: EsPeriodoActivo
 
 	column FechaFinFiltro
 		dataType: dateTime
 		formatString: Short Date
+		lineageTag: 4b39bb0f-64a5-480e-b345-1383bf266b12
 		summarizeBy: none
 		sourceColumn: FechaFinFiltro
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column OrigenFechaFin
 		dataType: string
+		lineageTag: b2afb06c-56af-438b-afe6-ba294cb365b4
 		summarizeBy: none
 		sourceColumn: OrigenFechaFin
 
@@ -64,3 +81,4 @@ table DimPeriodo
 				    AddCut = Table.AddColumn(AddActive,"FechaFinFiltro", each if [EsPeriodoActivo] then Today else [FechaFin], type date)
 				in
 				    AddCut
+

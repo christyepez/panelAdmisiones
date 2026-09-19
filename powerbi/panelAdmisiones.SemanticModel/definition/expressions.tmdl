@@ -284,3 +284,5 @@ expression FxOfertaMap =
 		    R = Table.Distinct(Valid,{"Carrera","Sede","Modalidad"})
 		in
 		    R
+	lineageTag: 242920e8-4e8d-4c38-98bd-dde324982300
+

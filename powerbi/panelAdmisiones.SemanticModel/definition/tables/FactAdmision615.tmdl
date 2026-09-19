@@ -1,5 +1,5 @@
 table FactAdmision615
-	lineageTag: 1b5402f4-1f04-4263-9623-3ef1f15022cc
+	lineageTag: f48aa267-dfdb-41dc-a5c6-cb1f89dbd305
 
 	measure 'Total Matriculas' = ```
 				CALCULATE(
@@ -9,7 +9,7 @@ table FactAdmision615
 				)
 			```
 		formatString: #,0
-		lineageTag: 62a4a229-9edc-4109-8d31-ee0beddd8e4d
+		lineageTag: c56abcc9-8db1-4e56-bbbe-38bc30df1e5f
 
 	measure 'Total Matriculas B26' = ```
 				CALCULATE(
@@ -19,117 +19,117 @@ table FactAdmision615
 				)
 			```
 		formatString: #,0
-		lineageTag: 670c640a-6fc5-4ac8-8a0c-72cf25ac533b
+		lineageTag: 62765ebe-de49-4ce8-b072-c20251ffe812
 
 	measure 'Matriculas Formalizadas' = CALCULATE([Total Matriculas], UPPER(FactAdmision615[Formalizado]) = "SI")
 		formatString: #,0
-		lineageTag: 59c4478d-bf0b-4ed8-8513-d19e5be64765
+		lineageTag: e5d4a7ca-cfbf-4094-bad9-adc96eb03aa1
 
 	measure 'Total Matriculas B26 Vis' = ```
 				VAR V = [Total Matriculas B26]
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
-		lineageTag: 95db7587-4daf-4eba-b05f-99d1dc9ac9ea
+		lineageTag: 465e2781-3202-45cb-a28f-b79211e90be9
 
 	column Periodo
 		dataType: string
-		lineageTag: 119a917c-1e06-4413-9786-c810abea33e7
+		lineageTag: 4dc0d5d1-4fe8-4761-895f-168fb1672031
 		sourceColumn: Periodo
 
 	column Sede
 		dataType: string
-		lineageTag: edc3d2bc-14b0-46e0-9644-af7427d62da6
+		lineageTag: 94314b5a-2f2b-4e27-8190-5ace9bf8b42a
 		sourceColumn: Sede
 
 	column Carrera
 		dataType: string
-		lineageTag: e008e79f-a58d-4461-9d63-b1ac47cf65ad
+		lineageTag: 4d6eb77a-da14-4165-8424-b18c33ea9b77
 		sourceColumn: Carrera
 
 	column Modalidad
 		dataType: string
-		lineageTag: 6b8f8c52-974a-4e33-a946-8ba7f110a012
+		lineageTag: 9a8c8533-82a5-4c01-8a8d-fc1ae6ea3bbf
 		sourceColumn: Modalidad
 
 	column Identificacion
 		dataType: string
 		isHidden
-		lineageTag: b74c26f4-6bda-4a84-a4c0-715932e4201d
+		lineageTag: eee801d5-a06c-48aa-bb02-1a424d452621
 		sourceColumn: Identificacion
 
 	column FechaInscripcionDay
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 2e46865f-bf9d-4a12-8ebb-604b9d6a5911
+		lineageTag: 347c7013-2092-4343-8ef4-cc594ff5aff8
 		summarizeBy: none
 		sourceColumn: FechaInscripcionDay
 
 	column FechaMatriculaDay
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 41c7a175-c6d4-4977-acd0-d8c971a1dd28
+		lineageTag: 39beb98e-fbd4-4da2-858d-1cb8138b3728
 		summarizeBy: none
 		sourceColumn: FechaMatriculaDay
 
 	column AnioMatricula
 		dataType: int64
-		lineageTag: 7fdf0e86-e386-4007-9221-17f690b56662
+		lineageTag: 01f38863-28d1-421f-a261-2deb6654fcdf
 		summarizeBy: none
 		sourceColumn: AnioMatricula
 
 	column MesNumero
 		dataType: int64
-		lineageTag: 73d70c54-6636-4ed8-bc77-3a26f99c34eb
+		lineageTag: de1b1208-7cc3-4721-8deb-183f6c4ef023
 		summarizeBy: none
 		sourceColumn: MesNumero
 
 	column AnioMesKey
 		dataType: int64
-		lineageTag: 24524dd3-990f-4b05-bb94-fe67aa49594c
+		lineageTag: d8467413-d7f2-462d-95f1-a5dc670e3223
 		summarizeBy: none
 		sourceColumn: AnioMesKey
 
 	column MesInscripcionNumero
 		dataType: int64
-		lineageTag: 73d2f786-8448-4377-9316-cc7cd7b81beb
+		lineageTag: b8dc385b-2c6c-4c4f-b559-72623ca1a46c
 		summarizeBy: none
 		sourceColumn: MesInscripcionNumero
 
 	column MatriculaEnPrimero
 		dataType: string
-		lineageTag: 08e93be3-036a-4ad9-9cc1-ce79a1bb75c7
+		lineageTag: 8b17a134-0815-4b29-807a-11ded064ccf4
 		sourceColumn: MatriculaEnPrimero
 
 	column Formalizado
 		dataType: string
-		lineageTag: 90adc741-a3e1-4a53-b212-cb9695e09d56
+		lineageTag: ed8e416a-8500-467d-9819-10a56b9c5709
 		sourceColumn: Formalizado
 
 	column Fuente
 		dataType: string
-		lineageTag: 2002d4b3-a8b2-44cb-ab4f-08ef6a0efe02
+		lineageTag: b1e48471-40de-40b3-bb4c-024c213a2088
 		sourceColumn: Fuente
 
 	column TipoPrograma
 		dataType: string
-		lineageTag: 1a99f755-ef19-4f52-ae11-c5972f44ede4
+		lineageTag: 71983553-f0cb-4ba0-8993-125fbc6a6d7d
 		sourceColumn: TipoPrograma
 
 	column TipoCarrera
 		dataType: string
-		lineageTag: 9b32b6ba-7fac-4d3b-9b45-eb6d86e87829
+		lineageTag: a8e0c77c-c2aa-4964-86fa-482c18745d98
 		sourceColumn: TipoCarrera
 
 	column ArchivoOrigen
 		dataType: string
 		isHidden
-		lineageTag: 63ad20f5-7f27-4486-9d2c-e07814b375a2
+		lineageTag: 67934fe6-a1cd-41b1-a654-a29fd517fbb2
 		sourceColumn: ArchivoOrigen
 
 	column OfertaB26 = COALESCE(LOOKUPVALUE(DimOfertaMap[OfertaB26], DimOfertaMap[Carrera], FactAdmision615[Carrera], DimOfertaMap[Sede], FactAdmision615[Sede], DimOfertaMap[Modalidad], FactAdmision615[Modalidad]), "NO")
 		dataType: string
-		lineageTag: 276e45dd-f766-4331-a0f9-36565b76a8c9
+		lineageTag: 05e93ba4-a96a-4b9b-ae74-6001e47f7bdb
 
 	partition FactAdmision615 = m
 		mode: import

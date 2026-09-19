@@ -1,24 +1,24 @@
 table DimOfertaMap
-	lineageTag: be5d5109-107a-4fa4-83ad-2cfe03507bfd
+	lineageTag: 7de50a75-3844-4cbf-b014-61f46425a724
 
 	column Carrera
 		dataType: string
-		lineageTag: 1b898700-adbd-45db-8191-94813ca2e57e
+		lineageTag: 8d9959e6-7d7b-4ccd-bca1-357cd354f896
 		sourceColumn: Carrera
 
 	column Sede
 		dataType: string
-		lineageTag: 0aeff441-36e5-4269-9f86-841713f7d796
+		lineageTag: 5fda9483-1362-4a39-bc87-f79e844879ed
 		sourceColumn: Sede
 
 	column Modalidad
 		dataType: string
-		lineageTag: 9da192b9-f779-4e48-8bd8-b881d0f38289
+		lineageTag: c45a64a0-9530-4da7-89f7-4b821926fc7f
 		sourceColumn: Modalidad
 
 	column OfertaB26
 		dataType: string
-		lineageTag: 0ffb9269-2653-47d4-806e-82e1b0055c85
+		lineageTag: 31efe6e0-1d35-4ebf-8186-d88f874b747a
 		sourceColumn: OfertaB26
 
 	partition DimOfertaMap = m

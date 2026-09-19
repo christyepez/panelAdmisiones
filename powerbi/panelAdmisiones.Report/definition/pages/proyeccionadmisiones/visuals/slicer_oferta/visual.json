@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "slicer_oferta",
   "position": {
-    "x": 1176.8155506265764,
-    "y": 20.808133508132,
+    "x": 1256.0469203055736,
+    "y": 20.043301919769792,
     "z": 5,
     "height": 65,
     "width": 145,
@@ -108,6 +108,13 @@
                             {
                               "Literal": {
                                 "Value": "'SI'"
+                              }
+                            }
+                          ],
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'NO'"
                               }
                             }
                           ]

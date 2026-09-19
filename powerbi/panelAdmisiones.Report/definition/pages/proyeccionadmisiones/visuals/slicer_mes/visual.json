@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "slicer_mes",
   "position": {
-    "x": 1040.4066754066,
-    "y": 19.652126091013557,
+    "x": 1039.57925957206,
+    "y": 20.043301919769792,
     "z": 4,
-    "height": 65.892422775751328,
-    "width": 107.50868979201533,
+    "height": 65.474786271247993,
+    "width": 195.0881386857593,
     "tabOrder": 5
   },
   "visual": {
@@ -189,5 +189,23 @@
         }
       ]
     }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "f0ec8e7deb44502d6313",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimMesPeriodo"
+              }
+            },
+            "Property": "Mes"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }
