@@ -159,8 +159,7 @@ expression FxLoad615 =
 		            "FechaInscripcion","FechaMatricula","Asesor","ResponsableGrupo","Prematricula","MatriculaEnPrimero","PersonaMatriculo",
 		            "Formalizado","RetiradoCarrera","Fuente","NivelMatricula","Centro","Homologacion","AsesorFinal","TipoPrograma","TipoCarrera","ArchivoOrigen"},
 		    Result0 = Table.SelectColumns(AddFile, Cols, MissingField.UseNull),
-		    Sorted = Table.Sort(Result0, {{"FechaMatricula", Order.Descending}, {"FechaInscripcion", Order.Descending}}),
-		    Result = Table.Distinct(Table.Buffer(Sorted), {"Periodo","Identificacion","Carrera"})
+		    Result = Table.Sort(Result0, {{"FechaMatricula", Order.Descending}, {"FechaInscripcion", Order.Descending}})
 		in
 		    Result
 	lineageTag: 7dca5931-ec5d-410d-9570-870f0e66c8dd
@@ -285,5 +284,3 @@ expression FxOfertaMap =
 		    R = Table.Distinct(Valid,{"Carrera","Sede","Modalidad"})
 		in
 		    R
-	lineageTag: c13cd38d-12cd-4b45-a650-225c78160abc
-

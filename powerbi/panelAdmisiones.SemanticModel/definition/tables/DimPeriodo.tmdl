@@ -1,67 +1,50 @@
 table DimPeriodo
-	lineageTag: d4dd9ea4-6403-4588-9583-a84c0ff1ac34
-
 	column Periodo
 		dataType: string
 		isKey
-		lineageTag: 03bff82c-4355-4066-8220-73457343756a
 		summarizeBy: none
 		sourceColumn: Periodo
 
 	column Ciclo
 		dataType: string
-		lineageTag: f1a2be24-27c7-4645-8d10-3c4421359f63
 		summarizeBy: none
 		sourceColumn: Ciclo
 
 	column Anio
 		dataType: int64
-		lineageTag: 3e3ecb75-9cdc-4ec7-be1e-00a7b2c6bb6c
 		summarizeBy: none
 		sourceColumn: Anio
 
 	column FechaInicio
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: f1362b12-554c-4a8c-b8d2-d2992852d007
 		summarizeBy: none
 		sourceColumn: FechaInicio
-
-		annotation UnderlyingDateTimeDataType = Date
 
 	column FechaFin
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 320e9769-bcc0-4fea-b6c4-54fc6fc4f495
 		summarizeBy: none
 		sourceColumn: FechaFin
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column Orden
 		dataType: int64
-		lineageTag: 2120d2fd-49d4-460c-9667-a4a81620c8ac
 		summarizeBy: none
 		sourceColumn: Orden
 
 	column EsPeriodoActivo
 		dataType: boolean
-		lineageTag: c5a8307c-6e3d-44e0-8b59-f3fb3bdfea3b
 		summarizeBy: none
 		sourceColumn: EsPeriodoActivo
 
 	column FechaFinFiltro
 		dataType: dateTime
 		formatString: Short Date
-		lineageTag: 6b10ec14-0f0a-4266-9cb1-8a633820fede
 		summarizeBy: none
 		sourceColumn: FechaFinFiltro
 
-		annotation UnderlyingDateTimeDataType = Date
-
 	column OrigenFechaFin
 		dataType: string
-		lineageTag: 1ca25bf9-3d90-4e88-ba83-185d6d76f2f7
 		summarizeBy: none
 		sourceColumn: OrigenFechaFin
 
@@ -69,20 +52,15 @@ table DimPeriodo
 		mode: import
 		source =
 				let
-				    Hist = FxLoad387(),
-				    HistDates = List.RemoveNulls(Hist[FechaMatricula]),
-				    FinB25 = if List.Count(HistDates)=0 then #date(2025,12,2) else List.Max(HistDates),
-				    FinB26 = Date.AddYears(FinB25,1),
 				    Today = Date.From(DateTime.LocalNow()),
 				    Base = #table(
 				        type table [Periodo=text,Ciclo=text,Anio=Int64.Type,FechaInicio=date,FechaFin=date,Orden=Int64.Type,OrigenFechaFin=text],
 				        {
-				            {"B25","B",2025,#date(2025,5,1),FinB25,20252,"MAX_FECHA_MATRICULA_B25"},
-				            {"B26","B",2026,#date(2026,5,1),FinB26,20262,"B25_ALINEADO_+1_ANIO"}
+				            {"B25","B",2025,#date(2025,5,1),#date(2025,10,31),20252,"CIERRE_OFICIAL_31_OCT"},
+				            {"B26","B",2026,#date(2026,5,1),#date(2026,10,31),20262,"CIERRE_OFICIAL_31_OCT"}
 				        }
 				    ),
 				    AddActive = Table.AddColumn(Base,"EsPeriodoActivo", each Today >= [FechaInicio] and Today <= [FechaFin], type logical),
 				    AddCut = Table.AddColumn(AddActive,"FechaFinFiltro", each if [EsPeriodoActivo] then Today else [FechaFin], type date)
 				in
 				    AddCut
-

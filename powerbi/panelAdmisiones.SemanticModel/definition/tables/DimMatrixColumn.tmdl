@@ -1,240 +1,6 @@
 table DimMatrixColumn
-	lineageTag: 03474344-3cb8-435a-a4fc-a9e76b3f2914
-
-	measure 'Matrix Corte Nivel B26' = ```
-				VAR EnDia = ISINSCOPE(DimFecha[Dia])
-				VAR EnMes = ISINSCOPE(DimFecha[Mes])
-				VAR M = SELECTEDVALUE(DimFecha[MesNumero])
-				VAR D = SELECTEDVALUE(DimFecha[DiaMes])
-				VAR CorteDatos = [Fecha Corte Datos B26]
-				VAR Inicio26 = [Inicio Periodo B26]
-				VAR Fin26 = [Fin Periodo B26]
-				VAR Anio26 = YEAR(Inicio26)
-				VAR MesCorte = MONTH(CorteDatos)
-				VAR DiaCorte = DAY(CorteDatos)
-				VAR FinMes26 = IF(NOT ISBLANK(M), EOMONTH(DATE(Anio26,M,1),0))
-				VAR DiaValido = IF(NOT ISBLANK(D) && NOT ISBLANK(FinMes26), MIN(D,DAY(FinMes26)))
-				VAR CorteSolicitado =
-					SWITCH(
-						TRUE(),
-						EnDia && NOT ISBLANK(M) && NOT ISBLANK(D), DATE(Anio26,M,DiaValido),
-						EnMes && NOT ISBLANK(M) && M = MesCorte, DATE(Anio26,M,MIN(DiaCorte,DAY(FinMes26))),
-						EnMes && NOT ISBLANK(M), FinMes26,
-						CorteDatos
-					)
-				VAR CorteFinal = MIN(Fin26, MIN(CorteDatos,CorteSolicitado))
-				RETURN IF(CorteFinal < Inicio26, BLANK(), CorteFinal)
-			```
-		formatString: yyyy-MM-dd
-		lineageTag: 7a4dfe2e-76a3-4d60-b3fd-abd8573f7965
-
-	measure 'Matrix Corte Nivel B25' = ```
-				VAR Corte26 = [Matrix Corte Nivel B26]
-				VAR Inicio25 = [Inicio Periodo B25]
-				VAR Fin25 = [Fin Periodo B25]
-				VAR Inicio26 = [Inicio Periodo B26]
-				VAR DiasDesdeInicio = IF(NOT ISBLANK(Corte26), DATEDIFF(Inicio26,Corte26,DAY))
-				VAR Corte25 = IF(NOT ISBLANK(DiasDesdeInicio), Inicio25 + DiasDesdeInicio)
-				RETURN IF(ISBLANK(Corte25), BLANK(), MIN(Fin25,Corte25))
-			```
-		formatString: yyyy-MM-dd
-		lineageTag: 718f6ffb-0cb2-4c74-9056-9719b92c5179
-
-	measure 'Matrix B25 Total Contexto' = ```
-				VAR V =
-					CALCULATE(
-						[Total Matriculas Historicas],
-						REMOVEFILTERS(DimPeriodo),
-						REMOVEFILTERS(DimFecha),
-						REMOVEFILTERS(DimMesPeriodo),
-						FactMatriculaHistorica[Periodo] = "B25"
-					)
-				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
-			```
-		formatString: #,0
-		lineageTag: 74070282-73da-4b64-9b1c-dcec256baadc
-
-	measure 'Matrix B25 YTD Contexto' = ```
-				VAR Inicio25 = [Inicio Periodo B25]
-				VAR Corte25 = [Matrix Corte Nivel B25]
-				VAR V =
-					IF(
-						ISBLANK(Corte25),
-						BLANK(),
-						CALCULATE(
-							[Total Matriculas Historicas],
-							REMOVEFILTERS(DimPeriodo),
-							REMOVEFILTERS(DimFecha),
-							REMOVEFILTERS(DimMesPeriodo),
-							FactMatriculaHistorica[Periodo] = "B25",
-							FILTER(
-								ALL(FactMatriculaHistorica[FechaMatricula]),
-								FactMatriculaHistorica[FechaMatricula] >= Inicio25 &&
-								FactMatriculaHistorica[FechaMatricula] <= Corte25
-							)
-						)
-					)
-				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
-			```
-		formatString: #,0
-		lineageTag: 3e08a111-800d-4d73-85ac-19548ea53a10
-
-	measure 'Matrix B26 Real Contexto' = ```
-				VAR Inicio26 = [Inicio Periodo B26]
-				VAR Corte26 = [Matrix Corte Nivel B26]
-				VAR V =
-					IF(
-						ISBLANK(Corte26),
-						BLANK(),
-						CALCULATE(
-							FactAdmision615[Total Matriculas B26],
-							REMOVEFILTERS(DimPeriodo),
-							REMOVEFILTERS(DimFecha),
-							REMOVEFILTERS(DimMesPeriodo),
-							FactAdmision615[Periodo] = "B26",
-							FILTER(
-								ALL(FactAdmision615[FechaMatriculaDay]),
-								FactAdmision615[FechaMatriculaDay] >= Inicio26 &&
-								FactAdmision615[FechaMatriculaDay] <= Corte26
-							)
-						)
-					)
-				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
-			```
-		formatString: #,0
-		lineageTag: a66a2391-8630-47c5-8d93-552ee7ccd95a
-
-	measure 'Matrix B25 Real % Contexto' = ```
-				VAR YTD25 = [Matrix B25 YTD Contexto]
-				VAR Total25 = [Matrix B25 Total Contexto]
-				RETURN IF(ISBLANK(YTD25) || ISBLANK(Total25), BLANK(), DIVIDE(YTD25,Total25))
-			```
-		formatString: 0.0%
-		lineageTag: b7fdbe14-003e-4204-a66b-2d6a5c4614b9
-
-	measure 'Matrix B26 YTD Objetivo Contexto' = ```
-				VAR Meta = [Meta Excel B26 Matriz]
-				VAR YTD25 = [Matrix B25 YTD Contexto]
-				VAR Total25 = [Matrix B25 Total Contexto]
-				VAR Avance25 = DIVIDE(YTD25,Total25)
-				VAR V = ROUND(Meta * Avance25,0)
-				RETURN IF(ISBLANK(Meta) || ISBLANK(Avance25) || V = 0, BLANK(), V)
-			```
-		formatString: #,0
-		lineageTag: f050a268-f51a-4edd-b89a-626bd08d9054
-
-	measure 'Matrix B26 Real % Contexto' = ```
-				VAR Real26YTD = [Matrix B26 Real Contexto]
-				VAR Obj26YTD = [Matrix B26 YTD Objetivo Contexto]
-				RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Obj26YTD), BLANK(), DIVIDE(Real26YTD,Obj26YTD))
-			```
-		formatString: 0.0%
-		lineageTag: e1aab99d-80fe-4c97-a031-5a173b6e4e91
-
-	measure 'Matrix Delta Budget Contexto' = ```
-				VAR Real26YTD = [Matrix B26 Real Contexto]
-				VAR Obj26YTD = [Matrix B26 YTD Objetivo Contexto]
-				RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Obj26YTD), BLANK(), Real26YTD-Obj26YTD)
-			```
-		formatString: +#,0;-#,0;0
-		lineageTag: d4b94f05-304f-43e3-9274-c8c4b45ddd20
-
-	measure 'Matrix Completion Contexto' = ```
-				VAR Real26YTD = [Matrix B26 Real Contexto]
-				VAR Meta = [Meta Excel B26 Matriz]
-				RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Meta), BLANK(), DIVIDE(Real26YTD,Meta))
-			```
-		formatString: 0.0%
-		lineageTag: 6ee93dbe-01b1-408f-b1d2-f7da601797e4
-
-	measure 'Matrix Real vs LY Contexto' = ```
-				VAR Real26YTD = [Matrix B26 Real Contexto]
-				VAR Real25YTD = [Matrix B25 YTD Contexto]
-				RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Real25YTD), BLANK(), DIVIDE(Real26YTD,Real25YTD))
-			```
-		formatString: 0.0%
-		lineageTag: aacb7413-c572-454e-b33c-56099bdf778c
-
-	measure 'Matrix Varianza Contexto' = ```
-				VAR Real26YTD = [Matrix B26 Real Contexto]
-				VAR Real25YTD = [Matrix B25 YTD Contexto]
-				RETURN IF(ISBLANK(Real26YTD) && ISBLANK(Real25YTD), BLANK(), COALESCE(Real26YTD,0)-COALESCE(Real25YTD,0))
-			```
-		formatString: +#,0;-#,0;0
-		lineageTag: 0ccd5f43-f9ba-446c-9730-bd8da2998bfe
-
-	measure 'Matrix Delta B25 % Contexto' = ```
-				VAR Meta = [Meta Excel B26 Matriz]
-				VAR Total25 = [Matrix B25 Total Contexto]
-				RETURN IF(ISBLANK(Meta) || ISBLANK(Total25), BLANK(), DIVIDE(Meta,Total25)-1)
-			```
-		formatString: +0.0%;-0.0%;0.0%
-		lineageTag: 0700ff15-4cae-467d-a0c4-b3ba060732e9
-
-	measure 'Matrix Hay Datos' = ```
-				VAR EnTiempo = ISINSCOPE(DimFecha[Mes]) || ISINSCOPE(DimFecha[Dia])
-				VAR V25Nivel =
-					IF(
-						EnTiempo,
-						CALCULATE(
-							[Total Matriculas Historicas],
-							REMOVEFILTERS(DimPeriodo),
-							FactMatriculaHistorica[Periodo] = "B25"
-						),
-						[Matrix B25 Total Contexto]
-					)
-				VAR V26Nivel =
-					IF(
-						EnTiempo,
-						CALCULATE(
-							FactAdmision615[Total Matriculas B26],
-							REMOVEFILTERS(DimPeriodo),
-							FactAdmision615[Periodo] = "B26"
-						),
-						[Matrix B26 Real Contexto]
-					)
-				RETURN IF(COALESCE(V25Nivel,0)+COALESCE(V26Nivel,0)>0,1,0)
-			```
-		formatString: 0
-		lineageTag: 9b90b1b3-99c0-4f3e-92cd-03058feb2a6e
-
-	measure 'Valor Matriz Comparativa' = ```
-				VAR A = SELECTEDVALUE(DimMatrixColumn[Anio])
-				VAR M = SELECTEDVALUE(DimMatrixColumn[Metrica])
-				VAR HayDatos = [Matrix Hay Datos] = 1
-				VAR V =
-					SWITCH(
-						TRUE(),
-						A = 2025 && M = "TOTAL", [Matrix B25 Total Contexto],
-						A = 2025 && M = "YTD", [Matrix B25 YTD Contexto],
-						A = 2025 && M = "REAL", [Matrix B25 Real % Contexto],
-						A = 2025 && M = "Δ%", [Matrix Delta B25 % Contexto],
-						A = 2026 && M = "BUDGET", [Meta Excel B26 Matriz Vis],
-						A = 2026 && M = "YTD", [Matrix B26 YTD Objetivo Contexto],
-						A = 2026 && M = "REAL", [Matrix B26 Real Contexto],
-						A = 2026 && M = "REAL %", [Matrix B26 Real % Contexto],
-						A = 2026 && M = "Δ BUDGET", [Matrix Delta Budget Contexto],
-						A = 2026 && M = "COMPLETION", [Matrix Completion Contexto],
-						A = 2026 && M = "REAL VS LY", [Matrix Real vs LY Contexto],
-						A = 2026 && M = "VARIANZA", [Matrix Varianza Contexto],
-						BLANK()
-					)
-				RETURN
-				IF(
-					NOT HayDatos || ISBLANK(V),
-					BLANK(),
-					IF(
-						(A = 2025 && M = "REAL") || M IN {"Δ%","REAL %","COMPLETION","REAL VS LY"},
-						FORMAT(V, "0.0%"),
-						IF(M IN {"Δ BUDGET","VARIANZA"}, FORMAT(V, "+#,##0;-#,##0;0"), FORMAT(V, "#,##0"))
-					)
-				)
-			```
-		lineageTag: 8268c35d-96d9-4e6d-8dc4-0a30a926520d
-
 	column Anio
 		dataType: int64
-		lineageTag: 2a428c86-2c0b-4cd4-a525-f9208d6cc1f6
 		summarizeBy: none
 		sourceColumn: Anio
 		sortByColumn: AnioOrden
@@ -242,13 +8,11 @@ table DimMatrixColumn
 	column AnioOrden
 		dataType: int64
 		isHidden
-		lineageTag: e826e787-3a1b-42aa-8e16-688dcc4056ae
 		summarizeBy: none
 		sourceColumn: AnioOrden
 
 	column Metrica
 		dataType: string
-		lineageTag: d62d7820-71db-4ef6-9a70-4c1bb1926039
 		summarizeBy: none
 		sourceColumn: Metrica
 		sortByColumn: MetricaOrden
@@ -256,9 +20,222 @@ table DimMatrixColumn
 	column MetricaOrden
 		dataType: int64
 		isHidden
-		lineageTag: f973b93b-b3ed-4b3d-b493-9032f2632e67
 		summarizeBy: none
 		sourceColumn: MetricaOrden
+
+	measure 'Matrix Corte Nivel B26' = ```
+			VAR EnDia = ISINSCOPE(DimFecha[Dia])
+			VAR EnMes = ISINSCOPE(DimFecha[Mes])
+			VAR M = SELECTEDVALUE(DimFecha[MesNumero])
+			VAR D = SELECTEDVALUE(DimFecha[DiaMes])
+			VAR CorteDatos = [Fecha Corte Datos B26]
+			VAR Inicio26 = [Inicio Periodo B26]
+			VAR Fin26 = [Fin Periodo B26]
+			VAR Anio26 = YEAR(Inicio26)
+			VAR MesCorte = MONTH(CorteDatos)
+			VAR DiaCorte = DAY(CorteDatos)
+			VAR FinMes26 = IF(NOT ISBLANK(M), EOMONTH(DATE(Anio26,M,1),0))
+			VAR DiaValido = IF(NOT ISBLANK(D) && NOT ISBLANK(FinMes26), MIN(D,DAY(FinMes26)))
+			VAR CorteSolicitado =
+				SWITCH(
+					TRUE(),
+					EnDia && NOT ISBLANK(M) && NOT ISBLANK(D), DATE(Anio26,M,DiaValido),
+					EnMes && NOT ISBLANK(M) && M = MesCorte, DATE(Anio26,M,MIN(DiaCorte,DAY(FinMes26))),
+					EnMes && NOT ISBLANK(M), FinMes26,
+					CorteDatos
+				)
+			VAR CorteFinal = MIN(Fin26, MIN(CorteDatos,CorteSolicitado))
+			RETURN IF(CorteFinal < Inicio26, BLANK(), CorteFinal)
+		```
+		formatString: yyyy-MM-dd
+
+	measure 'Matrix Corte Nivel B25' = ```
+			VAR Corte26 = [Matrix Corte Nivel B26]
+			VAR Inicio25 = [Inicio Periodo B25]
+			VAR Fin25 = [Fin Periodo B25]
+			VAR Inicio26 = [Inicio Periodo B26]
+			VAR DiasDesdeInicio = IF(NOT ISBLANK(Corte26), DATEDIFF(Inicio26,Corte26,DAY))
+			VAR Corte25 = IF(NOT ISBLANK(DiasDesdeInicio), Inicio25 + DiasDesdeInicio)
+			RETURN IF(ISBLANK(Corte25), BLANK(), MIN(Fin25,Corte25))
+		```
+		formatString: yyyy-MM-dd
+
+	measure 'Matrix B25 Total Contexto' = ```
+			VAR V =
+				CALCULATE(
+					[Total Matriculas Historicas],
+					REMOVEFILTERS(DimPeriodo),
+					REMOVEFILTERS(DimFecha),
+					REMOVEFILTERS(DimMesPeriodo),
+					FactMatriculaHistorica[Periodo] = "B25"
+				)
+			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+		```
+		formatString: #,0
+
+	measure 'Matrix B25 YTD Contexto' = ```
+
+			VAR Corte25 = [Matrix Corte Nivel B25]
+			VAR V =
+				IF(
+					ISBLANK(Corte25),
+					BLANK(),
+					CALCULATE(
+						[Total Matriculas Historicas],
+						REMOVEFILTERS(DimPeriodo),
+						REMOVEFILTERS(DimFecha),
+						REMOVEFILTERS(DimMesPeriodo),
+						FactMatriculaHistorica[Periodo] = "B25",
+						FILTER(
+							ALL(FactMatriculaHistorica[FechaMatricula]),
+							FactMatriculaHistorica[FechaMatricula] <= Corte25
+						)
+					)
+				)
+			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Matrix B26 Real Contexto' = ```
+
+			VAR Corte26 = [Matrix Corte Nivel B26]
+			VAR V =
+				IF(
+					ISBLANK(Corte26),
+					BLANK(),
+					CALCULATE(
+						FactAdmision615[Total Matriculas B26],
+						REMOVEFILTERS(DimPeriodo),
+						REMOVEFILTERS(DimFecha),
+						REMOVEFILTERS(DimMesPeriodo),
+						FactAdmision615[Periodo] = "B26",
+						FILTER(
+							ALL(FactAdmision615[FechaMatriculaDay]),
+							FactAdmision615[FechaMatriculaDay] <= Corte26
+						)
+					)
+				)
+			RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+
+	measure 'Matrix B25 Real % Contexto' = ```
+			VAR YTD25 = [Matrix B25 YTD Contexto]
+			VAR Total25 = [Matrix B25 Total Contexto]
+			RETURN IF(ISBLANK(YTD25) || ISBLANK(Total25), BLANK(), DIVIDE(YTD25,Total25))
+		```
+		formatString: 0.0%
+
+	measure 'Matrix B26 YTD Objetivo Contexto' = ```
+			VAR Meta = [Meta Excel B26 Matriz]
+			VAR YTD25 = [Matrix B25 YTD Contexto]
+			VAR Total25 = [Matrix B25 Total Contexto]
+			VAR Avance25 = DIVIDE(YTD25,Total25)
+			VAR V = ROUND(Meta * Avance25,0)
+			RETURN IF(ISBLANK(Meta) || ISBLANK(Avance25) || V = 0, BLANK(), V)
+		```
+		formatString: #,0
+
+	measure 'Matrix B26 Real % Contexto' = ```
+			VAR Real26YTD = [Matrix B26 Real Contexto]
+			VAR Obj26YTD = [Matrix B26 YTD Objetivo Contexto]
+			RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Obj26YTD), BLANK(), DIVIDE(Real26YTD,Obj26YTD))
+		```
+		formatString: 0.0%
+
+	measure 'Matrix Delta Budget Contexto' = ```
+			VAR Real26YTD = [Matrix B26 Real Contexto]
+			VAR Obj26YTD = [Matrix B26 YTD Objetivo Contexto]
+			RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Obj26YTD), BLANK(), Real26YTD-Obj26YTD)
+		```
+		formatString: +#,0;-#,0;0
+
+	measure 'Matrix Completion Contexto' = ```
+			VAR Real26YTD = [Matrix B26 Real Contexto]
+			VAR Meta = [Meta Excel B26 Matriz]
+			RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Meta), BLANK(), DIVIDE(Real26YTD,Meta))
+		```
+		formatString: 0.0%
+
+	measure 'Matrix Real vs LY Contexto' = ```
+			VAR Real26YTD = [Matrix B26 Real Contexto]
+			VAR Real25YTD = [Matrix B25 YTD Contexto]
+			RETURN IF(ISBLANK(Real26YTD) || ISBLANK(Real25YTD), BLANK(), DIVIDE(Real26YTD,Real25YTD))
+		```
+		formatString: 0.0%
+
+	measure 'Matrix Varianza Contexto' = ```
+			VAR Real26YTD = [Matrix B26 Real Contexto]
+			VAR Real25YTD = [Matrix B25 YTD Contexto]
+			RETURN IF(ISBLANK(Real26YTD) && ISBLANK(Real25YTD), BLANK(), COALESCE(Real26YTD,0)-COALESCE(Real25YTD,0))
+		```
+		formatString: +#,0;-#,0;0
+
+	measure 'Matrix Delta B25 % Contexto' = ```
+			VAR Meta = [Meta Excel B26 Matriz]
+			VAR Total25 = [Matrix B25 Total Contexto]
+			RETURN IF(ISBLANK(Meta) || ISBLANK(Total25), BLANK(), DIVIDE(Meta,Total25)-1)
+		```
+		formatString: +0.0%;-0.0%;0.0%
+
+	measure 'Matrix Hay Datos' = ```
+			VAR EnTiempo = ISINSCOPE(DimFecha[Mes]) || ISINSCOPE(DimFecha[Dia])
+			VAR V25Nivel =
+				IF(
+					EnTiempo,
+					CALCULATE(
+						[Total Matriculas Historicas],
+						REMOVEFILTERS(DimPeriodo),
+						FactMatriculaHistorica[Periodo] = "B25"
+					),
+					[Matrix B25 Total Contexto]
+				)
+			VAR V26Nivel =
+				IF(
+					EnTiempo,
+					CALCULATE(
+						FactAdmision615[Total Matriculas B26],
+						REMOVEFILTERS(DimPeriodo),
+						FactAdmision615[Periodo] = "B26"
+					),
+					[Matrix B26 Real Contexto]
+				)
+			RETURN IF(COALESCE(V25Nivel,0)+COALESCE(V26Nivel,0)>0,1,0)
+		```
+		formatString: 0
+
+	measure 'Valor Matriz Comparativa' = ```
+			VAR A = SELECTEDVALUE(DimMatrixColumn[Anio])
+			VAR M = SELECTEDVALUE(DimMatrixColumn[Metrica])
+			VAR HayDatos = [Matrix Hay Datos] = 1
+			VAR V =
+				SWITCH(
+					TRUE(),
+					A = 2025 && M = "TOTAL", [Matrix B25 Total Contexto],
+					A = 2025 && M = "YTD", [Matrix B25 YTD Contexto],
+					A = 2025 && M = "REAL", [Matrix B25 Real % Contexto],
+					A = 2025 && M = "Δ%", [Matrix Delta B25 % Contexto],
+					A = 2026 && M = "BUDGET", [Meta Excel B26 Matriz Vis],
+					A = 2026 && M = "YTD", [Matrix B26 YTD Objetivo Contexto],
+					A = 2026 && M = "REAL", [Matrix B26 Real Contexto],
+					A = 2026 && M = "REAL %", [Matrix B26 Real % Contexto],
+					A = 2026 && M = "Δ BUDGET", [Matrix Delta Budget Contexto],
+					A = 2026 && M = "COMPLETION", [Matrix Completion Contexto],
+					A = 2026 && M = "REAL VS LY", [Matrix Real vs LY Contexto],
+					A = 2026 && M = "VARIANZA", [Matrix Varianza Contexto],
+					BLANK()
+				)
+			RETURN
+			IF(
+				NOT HayDatos || ISBLANK(V),
+				BLANK(),
+				IF(
+					(A = 2025 && M = "REAL") || M IN {"Δ%","REAL %","COMPLETION","REAL VS LY"},
+					FORMAT(V, "0.0%"),
+					IF(M IN {"Δ BUDGET","VARIANZA"}, FORMAT(V, "+#,##0;-#,##0;0"), FORMAT(V, "#,##0"))
+				)
+			)
+		```
 
 	partition DimMatrixColumn = m
 		mode: import
@@ -271,4 +248,3 @@ table DimMatrixColumn
 				        {2026,2,"Δ BUDGET",5},{2026,2,"COMPLETION",6},{2026,2,"REAL VS LY",7},{2026,2,"VARIANZA",8}
 				    }
 				)
-
