@@ -880,18 +880,19 @@ table FactMatriculaHistorica
 						A = 2026 && M = "VARIANZA", [Matrix Varianza Contexto],
 						BLANK()
 					)
-				RETURN
-				IF(
-					NOT HayDatos || ISBLANK(V),
-					BLANK(),
-					IF(
-						(A = 2025 && M = "REAL") || M IN {"Δ%","REAL %","COMPLETION","REAL VS LY"},
-						FORMAT(V, "0.0%"),
-						IF(M IN {"Δ BUDGET","VARIANZA"}, FORMAT(V, "+#,##0;-#,##0;0"), FORMAT(V, "#,##0"))
-					)
-				)
+				RETURN IF(NOT HayDatos || ISBLANK(V), BLANK(), V)
 			```
 		lineageTag: bc2c30b7-8d4f-4713-971e-7fa7456b1ba6
+		formatStringDefinition = ```
+				VAR M = SELECTEDVALUE(DimMatrixColumn[Metrica])
+				RETURN
+					SWITCH(
+						TRUE(),
+						CONTAINSSTRING(M,"%") || M IN {"COMPLETION","REAL VS LY"}, "0.0%",
+						M = "VARIANZA" || (CONTAINSSTRING(M,"BUDGET") && M <> "BUDGET"), "+#,##0;-#,##0;0",
+						"#,##0"
+					)
+			```
 
 	column Periodo
 		dataType: string
