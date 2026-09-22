@@ -162,12 +162,12 @@ table FactMatriculaHistorica
 			
 				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
 				VAR FechaPunto = [Inicio Periodo B26] + D - 1
-				VAR CorteDatos = [Fecha Corte Datos B26]
+				VAR CorteHoy = MIN(TODAY(), [Fin Periodo B26])
 				VAR HayMes = [Hay Filtro Mes] = 1
 				VAR MesVisible = NOT HayMes || CONTAINS(VALUES(DimMesPeriodo[MesNumero]), DimMesPeriodo[MesNumero], MONTH(FechaPunto))
 				VAR V =
 				    IF(
-				        ISBLANK(D) || FechaPunto > CorteDatos || D > [Dias Totales B26] || NOT MesVisible,
+				        ISBLANK(D) || FechaPunto > CorteHoy || D > [Dias Totales B26] || NOT MesVisible,
 				        BLANK(),
 				        CALCULATE(
 				            FactAdmision615[Total Matriculas],
@@ -191,7 +191,7 @@ table FactMatriculaHistorica
 				VAR MesVisible = NOT HayMes || CONTAINS(VALUES(DimMesPeriodo[MesNumero]), DimMesPeriodo[MesNumero], MONTH(FechaB26))
 				VAR V =
 				    IF(
-				        ISBLANK(D) || FechaB26 > [Fecha Corte Datos B26] || FechaB25 > [Fin Periodo B25] || NOT MesVisible,
+				        ISBLANK(D) || FechaB25 > [Fin Periodo B25] || D > [Dias Totales B26] || NOT MesVisible,
 				        BLANK(),
 				        CALCULATE(
 				            [Total Matriculas Historicas],
@@ -217,14 +217,15 @@ table FactMatriculaHistorica
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
 				VAR Inicio = [Inicio Periodo B26]
 				VAR FinPeriodo = [Fin Periodo B26]
-				VAR CorteDatos = [Fecha Corte Datos B26]
+				VAR CorteHoy = MIN(TODAY(), FinPeriodo)
 				VAR InicioMes = IF(NOT ISBLANK(M), DATE(YEAR(Inicio), M, 1))
-				VAR FinPunto = IF(NOT ISBLANK(M), MIN(CorteDatos, EOMONTH(InicioMes, 0)))
+				VAR FinPunto = IF(NOT ISBLANK(M), MIN(CorteHoy, EOMONTH(InicioMes, 0)))
 				VAR V =
 				    IF(
 				        ISBLANK(M) ||
 				        ISBLANK(InicioMes) ||
 				        InicioMes > FinPeriodo ||
+				        InicioMes > CorteHoy ||
 				        ISBLANK(FinPunto) ||
 				        FinPunto < Inicio,
 				        BLANK(),
@@ -243,24 +244,19 @@ table FactMatriculaHistorica
 		lineageTag: a318f829-48c1-4893-b9ba-8069b8c7b7e3
 
 	measure 'B25 Acumulado Mes' = ```
+			
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
 				VAR Inicio25 = [Inicio Periodo B25]
 				VAR Fin25 = [Fin Periodo B25]
-				VAR Corte26 = [Fecha Corte Datos B26]
-				VAR MesCorte = MONTH(Corte26)
-				VAR DiaCorte = DAY(Corte26)
 				VAR InicioMes25 = IF(NOT ISBLANK(M), DATE(YEAR(Inicio25), M, 1))
-				VAR FinNatural25 = IF(NOT ISBLANK(M), EOMONTH(InicioMes25, 0))
-				VAR FinComparable25 =
-				    IF(
-				        ISBLANK(M),
-				        BLANK(),
-				        IF(M = MesCorte, MIN(FinNatural25, InicioMes25 + MIN(DiaCorte, DAY(FinNatural25)) - 1), FinNatural25)
-				    )
-				VAR FinPunto = IF(NOT ISBLANK(M), MIN(Fin25, FinComparable25))
+				VAR FinPunto = IF(NOT ISBLANK(M), MIN(Fin25, EOMONTH(InicioMes25, 0)))
 				VAR V =
 				    IF(
-				        ISBLANK(M) || M > MesCorte || ISBLANK(FinPunto) || FinPunto < Inicio25,
+				        ISBLANK(M) ||
+				        ISBLANK(InicioMes25) ||
+				        InicioMes25 > Fin25 ||
+				        ISBLANK(FinPunto) ||
+				        FinPunto < Inicio25,
 				        BLANK(),
 				        CALCULATE(
 				            [Total Matriculas Historicas],
@@ -297,15 +293,29 @@ table FactMatriculaHistorica
 			
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
 				VAR Inicio = [Inicio Periodo B26]
-				VAR FinProyeccion = DATE(YEAR(Inicio),12,31)
+				VAR Fin = [Fin Periodo B26]
+				VAR CorteHoy = MIN(TODAY(), Fin)
 				VAR InicioMes = DATE(YEAR(Inicio), M, 1)
-				VAR Corte = MIN(FinProyeccion, EOMONTH(InicioMes,0))
-				VAR DiasObjetivo = DATEDIFF(Inicio, Corte, DAY) + 1
-				RETURN IF(
-				    ISBLANK(M) || InicioMes > FinProyeccion || EOMONTH(InicioMes,0) < Inicio || Corte <= [Fecha Corte Datos B26],
-				    BLANK(),
-				    ROUND([Matriculas B26 Mismo Dia] + [Ritmo Diario B26] * (DiasObjetivo - [Dias Transcurridos B26]), 0)
-				)
+				VAR CorteMes = MIN(Fin, EOMONTH(InicioMes,0))
+				VAR MesActual = MONTH(CorteHoy)
+				VAR RealHoy =
+				    CALCULATE(
+				        FactAdmision615[Total Matriculas],
+				        REMOVEFILTERS(DimPeriodo), REMOVEFILTERS(DimFecha), REMOVEFILTERS(DimMesPeriodo),
+				        FactAdmision615[Periodo] = "B26",
+				        FILTER(ALL(FactAdmision615[FechaMatriculaDay]), FactAdmision615[FechaMatriculaDay] <= CorteHoy)
+				    )
+				VAR DiasHoy = DATEDIFF(Inicio, CorteHoy, DAY) + 1
+				VAR RitmoHoy = DIVIDE(RealHoy, DiasHoy)
+				VAR DiasObjetivo = DATEDIFF(Inicio, CorteMes, DAY) + 1
+				RETURN
+				    SWITCH(
+				        TRUE(),
+				        ISBLANK(M) || InicioMes > Fin || EOMONTH(InicioMes,0) < Inicio, BLANK(),
+				        M < MesActual, BLANK(),
+				        M = MesActual, RealHoy,
+				        ROUND(RealHoy + RitmoHoy * (DiasObjetivo - DiasHoy), 0)
+				    )
 			```
 		formatString: #,0
 		lineageTag: c9be600a-a0b9-46a3-aa69-b0d0f66f8c9a
