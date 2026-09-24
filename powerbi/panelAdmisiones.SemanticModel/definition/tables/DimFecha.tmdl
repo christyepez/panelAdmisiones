@@ -142,7 +142,7 @@ table DimFecha
 		dataType: int64
 		lineageTag: 48852b9e-cd0f-4850-ae02-4a03d1fbf622
 
-	column SemanaPeriodo = IF(ISBLANK(DimFecha[SemanaPeriodoNumero]), BLANK(), "S" & FORMAT(DimFecha[SemanaPeriodoNumero], "00"))
+	column SemanaPeriodo = IF(ISBLANK(DimFecha[SemanaPeriodoNumero]), BLANK(), "W" & FORMAT(DimFecha[SemanaPeriodoNumero], "0"))
 		dataType: string
 		lineageTag: a96f57d4-5d12-47ad-8c3b-fc4e7c8a857f
 		sortByColumn: SemanaPeriodoNumero

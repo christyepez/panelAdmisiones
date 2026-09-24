@@ -864,12 +864,12 @@ table FactMatriculaHistorica
 						A = 2025 && M = "TOTAL", [Matrix B25 Total Contexto],
 						A = 2025 && M = "YTD", [Matrix B25 YTD Contexto],
 						A = 2025 && M = "REAL", [Matrix B25 Real % Contexto],
-						A = 2025 && M = "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â½ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â%", [Matrix Delta B25 % Contexto],
+						A = 2025 && M = "DELTA %", [Matrix Delta B25 % Contexto],
 						A = 2026 && M = "BUDGET", [Meta Excel B26 Matriz Vis],
 						A = 2026 && M = "YTD", [Matrix B26 YTD Objetivo Contexto],
 						A = 2026 && M = "REAL", [Matrix B26 Real Contexto],
 						A = 2026 && M = "REAL %", [Matrix B26 Real % Contexto],
-						A = 2026 && M = "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â½ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â BUDGET", [Matrix Delta Budget Contexto],
+						A = 2026 && M = "DELTA BUDGET", [Matrix Delta Budget Contexto],
 						A = 2026 && M = "COMPLETION", [Matrix Completion Contexto],
 						A = 2026 && M = "REAL VS LY", [Matrix Real vs LY Contexto],
 						A = 2026 && M = "VARIANZA", [Matrix Varianza Contexto],
@@ -1003,77 +1003,264 @@ table FactMatriculaHistorica
 		formatString: #,0
 		lineageTag: 7f7c3b76-f675-4f08-a5bf-a9aa2a56a3c2
 
-	measure 'Fecha Lunes Semana' = MIN(DimFecha[InicioSemana])
-		formatString: dd/MM
-		lineageTag: 6376cc13-313d-4a74-8d98-b90d406a2d9c
-
 	measure 'Real B25 Semana' = CALCULATE([Total Matriculas Historicas], REMOVEFILTERS(DimPeriodo), FactMatriculaHistorica[Periodo] = "B25")
 		formatString: #,0
 		lineageTag: 9e5c2f7d-fbde-4a89-8599-b1c57d4f4f01
 
-	measure 'Real B26 Semana' = CALCULATE(FactAdmision615[Total Matriculas B26], REMOVEFILTERS(DimPeriodo))
+	measure 'Real B26 Semana' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			VAR WA = [Semana Actual B26 Numero]
+			VAR Actual = [Real B26 Acumulado Semana]
+			VAR Anterior =
+				IF(
+					W <= 1,
+					0,
+					CALCULATE(
+						[Real B26 Acumulado Semana],
+						REMOVEFILTERS(DimFecha[SemanaPeriodo]),
+						REMOVEFILTERS(DimFecha[SemanaPeriodoNumero]),
+						DimFecha[SemanaPeriodoNumero] = W - 1
+					)
+				)
+			RETURN
+				IF(
+					ISBLANK(W) || ISBLANK(WA) || W > WA,
+					BLANK(),
+					COALESCE(Actual,0) - COALESCE(Anterior,0)
+				)
 		formatString: #,0
 		lineageTag: 7cc6b6fa-a962-4b18-ae1f-4e437cab5155
 
-	measure 'Presupuesto B26 Semana' = BLANK()
+	measure 'Presupuesto B26 Semana' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			RETURN IF(ISBLANK(W) || W > [Semana Actual B26 Numero], BLANK(), 0)
 		formatString: #,0
 		lineageTag: 440edc74-bc9f-43ce-8f20-d37c7ca13344
 
-	measure 'Meta Real Semana' = BLANK()
+	measure 'Meta Real Semana' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			RETURN IF(ISBLANK(W) || W > [Semana Actual B26 Numero], BLANK(), 0)
 		formatString: #,0
 		lineageTag: 1f38eb42-4022-4fc1-89ff-778cc565f251
 
 	measure 'Real B25 Acumulado Semana' =
 			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
-			RETURN IF(ISBLANK(W),BLANK(),CALCULATE([Real B25 Semana],FILTER(ALL(DimFecha[SemanaPeriodoNumero],DimFecha[SemanaPeriodo]),DimFecha[SemanaPeriodoNumero] <= W)))
+			RETURN
+				IF(
+					ISBLANK(W),
+					BLANK(),
+					CALCULATE(
+						[Real B25 Semana],
+						FILTER(
+							ALL(DimFecha[SemanaPeriodoNumero],DimFecha[SemanaPeriodo]),
+							DimFecha[SemanaPeriodoNumero] <= W
+						)
+					)
+				)
 		formatString: #,0
 		lineageTag: dd93c5ff-064f-44ce-95dd-44bc7b3f1290
 
 	measure 'Real B26 Acumulado Semana' =
 			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
-			RETURN IF(ISBLANK(W),BLANK(),CALCULATE([Real B26 Semana],FILTER(ALL(DimFecha[SemanaPeriodoNumero],DimFecha[SemanaPeriodo]),DimFecha[SemanaPeriodoNumero] <= W)))
+			VAR WA = [Semana Actual B26 Numero]
+			VAR Inicio = [Inicio Periodo B26]
+			VAR Corte = [Fecha Corte Datos B26]
+			VAR FinSemanaB26 =
+				CALCULATE(
+					MAX(DimFecha[FinSemana]),
+					KEEPFILTERS(DimFecha[PeriodoSeguimiento] = "B26")
+				)
+			VAR CortePunto = MIN(Corte, FinSemanaB26)
+			RETURN
+				IF(
+					ISBLANK(W) || ISBLANK(WA) || W > WA || ISBLANK(FinSemanaB26),
+					BLANK(),
+					CALCULATE(
+						FactAdmision615[Total Matriculas B26],
+						REMOVEFILTERS(DimPeriodo),
+						REMOVEFILTERS(DimFecha),
+						FactAdmision615[Periodo] = "B26",
+						FILTER(
+							ALL(FactAdmision615[FechaMatriculaDay]),
+							FactAdmision615[FechaMatriculaDay] >= Inicio &&
+							FactAdmision615[FechaMatriculaDay] <= CortePunto
+						)
+					)
+				)
 		formatString: #,0
 		lineageTag: 501d9bf0-0b05-4a8f-9e4e-7559041419cd
 
-	measure 'Presupuesto B26 Acumulado Semana' = BLANK()
+	measure 'Presupuesto B26 Acumulado Semana' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			RETURN IF(ISBLANK(W) || W > [Semana Actual B26 Numero], BLANK(), 0)
 		formatString: #,0
 		lineageTag: 4afdb93a-0ee7-48bc-9351-bc37bbbaf08e
 
-	measure 'Meta Real Acumulado Semana' = BLANK()
+	measure 'Meta Real Acumulado Semana' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			RETURN IF(ISBLANK(W) || W > [Semana Actual B26 Numero], BLANK(), 0)
 		formatString: #,0
 		lineageTag: 478bce37-e839-4a58-a9ad-bfd11f0d9a94
 
 	measure 'Valor Semanal' =
 			VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
-			RETURN SWITCH(M,
-				"FECHA (LUNES)",[Fecha Lunes Semana],
-				"REAL B25",[Real B25 Semana],
-				"PRESUPUESTO B26",[Presupuesto B26 Semana],
-				"META REAL",[Meta Real Semana],
-				"REAL B26",[Real B26 Semana],
-				"% SOBRE PRESUPUESTO",DIVIDE([Real B26 Semana],[Presupuesto B26 Semana]),
-				BLANK())
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			VAR WA = [Semana Actual B26 Numero]
+			VAR B25 = [Real B25 Semana]
+			VAR B26 = [Real B26 Semana]
+			RETURN
+				IF(
+					ISBLANK(W) || ISBLANK(WA) || W > WA,
+					BLANK(),
+					SWITCH(
+						M,
+						"NE real B2025", COALESCE(B25,0),
+						"Presupuesto B2026", COALESCE([Presupuesto B26 Semana],0),
+						"Meta neta (70%)", COALESCE([Meta Real Semana],0),
+						"NE real B2026", COALESCE(B26,0),
+						"% sobre presupuesto", DIVIDE(COALESCE(B26,0),COALESCE([Presupuesto B26 Semana],0),0),
+						BLANK()
+					)
+				)
 		lineageTag: e458ce39-0432-42d2-b0d7-fb77a74c5472
 
 		formatStringDefinition =
 				VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
-				RETURN SWITCH(TRUE(), M = "FECHA (LUNES)", "dd/MM", CONTAINSSTRING(M,"%"), "0.0%", "#,##0")
+				RETURN IF(CONTAINSSTRING(M,"%"),"0.0%","#,##0")
 
 	measure 'Valor Semanal Acumulado' =
 			VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
-			RETURN SWITCH(M,
-				"FECHA (LUNES)",[Fecha Lunes Semana],
-				"REAL B25",[Real B25 Acumulado Semana],
-				"PRESUPUESTO B26",[Presupuesto B26 Acumulado Semana],
-				"META REAL",[Meta Real Acumulado Semana],
-				"REAL B26",[Real B26 Acumulado Semana],
-				"% SOBRE PRESUPUESTO",DIVIDE([Real B26 Acumulado Semana],[Presupuesto B26 Acumulado Semana]),
-				BLANK())
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			VAR WA = [Semana Actual B26 Numero]
+			VAR B25 = [Real B25 Acumulado Semana]
+			VAR B26 = [Real B26 Acumulado Semana]
+			RETURN
+				IF(
+					ISBLANK(W) || ISBLANK(WA) || W > WA,
+					BLANK(),
+					SWITCH(
+						M,
+						"NE real B2025", COALESCE(B25,0),
+						"Presupuesto B2026", COALESCE([Presupuesto B26 Acumulado Semana],0),
+						"Meta neta (70%)", COALESCE([Meta Real Acumulado Semana],0),
+						"NE real B2026", COALESCE(B26,0),
+						"% sobre presupuesto", DIVIDE(COALESCE(B26,0),COALESCE([Presupuesto B26 Acumulado Semana],0),0),
+						BLANK()
+					)
+				)
 		lineageTag: 7df4df99-8ba1-4b7b-b60e-11fb2cbaae2f
 
 		formatStringDefinition =
 				VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
-				RETURN SWITCH(TRUE(), M = "FECHA (LUNES)", "dd/MM", CONTAINSSTRING(M,"%"), "0.0%", "#,##0")
+				RETURN IF(CONTAINSSTRING(M,"%"),"0.0%","#,##0")
+
+	measure 'Proyeccion B26 Dia Periodo Seguimiento' =
+			VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
+			VAR Inicio = [Inicio Periodo B26]
+			VAR Fin = [Fin Periodo B26]
+			VAR Corte = [Fecha Corte Datos B26]
+			VAR FechaPunto = Inicio + D - 1
+			VAR RealCorte = [Matrix B26 Real Contexto]
+			VAR DiasCorte = DATEDIFF(Inicio, Corte, DAY) + 1
+			VAR Ritmo = DIVIDE(RealCorte, DiasCorte)
+			RETURN
+				SWITCH(
+					TRUE(),
+					ISBLANK(D) || ISBLANK(Corte) || ISBLANK(RealCorte) || FechaPunto < Corte || FechaPunto > Fin, BLANK(),
+					FechaPunto = Corte, RealCorte,
+					ROUND(RealCorte + Ritmo * DATEDIFF(Corte, FechaPunto, DAY), 0)
+				)
+		formatString: #,0
+		lineageTag: 2139696c-4abc-4ae2-b18f-c0111604bd1e
+
+	measure 'Semana Actual B26 Numero' =
+			VAR Inicio = [Inicio Periodo B26]
+			VAR Corte = [Fecha Corte Datos B26]
+			VAR LunesInicio = Inicio - WEEKDAY(Inicio,2) + 1
+			VAR LunesCorte = Corte - WEEKDAY(Corte,2) + 1
+			RETURN
+				IF(
+					ISBLANK(Inicio) || ISBLANK(Corte),
+					BLANK(),
+					1 + INT(DIVIDE(DATEDIFF(LunesInicio,LunesCorte,DAY),7))
+				)
+		formatString: #,0
+		lineageTag: 964a68f5-18e5-46c1-8978-4c22501c3910
+
+	measure 'Proyeccion B26 Acumulado Semana' =
+			VAR Inicio = [Inicio Periodo B26]
+			VAR Fin = [Fin Periodo B26]
+			VAR Corte = [Fecha Corte Datos B26]
+			VAR RealCorte = [Matrix B26 Real Contexto]
+			VAR FinSemanaPunto = MIN(Fin, MAX(DimFecha[FinSemana]))
+			VAR InicioSemanaPunto = MIN(DimFecha[InicioSemana])
+			VAR DiasCorte = DATEDIFF(Inicio, Corte, DAY) + 1
+			VAR Ritmo = DIVIDE(RealCorte, DiasCorte)
+			RETURN
+				SWITCH(
+					TRUE(),
+					ISBLANK(Corte) || ISBLANK(RealCorte) || ISBLANK(FinSemanaPunto) || FinSemanaPunto < Corte, BLANK(),
+					InicioSemanaPunto <= Corte && FinSemanaPunto >= Corte, RealCorte,
+					ROUND(RealCorte + Ritmo * DATEDIFF(Corte, FinSemanaPunto, DAY), 0)
+				)
+		formatString: #,0
+		lineageTag: f1743f9b-ea74-40c1-9c62-1dddc9e5aaf0
+
+	measure 'Acum NE B25 Semana Actual' =
+			VAR W = [Semana Actual B26 Numero]
+			RETURN CALCULATE([Real B25 Acumulado Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W)
+		formatString: #,0
+		lineageTag: 0158f7a8-717a-49c5-8603-c84dbec4b7dd
+
+	measure 'Acum Presupuesto B26 Semana Actual' =
+			VAR W = [Semana Actual B26 Numero]
+			RETURN COALESCE(CALCULATE([Presupuesto B26 Acumulado Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W),0)
+		formatString: #,0
+		lineageTag: 8c66b1b3-ea35-4d16-8a94-fd734278e113
+
+	measure 'Acum Meta Neta B26 Semana Actual' =
+			VAR W = [Semana Actual B26 Numero]
+			RETURN COALESCE(CALCULATE([Meta Real Acumulado Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W),0)
+		formatString: #,0
+		lineageTag: 51bd41cb-e04f-46f3-ac0f-1e531852784c
+
+	measure 'Acum NE B26 Semana Actual' =
+			VAR W = [Semana Actual B26 Numero]
+			RETURN CALCULATE([Real B26 Acumulado Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W)
+		formatString: #,0
+		lineageTag: 3b134494-7fcf-4645-9b3d-55ec522c11e6
+
+	measure 'Acum % Presupuesto Semana Actual' = DIVIDE([Acum NE B26 Semana Actual],[Acum Presupuesto B26 Semana Actual],0)
+		formatString: 0.0%
+		lineageTag: 09c677eb-5ff3-4f9a-93c8-1addbdca134b
+
+	measure 'NE B25 Semana Actual' =
+			VAR W = [Semana Actual B26 Numero]
+			RETURN CALCULATE([Real B25 Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W)
+		formatString: #,0
+		lineageTag: 590acaf2-ed49-4478-9924-9f33e2fe3cdb
+
+	measure 'Presupuesto B26 Semana Actual' =
+			VAR W = [Semana Actual B26 Numero]
+			RETURN COALESCE(CALCULATE([Presupuesto B26 Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W),0)
+		formatString: #,0
+		lineageTag: 3284051b-7392-430d-b0e5-8d5bd7915a3f
+
+	measure 'Meta Neta B26 Semana Actual' =
+			VAR W = [Semana Actual B26 Numero]
+			RETURN COALESCE(CALCULATE([Meta Real Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W),0)
+		formatString: #,0
+		lineageTag: e34d04dd-fe3b-474d-9714-4572679d1f8d
+
+	measure 'NE B26 Semana Actual' =
+			VAR W = [Semana Actual B26 Numero]
+			RETURN CALCULATE([Real B26 Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W)
+		formatString: #,0
+		lineageTag: 5f40b85d-8c85-49d7-bd60-580bec48e682
+
+	measure '% Presupuesto Semana Actual' = DIVIDE([NE B26 Semana Actual],[Presupuesto B26 Semana Actual],0)
+		formatString: 0.0%
+		lineageTag: d60e2fb5-3752-4422-9475-49b280fbd645
 
 	column Periodo
 		dataType: string

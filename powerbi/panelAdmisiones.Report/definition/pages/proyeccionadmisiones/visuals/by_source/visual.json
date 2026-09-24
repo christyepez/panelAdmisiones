@@ -45,7 +45,7 @@
                 }
               },
               "queryRef": "FactAdmision615.Total Matriculas B26 Vis",
-              "nativeQueryRef": "Matrículas"
+              "nativeQueryRef": "Matriculas"
             }
           ]
         }

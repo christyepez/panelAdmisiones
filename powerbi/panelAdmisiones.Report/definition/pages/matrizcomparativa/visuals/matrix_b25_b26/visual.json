@@ -27,7 +27,7 @@
                 }
               },
               "queryRef": "DimMatrixColumn.Anio",
-              "nativeQueryRef": "AÃƒÂ±o",
+              "nativeQueryRef": "Ano",
               "active": true
             },
             {
@@ -42,7 +42,7 @@
                 }
               },
               "queryRef": "DimMatrixColumn.Metrica",
-              "nativeQueryRef": "MÃƒÂ©trica",
+              "nativeQueryRef": "Metrica",
               "active": true
             }
           ]
@@ -91,7 +91,7 @@
                 }
               },
               "queryRef": "DimModalidadAdm.Modalidad",
-              "nativeQueryRef": "Modo",
+              "nativeQueryRef": "Modalidad",
               "active": true
             },
             {
@@ -121,7 +121,7 @@
                 }
               },
               "queryRef": "DimFecha.Dia",
-              "nativeQueryRef": "DÃƒÂ­a",
+              "nativeQueryRef": "Dia",
               "active": false
             }
           ]

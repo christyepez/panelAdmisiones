@@ -1,40 +1,39 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
-  "name": "semanal_slicer_modalidad",
+  "name": "wkacc_pct",
   "position": {
-    "x": 560,
-    "y": 20,
-    "z": 3,
-    "height": 72,
-    "width": 210,
-    "tabOrder": 3
+    "x": 1260,
+    "y": 330,
+    "z": 10,
+    "height": 65,
+    "width": 300,
+    "tabOrder": 1360
   },
   "visual": {
-    "visualType": "slicer",
+    "visualType": "card",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Column": {
+                "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimModalidadAdm"
+                      "Entity": "FactMatriculaHistorica"
                     }
                   },
-                  "Property": "Modalidad"
+                  "Property": "Acum % Presupuesto Semana Actual"
                 }
               },
-              "queryRef": "DimModalidadAdm.Modalidad",
-              "active": true
+              "queryRef": "FactMatriculaHistorica.Acum % Presupuesto Semana Actual"
             }
           ]
         }
       }
     },
     "objects": {
-      "header": [
+      "categoryLabels": [
         {
           "properties": {
             "show": {
@@ -47,46 +46,38 @@
           }
         }
       ],
-      "selection": [
+      "labels": [
         {
           "properties": {
-            "singleSelect": {
+            "labelDisplayUnits": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "1D"
                 }
               }
             },
-            "selectAllCheckboxEnabled": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "16D"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#3C235F'"
+                    }
+                  }
+                }
+              }
+            },
+            "bold": {
               "expr": {
                 "Literal": {
                   "Value": "true"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "general": [
-        {
-          "properties": {
-            "orientation": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Vertical'"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "data": [
-        {
-          "properties": {
-            "mode": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Dropdown'"
                 }
               }
             }
@@ -170,7 +161,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Modalidad'"
+                  "Value": "'% presupuesto'"
                 }
               }
             },

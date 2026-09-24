@@ -55,11 +55,25 @@
                       "Entity": "FactMatriculaHistorica"
                     }
                   },
+                  "Property": "Proyeccion B26 Dia Periodo Seguimiento"
+                }
+              },
+              "queryRef": "FactMatriculaHistorica.Proyeccion B26 Dia Periodo Seguimiento",
+              "nativeQueryRef": "B26 proy."
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMatriculaHistorica"
+                    }
+                  },
                   "Property": "B25 Acumulado Dia Periodo"
                 }
               },
               "queryRef": "FactMatriculaHistorica.B25 Acumulado Dia Periodo",
-              "nativeQueryRef": "B25 equivalente"
+              "nativeQueryRef": "B25 acum."
             },
             {
               "field": {
@@ -73,7 +87,7 @@
                 }
               },
               "queryRef": "FactMatriculaHistorica.Meta Lineal B26 Dia Periodo",
-              "nativeQueryRef": "Meta 2.400"
+              "nativeQueryRef": "Meta B26"
             }
           ]
         }
@@ -202,7 +216,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Evolución diaria B26 vs B25 · día equivalente'"
+                  "Value": "'Evolucion diaria B26 vs B25'"
                 }
               }
             },

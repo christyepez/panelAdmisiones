@@ -73,7 +73,7 @@
                 }
               },
               "queryRef": "FactMatriculaHistorica.Proyeccion B26 Mes Vis",
-              "nativeQueryRef": "B26 proyección"
+              "nativeQueryRef": "B26 proy."
             },
             {
               "field": {
@@ -216,7 +216,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Avance acumulado por mes · B26 vs B25 equivalente'"
+                  "Value": "'Avance acumulado - B26 vs B25'"
                 }
               }
             },

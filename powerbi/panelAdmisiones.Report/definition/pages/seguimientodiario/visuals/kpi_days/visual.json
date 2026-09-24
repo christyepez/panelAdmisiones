@@ -161,7 +161,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Días cierre'"
+                  "Value": "'Dias cierre'"
                 }
               }
             },

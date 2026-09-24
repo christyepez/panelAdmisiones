@@ -35,9 +35,9 @@ table DimMatrixColumn
 				#table(
 				    type table [Anio=Int64.Type, AnioOrden=Int64.Type, Metrica=text, MetricaOrden=Int64.Type],
 				    {
-				        {2025,1,"TOTAL",1},{2025,1,"YTD",2},{2025,1,"REAL",3},{2025,1,"Δ%",4},
+				        {2025,1,"TOTAL",1},{2025,1,"YTD",2},{2025,1,"REAL",3},{2025,1,"DELTA %",4},
 				        {2026,2,"BUDGET",1},{2026,2,"YTD",2},{2026,2,"REAL",3},{2026,2,"REAL %",4},
-				        {2026,2,"Δ BUDGET",5},{2026,2,"COMPLETION",6},{2026,2,"REAL VS LY",7},{2026,2,"VARIANZA",8}
+				        {2026,2,"DELTA BUDGET",5},{2026,2,"COMPLETION",6},{2026,2,"REAL VS LY",7},{2026,2,"VARIANZA",8}
 				    }
 				)
 

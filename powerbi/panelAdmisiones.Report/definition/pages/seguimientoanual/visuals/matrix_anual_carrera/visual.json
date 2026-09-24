@@ -125,7 +125,7 @@
                 }
               },
               "queryRef": "FactMatriculaHistorica.Valor Matriculas Seguimiento Anual",
-              "nativeQueryRef": "MatrÃƒÆ’Ã‚Â­culas"
+              "nativeQueryRef": "Matriculas"
             }
           ]
         }
@@ -388,7 +388,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Seguimiento anual Ãƒâ€šÃ‚Â· MatrÃƒÆ’Ã‚Â­culas por Carrera / Sede / Tipo / Modalidad'"
+                  "Value": "'Seguimiento anual - Matriculas'"
                 }
               }
             },

@@ -18,12 +18,11 @@ table DimSeguimientoSemanalMetric
 				#table(
 						type table [Metrica=text,Orden=Int64.Type],
 						{
-							{"FECHA (LUNES)",0},
-							{"REAL B25",1},
-							{"PRESUPUESTO B26",2},
-							{"META REAL",3},
-							{"REAL B26",4},
-							{"% SOBRE PRESUPUESTO",5}
+							{"NE real B2025",1},
+							{"Presupuesto B2026",2},
+							{"Meta neta (70%)",3},
+							{"NE real B2026",4},
+							{"% sobre presupuesto",5}
 						}
 					)
 

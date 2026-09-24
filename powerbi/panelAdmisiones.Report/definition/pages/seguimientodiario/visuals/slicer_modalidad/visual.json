@@ -170,7 +170,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Modo'"
+                  "Value": "'Modalidad'"
                 }
               }
             },
