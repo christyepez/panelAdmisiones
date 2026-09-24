@@ -3,7 +3,9 @@
   "pageOrder": [
     "proyeccionadmisiones",
     "matrizcomparativa",
-    "seguimientodiario"
+    "seguimientodiario",
+    "seguimientoanual",
+    "semanal"
   ],
-  "activePageName": "proyeccionadmisiones"
+  "activePageName": "seguimientoanual"
 }

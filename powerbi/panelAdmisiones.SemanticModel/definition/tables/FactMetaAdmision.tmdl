@@ -26,7 +26,7 @@ table FactMetaAdmision
 				VAR HaySede = ISFILTERED(DimSedeAdm[Sede]) || ISINSCOPE(DimSedeAdm[Sede])
 				VAR HayModalidad = ISFILTERED(DimModalidadAdm[Modalidad]) || ISINSCOPE(DimModalidadAdm[Modalidad])
 				VAR HayCarrera = ISFILTERED(DimCarreraAdm[Carrera]) || ISINSCOPE(DimCarreraAdm[Carrera])
-				VAR HayTipoCarrera = ISFILTERED(DimTipoCarrera[TipoCarrera]) || ISINSCOPE(DimTipoCarrera[TipoCarrera])
+				VAR HayTipoCarrera = ISFILTERED(DimCarreraAdm[TipoCarrera]) || ISINSCOPE(DimCarreraAdm[TipoCarrera])
 				VAR MetaTipo = CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE")
 				RETURN SWITCH(TRUE(), HayOferta, [Meta Oferta Excel B26], HayModalidad, [Meta Modalidad Excel B26], HaySede, [Meta Sede Excel B26], HayCarrera, [Meta Oficial Carrera B26], HayTipoCarrera, MetaTipo, [Meta Oficial B26 Panel])
 			```
@@ -111,6 +111,21 @@ table FactMetaAdmision
 			```
 		formatString: #,0
 		lineageTag: 3fad6dc8-f179-4d34-9e2a-560b0980e5ef
+
+	measure 'Meta B26 Seguimiento' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo] = "B26"),0)
+		formatString: #,0
+		lineageTag: f3d99577-ff39-4fba-a8c6-c43c2cb3c77d
+
+	measure 'Meta B26 Acumulada Hoy Seguimiento' =
+			VAR Inicio = CALCULATE(MAX(DimPeriodo[FechaInicio]), DimPeriodo[Periodo] = "B26")
+			VAR Fin = CALCULATE(MAX(DimPeriodo[FechaFin]), DimPeriodo[Periodo] = "B26")
+			VAR Corte = MIN(TODAY(), Fin)
+			VAR DiasTotal = IF(NOT ISBLANK(Inicio) && NOT ISBLANK(Fin), DATEDIFF(Inicio, Fin, DAY) + 1)
+			VAR DiasTrans = IF(NOT ISBLANK(Inicio) && Corte >= Inicio, DATEDIFF(Inicio, Corte, DAY) + 1, 0)
+			VAR Factor = MIN(1, DIVIDE(DiasTrans, DiasTotal, 0))
+			RETURN ROUND([Meta B26 Seguimiento] * Factor, 0)
+		formatString: #,0
+		lineageTag: 6a128751-48e0-4bbb-bc5a-c0ae2a990e0f
 
 	column Periodo
 		dataType: string

@@ -1,0 +1,41 @@
+table DimSeguimientoResumenColumn
+	lineageTag: b835c265-d642-4dc4-959d-5877163f51ca
+
+	column Grupo
+		dataType: string
+		lineageTag: e4d44a08-3f5a-481d-873c-56a4375dfa7f
+		sourceColumn: Grupo
+		sortByColumn: GrupoOrden
+
+	column Subgrupo
+		dataType: string
+		lineageTag: 5dbe3015-5af6-4faf-937d-a30e1c16b661
+		sourceColumn: Subgrupo
+		sortByColumn: SubgrupoOrden
+
+	column GrupoOrden
+		dataType: int64
+		lineageTag: 4fd7a201-bbd9-48b3-a775-fc2d13282e06
+		sourceColumn: GrupoOrden
+
+	column SubgrupoOrden
+		dataType: int64
+		lineageTag: 992d4e87-18bb-47a8-819a-3d2307e4fa41
+		sourceColumn: SubgrupoOrden
+
+	partition DimSeguimientoResumenColumn = m
+		mode: import
+		source =
+				#table(
+						type table [Grupo=text,Subgrupo=text,GrupoOrden=Int64.Type,SubgrupoOrden=Int64.Type],
+						{
+							{"TOTAL NE 2025","",1,1},
+							{"SEGMENTO","",2,1},
+							{"TOTAL SEGMENTO","",3,1},
+							{"B25","NE",4,1},
+							{"B25","%",4,2},
+							{"B26","NE",5,1},
+							{"B26","%",5,2}
+						}
+					)
+

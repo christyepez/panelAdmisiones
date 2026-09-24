@@ -12,6 +12,11 @@ table DimCarreraAdm
 		lineageTag: efc489c2-f600-4a2e-b412-df949c8b71a7
 		sourceColumn: TipoPrograma
 
+	column TipoCarrera
+		dataType: string
+		lineageTag: 49c0b36b-1e9d-4fa2-98d0-2cc5bb4e4f30
+		sourceColumn: TipoCarrera
+
 	partition DimCarreraAdm = m
 		mode: import
 		source =
@@ -22,8 +27,10 @@ table DimCarreraAdm
 				    M = Table.SelectColumns(M0, {"Carrera","TipoPrograma"}, MissingField.UseNull),
 				    U = Table.Combine({A,H,M}),
 				    Clean = Table.SelectRows(U, each [Carrera] <> null and Text.Trim(Text.From([Carrera])) <> ""),
-				    Sorted = Table.Sort(Clean, {{"Carrera",Order.Ascending}}),
-				    R = Table.Distinct(Sorted, {"Carrera"})
+				    BaseCarrera = Table.Distinct(Table.SelectColumns(Clean, {"Carrera"})),
+				    WithTipoPrograma = Table.AddColumn(BaseCarrera, "TipoPrograma", each FxTipoPrograma([Carrera]), type text),
+				    WithTipoCarrera = Table.AddColumn(WithTipoPrograma, "TipoCarrera", each if [TipoPrograma] = "POSGRADO" then "POSGRADO" else "GRADO", type text),
+				    R = Table.Sort(WithTipoCarrera, {{"Carrera",Order.Ascending}})
 				in
 				    R
 

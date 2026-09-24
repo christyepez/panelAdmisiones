@@ -59,18 +59,6 @@ relationship rel-meta-carrera
 	fromColumn: FactMetaAdmision.Carrera
 	toColumn: DimCarreraAdm.Carrera
 
-relationship rel-current-tipo-carrera
-	fromColumn: FactAdmision615.TipoCarrera
-	toColumn: DimTipoCarrera.TipoCarrera
-
-relationship rel-hist-tipo-carrera
-	fromColumn: FactMatriculaHistorica.TipoCarrera
-	toColumn: DimTipoCarrera.TipoCarrera
-
-relationship rel-meta-tipo-carrera
-	fromColumn: FactMetaAdmision.TipoCarrera
-	toColumn: DimTipoCarrera.TipoCarrera
-
 relationship rel-current-month
 	fromColumn: FactAdmision615.MesNumero
 	toColumn: DimMesPeriodo.MesNumero

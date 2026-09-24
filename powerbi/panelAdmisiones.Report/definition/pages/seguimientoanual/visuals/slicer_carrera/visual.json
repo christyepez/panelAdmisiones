@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
-  "name": "slicer_tipo_carrera",
+  "name": "seguimientoanual_slicer_carrera",
   "position": {
-    "x": 860,
-    "y": 18,
-    "z": 2,
-    "height": 65,
-    "width": 270,
-    "tabOrder": 2
+    "x": 20,
+    "y": 20,
+    "z": 1,
+    "height": 72,
+    "width": 300,
+    "tabOrder": 1
   },
   "visual": {
     "visualType": "slicer",
@@ -23,10 +23,10 @@
                       "Entity": "DimCarreraAdm"
                     }
                   },
-                  "Property": "TipoCarrera"
+                  "Property": "Carrera"
                 }
               },
-              "queryRef": "DimCarreraAdm.TipoCarrera",
+              "queryRef": "DimCarreraAdm.Carrera",
               "active": true
             }
           ]
@@ -75,47 +75,6 @@
                 "Literal": {
                   "Value": "'Vertical'"
                 }
-              }
-            },
-            "filter": {
-              "filter": {
-                "Version": 2,
-                "From": [
-                  {
-                    "Name": "d",
-                    "Entity": "DimCarreraAdm",
-                    "Type": 0
-                  }
-                ],
-                "Where": [
-                  {
-                    "Condition": {
-                      "In": {
-                        "Expressions": [
-                          {
-                            "Column": {
-                              "Expression": {
-                                "SourceRef": {
-                                  "Source": "d"
-                                }
-                              },
-                              "Property": "TipoCarrera"
-                            }
-                          }
-                        ],
-                        "Values": [
-                          [
-                            {
-                              "Literal": {
-                                "Value": "'Grado'"
-                              }
-                            }
-                          ]
-                        ]
-                      }
-                    }
-                  }
-                ]
               }
             }
           }
@@ -211,7 +170,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Tipo'"
+                  "Value": "'Carrera'"
                 }
               }
             },

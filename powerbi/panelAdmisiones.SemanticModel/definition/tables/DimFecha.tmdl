@@ -100,6 +100,53 @@ table DimFecha
 		summarizeBy: none
 		sourceColumn: AnioMesKey
 
+	column InicioSemana
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: b9bc186d-2c63-4ef2-9cfd-32c8dd3de114
+		sourceColumn: InicioSemana
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FinSemana
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: d3e8b15e-61b5-4060-9426-a5dfc9055eaf
+		sourceColumn: FinSemana
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column PeriodoSeguimiento = ```
+				VAR F = DATEVALUE(DimFecha[Date])
+				RETURN
+					MAXX(
+						FILTER(
+							ALL(DimPeriodo),
+							F >= DimPeriodo[FechaInicio] &&
+							F <= DimPeriodo[FechaFin]
+						),
+						DimPeriodo[Periodo]
+					)
+			```
+		dataType: string
+		lineageTag: 3ef40730-942c-49ec-8df1-2a13a32bec37
+
+	column SemanaPeriodoNumero = ```
+				VAR F = DATEVALUE(DimFecha[Date])
+				VAR P = DimFecha[PeriodoSeguimiento]
+				VAR Inicio = LOOKUPVALUE(DimPeriodo[FechaInicio], DimPeriodo[Periodo], P)
+				VAR LunesF = F - WEEKDAY(F, 2) + 1
+				VAR LunesInicio = Inicio - WEEKDAY(Inicio, 2) + 1
+				RETURN IF(ISBLANK(P) || ISBLANK(Inicio), BLANK(), 1 + INT(DIVIDE(DATEDIFF(LunesInicio, LunesF, DAY), 7)))
+			```
+		dataType: int64
+		lineageTag: 48852b9e-cd0f-4850-ae02-4a03d1fbf622
+
+	column SemanaPeriodo = IF(ISBLANK(DimFecha[SemanaPeriodoNumero]), BLANK(), "S" & FORMAT(DimFecha[SemanaPeriodoNumero], "00"))
+		dataType: string
+		lineageTag: a96f57d4-5d12-47ad-8c3b-fc4e7c8a857f
+		sortByColumn: SemanaPeriodoNumero
+
 	partition DimFecha = m
 		mode: import
 		source =
@@ -108,8 +155,12 @@ table DimFecha
 				    Current = FxLoad615(),
 				    HistDates = List.RemoveNulls(Hist[FechaMatricula]),
 				    CurrentDates = List.RemoveNulls(Current[FechaMatricula]),
-				    Fin = #date(2026,10,31),
-				    Inicio = List.Min(List.Combine({if List.Count(HistDates)=0 then {#date(2025,5,1)} else HistDates, if List.Count(CurrentDates)=0 then {#date(2026,5,1)} else CurrentDates})),
+				    FinDatos = if List.Count(CurrentDates)=0 then #date(2026,10,31) else List.Max(CurrentDates),
+				    Fin = List.Max({#date(2026,10,31), FinDatos}),
+				    Inicio = List.Min(List.Combine({
+				        if List.Count(HistDates)=0 then {#date(2024,1,1)} else HistDates,
+				        if List.Count(CurrentDates)=0 then {#date(2026,5,1)} else CurrentDates
+				    })),
 				    L = List.Dates(Inicio, Duration.Days(Fin-Inicio)+1, #duration(1,0,0,0)),
 				    T = Table.FromList(L, Splitter.SplitByNothing(), {"Date"}),
 				    A = Table.AddColumn(T,"Anio", each Date.Year([Date]), Int64.Type),
@@ -126,7 +177,9 @@ table DimFecha
 				    DK = Table.AddColumn(D,"DiaKey", each [MesNumero]*100+[DiaMes], Int64.Type),
 				    YM = Table.AddColumn(DK,"AnioMes", each Date.ToText([Date],"yyyy-MM"), type text),
 				    YMKey = Table.AddColumn(YM,"AnioMesKey", each [Anio]*100+[MesNumero], Int64.Type),
-				    R = Table.TransformColumnTypes(YMKey,{{"Date", type date},{"Anio",Int64.Type},{"MesNumero",Int64.Type},{"Mes",type text},{"QuincenaNumero",Int64.Type},{"Quincena",type text},{"QuincenaKey",Int64.Type},{"SemanaMesNumero",Int64.Type},{"Semana",type text},{"SemanaKey",Int64.Type},{"DiaMes",Int64.Type},{"Dia",type text},{"DiaKey",Int64.Type},{"AnioMes",type text},{"AnioMesKey",Int64.Type}})
+				    IS = Table.AddColumn(YMKey,"InicioSemana", each Date.StartOfWeek([Date], Day.Monday), type date),
+				    FS = Table.AddColumn(IS,"FinSemana", each Date.EndOfWeek([Date], Day.Monday), type date),
+				    R = Table.TransformColumnTypes(FS,{{"Date", type date},{"Anio",Int64.Type},{"MesNumero",Int64.Type},{"Mes",type text},{"QuincenaNumero",Int64.Type},{"Quincena",type text},{"QuincenaKey",Int64.Type},{"SemanaMesNumero",Int64.Type},{"Semana",type text},{"SemanaKey",Int64.Type},{"DiaMes",Int64.Type},{"Dia",type text},{"DiaKey",Int64.Type},{"AnioMes",type text},{"AnioMesKey",Int64.Type},{"InicioSemana",type date},{"FinSemana",type date}})
 				in
 				    R
 

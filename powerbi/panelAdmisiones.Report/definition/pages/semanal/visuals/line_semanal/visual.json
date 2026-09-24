@@ -1,133 +1,139 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
-  "name": "slicer_tipo_carrera",
+  "name": "line_semanal",
   "position": {
-    "x": 860,
-    "y": 18,
-    "z": 2,
-    "height": 65,
-    "width": 270,
-    "tabOrder": 2
+    "x": 20,
+    "y": 705,
+    "z": 20,
+    "height": 500,
+    "width": 1560,
+    "tabOrder": 20
   },
   "visual": {
-    "visualType": "slicer",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
-        "Values": {
+        "Category": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimCarreraAdm"
+                      "Entity": "DimFecha"
                     }
                   },
-                  "Property": "TipoCarrera"
+                  "Property": "SemanaPeriodo"
                 }
               },
-              "queryRef": "DimCarreraAdm.TipoCarrera",
+              "queryRef": "DimFecha.SemanaPeriodo",
+              "nativeQueryRef": "Semana",
               "active": true
             }
           ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMatriculaHistorica"
+                    }
+                  },
+                  "Property": "Real B25 Acumulado Semana"
+                }
+              },
+              "queryRef": "FactMatriculaHistorica.Real B25 Acumulado Semana",
+              "nativeQueryRef": "Real B25"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMatriculaHistorica"
+                    }
+                  },
+                  "Property": "Presupuesto B26 Acumulado Semana"
+                }
+              },
+              "queryRef": "FactMatriculaHistorica.Presupuesto B26 Acumulado Semana",
+              "nativeQueryRef": "Presupuesto B26"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMatriculaHistorica"
+                    }
+                  },
+                  "Property": "Meta Real Acumulado Semana"
+                }
+              },
+              "queryRef": "FactMatriculaHistorica.Meta Real Acumulado Semana",
+              "nativeQueryRef": "Meta real"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "FactMatriculaHistorica"
+                    }
+                  },
+                  "Property": "Real B26 Acumulado Semana"
+                }
+              },
+              "queryRef": "FactMatriculaHistorica.Real B26 Acumulado Semana",
+              "nativeQueryRef": "Real B26"
+            }
+          ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimFecha"
+                  }
+                },
+                "Property": "SemanaPeriodoNumero"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ],
+        "isDefaultSort": true
       }
     },
     "objects": {
-      "header": [
+      "labels": [
         {
           "properties": {
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "selection": [
-        {
-          "properties": {
-            "singleSelect": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
-            "selectAllCheckboxEnabled": {
-              "expr": {
-                "Literal": {
                   "Value": "true"
                 }
               }
-            }
-          }
-        }
-      ],
-      "general": [
-        {
-          "properties": {
-            "orientation": {
+            },
+            "fontSize": {
               "expr": {
                 "Literal": {
-                  "Value": "'Vertical'"
+                  "Value": "8D"
                 }
               }
             },
-            "filter": {
-              "filter": {
-                "Version": 2,
-                "From": [
-                  {
-                    "Name": "d",
-                    "Entity": "DimCarreraAdm",
-                    "Type": 0
-                  }
-                ],
-                "Where": [
-                  {
-                    "Condition": {
-                      "In": {
-                        "Expressions": [
-                          {
-                            "Column": {
-                              "Expression": {
-                                "SourceRef": {
-                                  "Source": "d"
-                                }
-                              },
-                              "Property": "TipoCarrera"
-                            }
-                          }
-                        ],
-                        "Values": [
-                          [
-                            {
-                              "Literal": {
-                                "Value": "'Grado'"
-                              }
-                            }
-                          ]
-                        ]
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        }
-      ],
-      "data": [
-        {
-          "properties": {
-            "mode": {
+            "labelDisplayUnits": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dropdown'"
+                  "Value": "1D"
                 }
               }
             }
@@ -211,7 +217,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Tipo'"
+                  "Value": "'Seguimiento semanal Â· acumulado B25 vs B26'"
                 }
               }
             },

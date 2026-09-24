@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
-  "name": "slicer_tipo_carrera",
+  "name": "seguimientoanual_slicer_oferta",
   "position": {
-    "x": 860,
-    "y": 18,
-    "z": 2,
-    "height": 65,
-    "width": 270,
-    "tabOrder": 2
+    "x": 1195,
+    "y": 20,
+    "z": 5,
+    "height": 72,
+    "width": 190,
+    "tabOrder": 6
   },
   "visual": {
     "visualType": "slicer",
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimCarreraAdm"
+                      "Entity": "DimOfertaAdm"
                     }
                   },
-                  "Property": "TipoCarrera"
+                  "Property": "Oferta"
                 }
               },
-              "queryRef": "DimCarreraAdm.TipoCarrera",
+              "queryRef": "DimOfertaAdm.Oferta",
               "active": true
             }
           ]
@@ -53,14 +53,14 @@
             "singleSelect": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
                 }
               }
             },
             "selectAllCheckboxEnabled": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             }
@@ -83,7 +83,7 @@
                 "From": [
                   {
                     "Name": "d",
-                    "Entity": "DimCarreraAdm",
+                    "Entity": "DimOfertaAdm",
                     "Type": 0
                   }
                 ],
@@ -99,7 +99,7 @@
                                   "Source": "d"
                                 }
                               },
-                              "Property": "TipoCarrera"
+                              "Property": "Oferta"
                             }
                           }
                         ],
@@ -107,7 +107,14 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'Grado'"
+                                "Value": "'SI'"
+                              }
+                            }
+                          ],
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'NO'"
                               }
                             }
                           ]
@@ -211,7 +218,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Tipo'"
+                  "Value": "'Oferta'"
                 }
               }
             },
@@ -230,5 +237,23 @@
         }
       ]
     }
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "oferta_b26_filter",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "DimOfertaAdm"
+              }
+            },
+            "Property": "Oferta"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
   }
 }

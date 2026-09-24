@@ -35,7 +35,6 @@ table FactMatriculaHistorica
 				        REMOVEFILTERS(DimCarreraAdm),
 				        REMOVEFILTERS(DimSedeAdm),
 				        REMOVEFILTERS(DimModalidadAdm),
-				        REMOVEFILTERS(DimTipoCarrera),
 				        FactAdmision615[Periodo] = "B26"
 				    )
 				RETURN MIN([Fin Periodo B26], DATEVALUE(MaxFecha))
@@ -217,23 +216,25 @@ table FactMatriculaHistorica
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
 				VAR Inicio = [Inicio Periodo B26]
 				VAR FinPeriodo = [Fin Periodo B26]
-				VAR CorteHoy = MIN(TODAY(), FinPeriodo)
+				VAR CorteReal = MIN([Fecha Corte Datos B26], FinPeriodo)
 				VAR InicioMes = IF(NOT ISBLANK(M), DATE(YEAR(Inicio), M, 1))
-				VAR FinPunto = IF(NOT ISBLANK(M), MIN(CorteHoy, EOMONTH(InicioMes, 0)))
+				VAR FinPunto = IF(NOT ISBLANK(M), MIN(CorteReal, EOMONTH(InicioMes, 0)))
 				VAR V =
 				    IF(
 				        ISBLANK(M) ||
 				        ISBLANK(InicioMes) ||
 				        InicioMes > FinPeriodo ||
-				        InicioMes > CorteHoy ||
+				        InicioMes > CorteReal ||
 				        ISBLANK(FinPunto) ||
 				        FinPunto < Inicio,
 				        BLANK(),
 				        CALCULATE(
-				            FactAdmision615[Total Matriculas],
+				            FactAdmision615[Total Matriculas B26],
+				            REMOVEFILTERS(DimPeriodo),
 				            REMOVEFILTERS(DimMesPeriodo),
 				            REMOVEFILTERS(DimFecha),
 				            REMOVEFILTERS(FactAdmision615[MesNumero]),
+				            FactAdmision615[Periodo] = "B26",
 				            FactAdmision615[FechaMatriculaDay] >= Inicio,
 				            FactAdmision615[FechaMatriculaDay] <= FinPunto
 				        )
@@ -294,27 +295,21 @@ table FactMatriculaHistorica
 				VAR M = SELECTEDVALUE(DimMesPeriodo[MesNumero])
 				VAR Inicio = [Inicio Periodo B26]
 				VAR Fin = [Fin Periodo B26]
-				VAR CorteHoy = MIN(TODAY(), Fin)
+				VAR CorteReal = MIN([Fecha Corte Datos B26], Fin)
 				VAR InicioMes = DATE(YEAR(Inicio), M, 1)
 				VAR CorteMes = MIN(Fin, EOMONTH(InicioMes,0))
-				VAR MesActual = MONTH(CorteHoy)
-				VAR RealHoy =
-				    CALCULATE(
-				        FactAdmision615[Total Matriculas],
-				        REMOVEFILTERS(DimPeriodo), REMOVEFILTERS(DimFecha), REMOVEFILTERS(DimMesPeriodo),
-				        FactAdmision615[Periodo] = "B26",
-				        FILTER(ALL(FactAdmision615[FechaMatriculaDay]), FactAdmision615[FechaMatriculaDay] <= CorteHoy)
-				    )
-				VAR DiasHoy = DATEDIFF(Inicio, CorteHoy, DAY) + 1
-				VAR RitmoHoy = DIVIDE(RealHoy, DiasHoy)
+				VAR MesCorte = MONTH(CorteReal)
+				VAR RealCorte = [Matrix B26 Real Contexto]
+				VAR DiasCorte = DATEDIFF(Inicio, CorteReal, DAY) + 1
+				VAR RitmoCorte = DIVIDE(RealCorte, DiasCorte)
 				VAR DiasObjetivo = DATEDIFF(Inicio, CorteMes, DAY) + 1
 				RETURN
 				    SWITCH(
 				        TRUE(),
-				        ISBLANK(M) || InicioMes > Fin || EOMONTH(InicioMes,0) < Inicio, BLANK(),
-				        M < MesActual, BLANK(),
-				        M = MesActual, RealHoy,
-				        ROUND(RealHoy + RitmoHoy * (DiasObjetivo - DiasHoy), 0)
+				        ISBLANK(M) || ISBLANK(CorteReal) || ISBLANK(RealCorte) || InicioMes > Fin || EOMONTH(InicioMes,0) < Inicio, BLANK(),
+				        M < MesCorte, BLANK(),
+				        M = MesCorte, RealCorte,
+				        ROUND(RealCorte + RitmoCorte * (DiasObjetivo - DiasCorte), 0)
 				    )
 			```
 		formatString: #,0
@@ -869,12 +864,12 @@ table FactMatriculaHistorica
 						A = 2025 && M = "TOTAL", [Matrix B25 Total Contexto],
 						A = 2025 && M = "YTD", [Matrix B25 YTD Contexto],
 						A = 2025 && M = "REAL", [Matrix B25 Real % Contexto],
-						A = 2025 && M = "Δ%", [Matrix Delta B25 % Contexto],
+						A = 2025 && M = "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â½ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â%", [Matrix Delta B25 % Contexto],
 						A = 2026 && M = "BUDGET", [Meta Excel B26 Matriz Vis],
 						A = 2026 && M = "YTD", [Matrix B26 YTD Objetivo Contexto],
 						A = 2026 && M = "REAL", [Matrix B26 Real Contexto],
 						A = 2026 && M = "REAL %", [Matrix B26 Real % Contexto],
-						A = 2026 && M = "Δ BUDGET", [Matrix Delta Budget Contexto],
+						A = 2026 && M = "ÃƒÆ’Ã†â€™Ãƒâ€ Ã¢â‚¬â„¢ÃƒÆ’Ã¢â‚¬Â¦Ãƒâ€šÃ‚Â½ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã¢â‚¬Å¡Ãƒâ€šÃ‚Â BUDGET", [Matrix Delta Budget Contexto],
 						A = 2026 && M = "COMPLETION", [Matrix Completion Contexto],
 						A = 2026 && M = "REAL VS LY", [Matrix Real vs LY Contexto],
 						A = 2026 && M = "VARIANZA", [Matrix Varianza Contexto],
@@ -883,16 +878,202 @@ table FactMatriculaHistorica
 				RETURN IF(NOT HayDatos || ISBLANK(V), BLANK(), V)
 			```
 		lineageTag: bc2c30b7-8d4f-4713-971e-7fa7456b1ba6
+
 		formatStringDefinition = ```
-				VAR M = SELECTEDVALUE(DimMatrixColumn[Metrica])
-				RETURN
+					VAR M = SELECTEDVALUE(DimMatrixColumn[Metrica])
+					RETURN
+						SWITCH(
+							TRUE(),
+							CONTAINSSTRING(M,"%") || M IN {"COMPLETION","REAL VS LY"}, "0.0%",
+							M = "VARIANZA" || (CONTAINSSTRING(M,"BUDGET") && M <> "BUDGET"), "+#,##0;-#,##0;0",
+							"#,##0"
+						)
+				```
+
+	measure 'Real A25 Seguimiento' = CALCULATE([Total Matriculas Historicas], REMOVEFILTERS(DimPeriodo), FactMatriculaHistorica[Periodo] = "A25")
+		formatString: #,0
+		lineageTag: 3016f490-e1d9-42c7-a76f-1815b70f0878
+
+	measure 'Real B25 Seguimiento' = CALCULATE([Total Matriculas Historicas], REMOVEFILTERS(DimPeriodo), FactMatriculaHistorica[Periodo] = "B25")
+		formatString: #,0
+		lineageTag: 25a5e227-4f33-454b-a604-13e4dac790ce
+
+	measure 'Real A26 Seguimiento' = CALCULATE(FactAdmision615[Total Matriculas], REMOVEFILTERS(DimPeriodo), FactAdmision615[Periodo] = "A26")
+		formatString: #,0
+		lineageTag: 7a53170f-c695-4d04-bc08-ddc4ae5a60c6
+
+	measure 'Real B26 Seguimiento' = [Matrix B26 Real Contexto]
+		formatString: #,0
+		lineageTag: 811c802a-49b7-4e83-b62d-b3466715c5fd
+
+	measure 'Total 2025 Seguimiento' = [Real A25 Seguimiento] + [Real B25 Seguimiento]
+		formatString: #,0
+		lineageTag: e166d5cc-1ed6-4577-8f79-0e735fe10c14
+
+	measure 'Total 2026 Seguimiento' = [Real A26 Seguimiento] + [Real B26 Seguimiento]
+		formatString: #,0
+		lineageTag: b4b34bc1-150d-474e-85c8-372579cc4aa8
+
+	measure '% Periodo A25 Seguimiento' =
+			VAR Den = CALCULATE([Real A25 Seguimiento], ALLSELECTED(DimCarreraAdm), ALLSELECTED(DimSedeAdm), ALLSELECTED(DimModalidadAdm))
+			RETURN DIVIDE([Real A25 Seguimiento], Den)
+		formatString: 0.0%
+		lineageTag: 82c7191b-a41e-4f0b-a784-fd3592f29d95
+
+	measure '% Periodo B25 Seguimiento' =
+			VAR Den = CALCULATE([Real B25 Seguimiento], ALLSELECTED(DimCarreraAdm), ALLSELECTED(DimSedeAdm), ALLSELECTED(DimModalidadAdm))
+			RETURN DIVIDE([Real B25 Seguimiento], Den)
+		formatString: 0.0%
+		lineageTag: 150bc0c5-a75e-47cb-8de8-2bac0e9fb059
+
+	measure '% Periodo A26 Seguimiento' =
+			VAR Den = CALCULATE([Real A26 Seguimiento], ALLSELECTED(DimCarreraAdm), ALLSELECTED(DimSedeAdm), ALLSELECTED(DimModalidadAdm))
+			RETURN DIVIDE([Real A26 Seguimiento], Den)
+		formatString: 0.0%
+		lineageTag: 85e19486-ab0b-4635-9fe9-3ca55d07afc3
+
+	measure '% Periodo B26 Seguimiento' =
+			VAR Den = CALCULATE([Real B26 Seguimiento], ALLSELECTED(DimCarreraAdm), ALLSELECTED(DimSedeAdm), ALLSELECTED(DimModalidadAdm))
+			RETURN DIVIDE([Real B26 Seguimiento], Den)
+		formatString: 0.0%
+		lineageTag: 49ef50ad-a400-4b04-93a8-52d2db1b74bc
+
+	measure 'Total NE 2025 Resumen' = CALCULATE([Total 2025 Seguimiento], ALLSELECTED(DimCarreraAdm), ALLSELECTED(DimSedeAdm), ALLSELECTED(DimModalidadAdm))
+		formatString: #,0
+		lineageTag: 58ef9df1-e5ef-4f57-9908-40558f13dd11
+
+	measure 'Total Segmento 2025 Resumen' = CALCULATE([Total 2025 Seguimiento], ALLSELECTED(DimCarreraAdm[Carrera]), ALLSELECTED(DimSedeAdm[Sede]), ALLSELECTED(DimModalidadAdm[Modalidad]))
+		formatString: #,0
+		lineageTag: bf3103cb-26cf-4d58-9f21-ddf129e3a78b
+
+	measure 'Valor Resumen Seguimiento Anual' =
+			VAR G = SELECTEDVALUE(DimSeguimientoResumenColumn[Grupo])
+			VAR S = SELECTEDVALUE(DimSeguimientoResumenColumn[Subgrupo])
+			VAR Tipo = SELECTEDVALUE(DimCarreraAdm[TipoPrograma])
+			VAR B25 = [Real B25 Seguimiento]
+			VAR B26 = [Real B26 Seguimiento]
+			VAR HayDatos = COALESCE(B25,0) + COALESCE(B26,0) > 0
+			VAR EnCarrera = ISINSCOPE(DimCarreraAdm[Carrera])
+			VAR EnSede = ISINSCOPE(DimSedeAdm[Sede])
+			VAR EnTipo = ISINSCOPE(DimCarreraAdm[TipoPrograma])
+			VAR EnModalidad = ISINSCOPE(DimModalidadAdm[Modalidad])
+			RETURN
+				IF(
+					NOT HayDatos,
+					BLANK(),
 					SWITCH(
 						TRUE(),
-						CONTAINSSTRING(M,"%") || M IN {"COMPLETION","REAL VS LY"}, "0.0%",
-						M = "VARIANZA" || (CONTAINSSTRING(M,"BUDGET") && M <> "BUDGET"), "+#,##0;-#,##0;0",
-						"#,##0"
+						G = "TOTAL NE 2025" && EnCarrera && NOT EnSede, FORMAT([Total NE 2025 Resumen], "#,##0"),
+						G = "SEGMENTO" && EnTipo && NOT EnModalidad, Tipo,
+						G = "TOTAL SEGMENTO" && EnTipo && NOT EnModalidad, FORMAT([Total Segmento 2025 Resumen], "#,##0"),
+						G = "B25" && S = "NE", FORMAT(B25, "#,##0"),
+						G = "B25" && S = "%", FORMAT([% Periodo B25 Seguimiento], "0.0%"),
+						G = "B26" && S = "NE", FORMAT(B26, "#,##0"),
+						G = "B26" && S = "%", FORMAT([% Periodo B26 Seguimiento], "0.0%"),
+						BLANK()
 					)
-			```
+				)
+		lineageTag: a8fe85bd-3852-4fc4-89ab-f52b8f930f82
+
+	measure 'Valor Matriculas Seguimiento Anual' =
+			VAR G = SELECTEDVALUE(DimSeguimientoAnualColumn[Grupo])
+			VAR S = SELECTEDVALUE(DimSeguimientoAnualColumn[Subgrupo])
+			VAR RealA25 = [Real A25 Seguimiento]
+			VAR RealB25 = [Real B25 Seguimiento]
+			VAR RealA26 = [Real A26 Seguimiento]
+			VAR Total25 = [Total 2025 Seguimiento]
+			VAR Total26 = [Total 2026 Seguimiento]
+			VAR HayFila = COALESCE(Total25,0) + COALESCE(Total26,0) > 0
+			RETURN
+				IF(
+					NOT HayFila,
+					BLANK(),
+					SWITCH(
+						TRUE(),
+						G = "REAL 2025" && S = "A25", RealA25,
+						G = "REAL 2025" && S = "B25", RealB25,
+						G = "REAL 2025" && S = "TOTAL", Total25,
+						G = "PRESUPUESTO 2026" && S IN {"A26","B26","TOTAL"}, 0,
+						G = "META COMERCIAL 2026" && S = "A26 REAL", COALESCE(RealA26,0),
+						G = "META COMERCIAL 2026" && S = "B26 META", [Matrix B26 YTD Objetivo Contexto],
+						G = "META COMERCIAL 2026" && S = "TOTAL", [Matrix B26 Real Contexto],
+						BLANK()
+					)
+				)
+		formatString: #,0
+		lineageTag: 7f7c3b76-f675-4f08-a5bf-a9aa2a56a3c2
+
+	measure 'Fecha Lunes Semana' = MIN(DimFecha[InicioSemana])
+		formatString: dd/MM
+		lineageTag: 6376cc13-313d-4a74-8d98-b90d406a2d9c
+
+	measure 'Real B25 Semana' = CALCULATE([Total Matriculas Historicas], REMOVEFILTERS(DimPeriodo), FactMatriculaHistorica[Periodo] = "B25")
+		formatString: #,0
+		lineageTag: 9e5c2f7d-fbde-4a89-8599-b1c57d4f4f01
+
+	measure 'Real B26 Semana' = CALCULATE(FactAdmision615[Total Matriculas B26], REMOVEFILTERS(DimPeriodo))
+		formatString: #,0
+		lineageTag: 7cc6b6fa-a962-4b18-ae1f-4e437cab5155
+
+	measure 'Presupuesto B26 Semana' = BLANK()
+		formatString: #,0
+		lineageTag: 440edc74-bc9f-43ce-8f20-d37c7ca13344
+
+	measure 'Meta Real Semana' = BLANK()
+		formatString: #,0
+		lineageTag: 1f38eb42-4022-4fc1-89ff-778cc565f251
+
+	measure 'Real B25 Acumulado Semana' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			RETURN IF(ISBLANK(W),BLANK(),CALCULATE([Real B25 Semana],FILTER(ALL(DimFecha[SemanaPeriodoNumero],DimFecha[SemanaPeriodo]),DimFecha[SemanaPeriodoNumero] <= W)))
+		formatString: #,0
+		lineageTag: dd93c5ff-064f-44ce-95dd-44bc7b3f1290
+
+	measure 'Real B26 Acumulado Semana' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			RETURN IF(ISBLANK(W),BLANK(),CALCULATE([Real B26 Semana],FILTER(ALL(DimFecha[SemanaPeriodoNumero],DimFecha[SemanaPeriodo]),DimFecha[SemanaPeriodoNumero] <= W)))
+		formatString: #,0
+		lineageTag: 501d9bf0-0b05-4a8f-9e4e-7559041419cd
+
+	measure 'Presupuesto B26 Acumulado Semana' = BLANK()
+		formatString: #,0
+		lineageTag: 4afdb93a-0ee7-48bc-9351-bc37bbbaf08e
+
+	measure 'Meta Real Acumulado Semana' = BLANK()
+		formatString: #,0
+		lineageTag: 478bce37-e839-4a58-a9ad-bfd11f0d9a94
+
+	measure 'Valor Semanal' =
+			VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
+			RETURN SWITCH(M,
+				"FECHA (LUNES)",[Fecha Lunes Semana],
+				"REAL B25",[Real B25 Semana],
+				"PRESUPUESTO B26",[Presupuesto B26 Semana],
+				"META REAL",[Meta Real Semana],
+				"REAL B26",[Real B26 Semana],
+				"% SOBRE PRESUPUESTO",DIVIDE([Real B26 Semana],[Presupuesto B26 Semana]),
+				BLANK())
+		lineageTag: e458ce39-0432-42d2-b0d7-fb77a74c5472
+
+		formatStringDefinition =
+				VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
+				RETURN SWITCH(TRUE(), M = "FECHA (LUNES)", "dd/MM", CONTAINSSTRING(M,"%"), "0.0%", "#,##0")
+
+	measure 'Valor Semanal Acumulado' =
+			VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
+			RETURN SWITCH(M,
+				"FECHA (LUNES)",[Fecha Lunes Semana],
+				"REAL B25",[Real B25 Acumulado Semana],
+				"PRESUPUESTO B26",[Presupuesto B26 Acumulado Semana],
+				"META REAL",[Meta Real Acumulado Semana],
+				"REAL B26",[Real B26 Acumulado Semana],
+				"% SOBRE PRESUPUESTO",DIVIDE([Real B26 Acumulado Semana],[Presupuesto B26 Acumulado Semana]),
+				BLANK())
+		lineageTag: 7df4df99-8ba1-4b7b-b60e-11fb2cbaae2f
+
+		formatStringDefinition =
+				VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
+				RETURN SWITCH(TRUE(), M = "FECHA (LUNES)", "dd/MM", CONTAINSSTRING(M,"%"), "0.0%", "#,##0")
 
 	column Periodo
 		dataType: string

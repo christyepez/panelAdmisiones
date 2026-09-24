@@ -1,0 +1,29 @@
+table DimSeguimientoSemanalMetric
+	lineageTag: f25142a3-2f92-4e30-99f8-d0b311114e96
+
+	column Metrica
+		dataType: string
+		lineageTag: 57eb476e-631c-4327-80c6-19493f27135d
+		sourceColumn: Metrica
+		sortByColumn: Orden
+
+	column Orden
+		dataType: int64
+		lineageTag: f8f3a8db-89db-4c16-b3ac-fe696639c1e5
+		sourceColumn: Orden
+
+	partition DimSeguimientoSemanalMetric = m
+		mode: import
+		source =
+				#table(
+						type table [Metrica=text,Orden=Int64.Type],
+						{
+							{"FECHA (LUNES)",0},
+							{"REAL B25",1},
+							{"PRESUPUESTO B26",2},
+							{"META REAL",3},
+							{"REAL B26",4},
+							{"% SOBRE PRESUPUESTO",5}
+						}
+					)
+

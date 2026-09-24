@@ -1,12 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
-  "name": "slicer_tipo_carrera",
+  "name": "seguimientoanual_slicer_sede",
   "position": {
-    "x": 860,
-    "y": 18,
+    "x": 335,
+    "y": 20,
     "z": 2,
-    "height": 65,
-    "width": 270,
+    "height": 72,
+    "width": 210,
     "tabOrder": 2
   },
   "visual": {
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimCarreraAdm"
+                      "Entity": "DimSedeAdm"
                     }
                   },
-                  "Property": "TipoCarrera"
+                  "Property": "Sede"
                 }
               },
-              "queryRef": "DimCarreraAdm.TipoCarrera",
+              "queryRef": "DimSedeAdm.Sede",
               "active": true
             }
           ]
@@ -75,47 +75,6 @@
                 "Literal": {
                   "Value": "'Vertical'"
                 }
-              }
-            },
-            "filter": {
-              "filter": {
-                "Version": 2,
-                "From": [
-                  {
-                    "Name": "d",
-                    "Entity": "DimCarreraAdm",
-                    "Type": 0
-                  }
-                ],
-                "Where": [
-                  {
-                    "Condition": {
-                      "In": {
-                        "Expressions": [
-                          {
-                            "Column": {
-                              "Expression": {
-                                "SourceRef": {
-                                  "Source": "d"
-                                }
-                              },
-                              "Property": "TipoCarrera"
-                            }
-                          }
-                        ],
-                        "Values": [
-                          [
-                            {
-                              "Literal": {
-                                "Value": "'Grado'"
-                              }
-                            }
-                          ]
-                        ]
-                      }
-                    }
-                  }
-                ]
               }
             }
           }
@@ -211,7 +170,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Tipo'"
+                  "Value": "'Sede'"
                 }
               }
             },

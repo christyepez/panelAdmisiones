@@ -15,8 +15,8 @@ expression FxTipoPrograma =
 		let
 		    T = Text.Upper(Text.Trim(if carrera = null then "" else carrera)),
 		    EsPosgrado =
-		        Text.Contains(T, "MAESTRIA") or Text.Contains(T, "MAESTRÍA") or
-		        Text.Contains(T, "ESPECIALIZACION") or Text.Contains(T, "ESPECIALIZACIÓN") or
+		        Text.Contains(T, "MAESTRIA") or Text.Contains(T, "MAESTRÃƒÂA") or
+		        Text.Contains(T, "ESPECIALIZACION") or Text.Contains(T, "ESPECIALIZACIÃƒâ€œN") or
 		        Text.Contains(T, "DOCTORADO") or Text.Contains(T, "POSGRADO") or
 		        Text.Contains(T, "MASTER") or Text.Contains(T, "PHD")
 		in
@@ -28,7 +28,7 @@ expression FxTipoCarrera =
 		let
 		    T = FxNormalizeName(carrera)
 		in
-		    if Text.Contains(T, "MAESTRIA") then "Maestría" else "Grado"
+		    if Text.Contains(T, "MAESTRIA") then "MaestrÃƒÂ­a" else "Grado"
 	lineageTag: 5b5578bb-58f4-4a98-91a4-42b7a5b84601
 
 expression FxCleanText =
@@ -60,40 +60,32 @@ expression FxLoad387 =
 		    Files1 = Table.SelectRows(Files0, each
 		        Text.Contains(Text.Lower([Folder Path]), "/general/paneles/admisiones/historicos/") and
 		        not Text.StartsWith([Name], "~$") and
-		        Text.Lower([Name]) = "datoshistoricob25.xlsx"),
-		    Files = Table.Sort(Files1, {{"Date modified", Order.Descending}}),
-		    Latest =
-		        if Table.RowCount(Files)=0
-		        then error "No se encontró Datoshistoricob25.xlsx en la carpeta configurada."
-		        else Files{0},
-		    FileName = Text.From(Latest[Name]),
-		    Raw = FxReadNamedSheet(Latest[Content], "Hoja2"),
-		    Keep = Table.SelectColumns(
-		        Raw,
-		        {"IDENTIF.","PERIODO","SEDE","FACULTAD","MODALIDAD","CARRERA","CENTRO INFORMACION","MAT.","APELLIDOS Y NOMBRES",
-		         "FECHA DE MATRICULA","NIVEL","FORMALIZADA","RET.CARRERA","PERSONA INSCRIBIO","PERSONA MATRICULO"},
-		        MissingField.UseNull
-		    ),
-		    Ren = Table.RenameColumns(Keep,{
-		        {"IDENTIF.","Identificacion"},{"PERIODO","Periodo"},{"SEDE","Sede"},{"FACULTAD","Facultad"},{"MODALIDAD","Modalidad"},
-		        {"CARRERA","Carrera"},{"CENTRO INFORMACION","Centro"},{"MAT.","MatriculaId"},{"APELLIDOS Y NOMBRES","Estudiante"},
-		        {"FECHA DE MATRICULA","FechaMatricula"},{"NIVEL","Nivel"},{"FORMALIZADA","Formalizada"},{"RET.CARRERA","RetiradoCarrera"},
-		        {"PERSONA INSCRIBIO","PersonaInscribio"},{"PERSONA MATRICULO","PersonaMatriculo"}
-		    }, MissingField.Ignore),
-		    Cleaned = Table.TransformColumns(Ren,{
-		        {"Identificacion", FxCleanText, type text},{"Periodo", each Text.Upper(FxCleanText(_)), type text},
-		        {"Sede", FxCleanText, type text},{"Facultad", FxCleanText, type text},{"Modalidad", FxCleanText, type text},
-		        {"Carrera", FxCleanText, type text},{"Centro", FxCleanText, type text},{"MatriculaId", FxCleanText, type text},
-		        {"Estudiante", FxCleanText, type text},{"Nivel", FxCleanText, type text},{"Formalizada", FxCleanText, type text},
-		        {"RetiradoCarrera", FxCleanText, type text},{"PersonaInscribio", FxCleanText, type text},{"PersonaMatriculo", FxCleanText, type text}
-		    }),
-		    Dates = Table.TransformColumns(Cleaned,{{"FechaMatricula", each try Date.From(_) otherwise null, type date}}),
-		    Canon = Table.TransformColumns(Dates,{{"Carrera", each FxCarreraCanonica(_), type text}}),
-		    AddTipo = Table.AddColumn(Canon, "TipoPrograma", each FxTipoPrograma([Carrera]), type text),
-		    AddTipoCarrera = Table.AddColumn(AddTipo, "TipoCarrera", each FxTipoCarrera([Carrera]), type text),
-		    AddFile = Table.AddColumn(AddTipoCarrera, "ArchivoOrigen", each FileName, type text),
-		    Result0 = Table.SelectRows(AddFile, each [Periodo] = "B25" and [Identificacion] <> null),
-		    Result = Table.Distinct(Result0, {"Periodo","Identificacion","Carrera","MatriculaId"})
+		        List.Contains({"387 a24.xlsx","387 b24.xlsx","387 a25.xlsx","387 b25.xlsx"}, Text.Lower([Name]))),
+		    LoadOne = (content as binary, fileName as text) as table =>
+		        let
+		            Raw = FxReadNamedSheet(content, "matriz_alumnos_matriculados_por"),
+		            Keep = Table.SelectColumns(Raw, {"IDENTIF.","PERIODO","SEDE","MODALIDAD","CARRERA","MAT.","FECHA DE MATRICULA","FORMALIZADA"}, MissingField.UseNull),
+		            Ren = Table.RenameColumns(Keep,{
+		                {"IDENTIF.","Identificacion"},{"PERIODO","Periodo"},{"SEDE","Sede"},{"MODALIDAD","Modalidad"},
+		                {"CARRERA","Carrera"},{"MAT.","MatriculaId"},{"FECHA DE MATRICULA","FechaMatricula"},{"FORMALIZADA","Formalizada"}
+		            }, MissingField.Ignore),
+		            Cleaned = Table.TransformColumns(Ren,{
+		                {"Identificacion", FxCleanText, type text},{"Periodo", each Text.Upper(FxCleanText(_)), type text},
+		                {"Sede", FxCleanText, type text},{"Modalidad", FxCleanText, type text},{"Carrera", FxCleanText, type text},
+		                {"MatriculaId", FxCleanText, type text},{"Formalizada", FxCleanText, type text}
+		            }),
+		            Dates = Table.TransformColumns(Cleaned,{{"FechaMatricula", each try Date.From(_) otherwise null, type date}}),
+		            Canon = Table.TransformColumns(Dates,{{"Carrera", each FxCarreraCanonica(_), type text}}),
+		            AddTipo = Table.AddColumn(Canon, "TipoPrograma", each FxTipoPrograma([Carrera]), type text),
+		            AddTipoCarrera = Table.AddColumn(AddTipo, "TipoCarrera", each FxTipoCarrera([Carrera]), type text),
+		            AddFile = Table.AddColumn(AddTipoCarrera, "ArchivoOrigen", each fileName, type text),
+		            Valid = Table.SelectRows(AddFile, each [Periodo] <> null and [Identificacion] <> null and [FechaMatricula] <> null),
+		            Dedup = Table.Distinct(Valid, {"Periodo","Identificacion","Carrera","MatriculaId"}),
+		            Result = Table.SelectColumns(Dedup,{"Periodo","Sede","Modalidad","Carrera","Identificacion","FechaMatricula","Formalizada","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull)
+		        in
+		            Result,
+		    Tables = List.Transform(Table.ToRecords(Files1), each LoadOne(_[Content], _[Name])),
+		    Result = if List.Count(Tables)=0 then #table(type table [Periodo=text,Sede=text,Modalidad=text,Carrera=text,Identificacion=text,FechaMatricula=date,Formalizada=text,TipoPrograma=text,TipoCarrera=text,ArchivoOrigen=text], {}) else Table.Combine(Tables)
 		in
 		    Result
 	lineageTag: da1e8591-e9bb-437a-9f6e-4ac4d241ba78
@@ -109,7 +101,7 @@ expression FxLoad615 =
 		    Files = Table.Sort(Files1, {{"Date modified", Order.Descending}}),
 		    Latest =
 		        if Table.RowCount(Files)=0
-		        then error "No se encontró 615.xlsx en SharePoint /General/Paneles/Admisiones/Actual/."
+		        then error "No se encontrÃƒÂ³ 615.xlsx en SharePoint /General/Paneles/Admisiones/Actual/."
 		        else Files{0},
 		    FileName = Text.From(Latest[Name]),
 		    Raw = FxReadNamedSheet(Latest[Content], "reporte"),
@@ -147,7 +139,7 @@ expression FxLoad615 =
 		    AddTipo = Table.AddColumn(AddAsesor, "TipoPrograma", each FxTipoPrograma([Carrera]), type text),
 		    AddTipoCarrera = Table.AddColumn(AddTipo, "TipoCarrera", each FxTipoCarrera([Carrera]), type text),
 		    BusinessFilter = Table.SelectRows(AddTipoCarrera, each
-		        FxNormalizeName([Periodo]) = "B26" and
+		        List.Contains({"A26","B26"}, FxNormalizeName([Periodo])) and
 		        FxNormalizeName([Homologacion]) = "NO" and
 		        FxNormalizeName([RetiradoCarrera]) = "NO" and
 		        FxNormalizeName([MatriculaEnPrimero]) = "SI" and
@@ -168,7 +160,7 @@ expression FxNormalizeName =
 		(t as nullable text) as text =>
 		let
 		    S0 = Text.Upper(Text.Trim(if t = null then "" else t)),
-		    S1 = Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(S0,"Á","A"),"É","E"),"Í","I"),"Ó","O"),"Ú","U"),
+		    S1 = Text.Replace(Text.Replace(Text.Replace(Text.Replace(Text.Replace(S0,"ÃƒÂ","A"),"Ãƒâ€°","E"),"ÃƒÂ","I"),"Ãƒâ€œ","O"),"ÃƒÅ¡","U"),
 		    S2 = Text.Replace(Text.Replace(Text.Replace(Text.Replace(S1,"_"," "),"."," "),"-"," "),"/"," "),
 		    S3 = Text.Combine(List.Select(Text.SplitAny(S2," "), each _ <> ""), " ")
 		in
@@ -182,16 +174,16 @@ expression FxCarreraCanonica =
 		    N = FxNormalizeName(Raw),
 		    R =
 		        if Raw = null then null
-		        else if N = "ELECTRICIDAD" or N = "INGENIERIA ELECTRICA" then "INGENIERÍA ELECTRICA"
-		        else if N = "INTELIGENCIA DE NEGOCIOS" or N = "INGENIERIA EN INTELIGENCIA DE NEGOCIOS" then "INGENIERÍA EN INTELIGENCIA DE NEGOCIOS"
-		        else if N = "MECATRONICA" or N = "INGENIERIA EN MECATRONICA" then "INGENIERÍA EN MECATRÓNICA"
-		        else if N = "SOFTWARE" or N = "INGENIERIA EN SOFTWARE" then "INGENIERÍA EN SOFTWARE"
-		        else if N = "PSICOLOGIA" or N = "PSICOLOGIA GENERAL" then "PSICOLOGÍA GENERAL"
+		        else if N = "ELECTRICIDAD" or N = "INGENIERIA ELECTRICA" then "INGENIERÃƒÂA ELECTRICA"
+		        else if N = "INTELIGENCIA DE NEGOCIOS" or N = "INGENIERIA EN INTELIGENCIA DE NEGOCIOS" then "INGENIERÃƒÂA EN INTELIGENCIA DE NEGOCIOS"
+		        else if N = "MECATRONICA" or N = "INGENIERIA EN MECATRONICA" then "INGENIERÃƒÂA EN MECATRÃƒâ€œNICA"
+		        else if N = "SOFTWARE" or N = "INGENIERIA EN SOFTWARE" then "INGENIERÃƒÂA EN SOFTWARE"
+		        else if N = "PSICOLOGIA" or N = "PSICOLOGIA GENERAL" then "PSICOLOGÃƒÂA GENERAL"
 		        else if N = "PSICOLOGIA CLINICA" then "PSICOLOGIA CLINICA"
 		        else if N = "PSICOLOGIA EDUCATIVA" then "PSICOLOGIA EDUCATIVA"
-		        else if N = "PSICOLOGIA ORGANIZACIONAL" then "PSICOLOGÍA ORGANIZACIONAL"
-		        else if N = "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEPORTE" or N = "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEL DEPORTE" then "PEDAGOGÍA DE LA ACTIVIDAD FÍSICA Y DEL DEPORTE"
-		        else if N = "ENFERMERIA" then "ENFERMERÍA"
+		        else if N = "PSICOLOGIA ORGANIZACIONAL" then "PSICOLOGÃƒÂA ORGANIZACIONAL"
+		        else if N = "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEPORTE" or N = "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEL DEPORTE" then "PEDAGOGÃƒÂA DE LA ACTIVIDAD FÃƒÂSICA Y DEL DEPORTE"
+		        else if N = "ENFERMERIA" then "ENFERMERÃƒÂA"
 		        else if N = "ADMINISTRACION DE EMPRESAS" then "ADMINISTRACION DE EMPRESAS"
 		        else if N = "CONTABILIDAD Y AUDITORIA" then "CONTABILIDAD Y AUDITORIA"
 		        else if N = "INGENIERIA INDUSTRIAL" then "INGENIERIA INDUSTRIAL"
@@ -240,24 +232,31 @@ expression FxLoadMetas =
 		() as table =>
 		let
 		    Files0 = FxSharePointAdmisionesFiles(),
-		    Files = Table.Sort(Table.SelectRows(Files0, each Text.Contains(Text.Lower([Folder Path]), "/general/paneles/admisiones/actual/") and Text.Lower([Name]) = "metasv1.xlsx"), {{"Date modified", Order.Descending}}),
-		    Latest = if Table.RowCount(Files)=0 then error "No se encontró MetasV1.xlsx en SharePoint /General/Paneles/Admisiones/Actual/." else Files{0},
-		    Bin = Latest[Content],
-		    Raw = FxReadNamedSheet(Bin, "B25 vs B26"),
-		    Keep = Table.SelectColumns(Raw,{"Carrera","Sede","Modalidad","Meta","Oferta B26"},MissingField.UseNull),
+		    Files = Table.Sort(
+		        Table.SelectRows(Files0, each
+		            Text.Contains(Text.Lower([Folder Path]), "/general/paneles/admisiones/actual/") and
+		            Text.Lower([Name]) = "metasbase.xlsx" and
+		            not Text.StartsWith([Name], "~$")
+		        ),
+		        {{"Date modified", Order.Descending}}
+		    ),
+		    Latest = if Table.RowCount(Files)=0 then error "No se encontro MetasBase.xlsx en SharePoint /General/Paneles/Admisiones/Actual/." else Files{0},
+		    Raw = FxReadNamedSheet(Latest[Content], "Meta"),
+		    Keep = Table.SelectColumns(Raw,{"Segmento","Carrera","Sede","Modalidad","Meta Ventas","Oferta B26"},MissingField.UseNull),
 		    Clean0 = Table.TransformColumns(Keep,{
 		        {"Carrera", each FxCarreraCanonica(_), type nullable text},
 		        {"Sede", each FxCleanText(_), type nullable text},
 		        {"Modalidad", each FxCleanText(_), type nullable text},
-		        {"Meta", each try Number.From(_) otherwise try Number.FromText(Text.From(_),"es-EC") otherwise null, type nullable number},
+		        {"Meta Ventas", each try Number.From(_) otherwise try Number.FromText(Text.From(_),"es-EC") otherwise null, type nullable number},
 		        {"Oferta B26", each let v=FxCleanText(_) in if v=null then "NO" else Text.Upper(v), type text}
 		    }),
 		    Clean = Table.TransformColumns(Clean0,{
 		        {"Sede", each let n=FxNormalizeName(_) in if n="AMBATO" or n="AMB" then "MATRIZ" else if n="UIO" then "QUITO" else if n="LTG" then "LATACUNGA" else n, type nullable text},
 		        {"Modalidad", each let n=FxNormalizeName(_) in if Text.StartsWith(n,"HIBRIDA") then "HIBRIDA" else if Text.StartsWith(n,"EN LINEA") then "EN LINEA" else if Text.StartsWith(n,"PRESENCIAL") then "PRESENCIAL" else if Text.StartsWith(n,"SEMIPRESENCIAL") then "SEMIPRESENCIAL" else n, type nullable text}
 		    }),
-		    Valid = Table.SelectRows(Clean, each [Carrera]<>null and [Meta]<>null),
-		    AddPeriodo = Table.AddColumn(Valid,"Periodo",each "B26",type text),
+		    Valid = Table.SelectRows(Clean, each [Carrera]<>null and [Meta Ventas]<>null),
+		    Ren = Table.RenameColumns(Valid,{{"Meta Ventas","Meta"}},MissingField.Ignore),
+		    AddPeriodo = Table.AddColumn(Ren,"Periodo",each "B26",type text),
 		    AddTipoPrograma = Table.AddColumn(AddPeriodo,"TipoPrograma",each FxTipoPrograma([Carrera]),type text),
 		    AddTipoCarrera = Table.AddColumn(AddTipoPrograma,"TipoCarrera",each FxTipoCarrera([Carrera]),type text),
 		    AddNivel = Table.AddColumn(AddTipoCarrera,"NivelMeta",each "DETALLE_FUENTE",type text),
@@ -267,8 +266,8 @@ expression FxLoadMetas =
 		    AddMesOrden = Table.AddColumn(AddMes,"MesOrden",each null,Int64.Type),
 		    AddPeriodoMes = Table.AddColumn(AddMesOrden,"PeriodoMes",each "B26-GENERAL",type text),
 		    AddProyeccion = Table.AddColumn(AddPeriodoMes,"Proyeccion",each null,type nullable number),
-		    AddFile = Table.AddColumn(AddProyeccion,"ArchivoOrigen",each "MetasV1.xlsx",type text),
-		    AddSheet = Table.AddColumn(AddFile,"HojaOrigen",each "B25 vs B26",type text),
+		    AddFile = Table.AddColumn(AddProyeccion,"ArchivoOrigen",each "MetasBase.xlsx",type text),
+		    AddSheet = Table.AddColumn(AddFile,"HojaOrigen",each "Meta",type text),
 		    Result = Table.SelectColumns(AddSheet,{"PeriodoMes","Periodo","Mes","MesOrden","TipoPrograma","TipoCarrera","Carrera","Sede","Modalidad","ModalidadMeta","NivelMeta","Meta","MetaOficial","Proyeccion","ArchivoOrigen","HojaOrigen","Oferta B26"},MissingField.UseNull)
 		in
 		    Result
