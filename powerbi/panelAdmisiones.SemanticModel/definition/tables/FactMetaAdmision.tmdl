@@ -21,15 +21,24 @@ table FactMetaAdmision
 		formatString: #,0
 		lineageTag: 4f43d821-0fc6-487a-98d6-952f6d9c9fa4
 
-	measure 'Meta B26 Base Contexto' = ```
-				VAR HayOferta = ISFILTERED(DimOfertaAdm[Oferta])
-				VAR HaySede = ISFILTERED(DimSedeAdm[Sede]) || ISINSCOPE(DimSedeAdm[Sede])
-				VAR HayModalidad = ISFILTERED(DimModalidadAdm[Modalidad]) || ISINSCOPE(DimModalidadAdm[Modalidad])
-				VAR HayCarrera = ISFILTERED(DimCarreraAdm[Carrera]) || ISINSCOPE(DimCarreraAdm[Carrera])
-				VAR HayTipoCarrera = ISFILTERED(DimCarreraAdm[TipoCarrera]) || ISINSCOPE(DimCarreraAdm[TipoCarrera])
-				VAR MetaTipo = CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE")
-				RETURN SWITCH(TRUE(), HayOferta, [Meta Oferta Excel B26], HayModalidad, [Meta Modalidad Excel B26], HaySede, [Meta Sede Excel B26], HayCarrera, [Meta Oficial Carrera B26], HayTipoCarrera, MetaTipo, [Meta Oficial B26 Panel])
-			```
+	measure 'Meta B26 Base Contexto' =
+			VAR PeriodoActivo =
+				COALESCE(
+					SELECTEDVALUE(DimPeriodo[Periodo]),
+					CALCULATE(
+						MAX(DimPeriodo[Periodo]),
+						FILTER(ALL(DimPeriodo), DimPeriodo[EsPeriodoActivo] = TRUE())
+					),
+					"B26"
+				)
+			VAR MetaExcel =
+				CALCULATE(
+					SUM(FactMetaAdmision[Meta]),
+					REMOVEFILTERS(DimPeriodo),
+					FactMetaAdmision[Periodo] = PeriodoActivo,
+					FactMetaAdmision[NivelMeta] = "DETALLE_FUENTE"
+				)
+			RETURN MetaExcel
 		formatString: #,0
 		lineageTag: a4c6f31b-c07a-40a2-a748-5258332e8533
 

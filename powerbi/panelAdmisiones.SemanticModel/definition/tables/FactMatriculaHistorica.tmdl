@@ -296,21 +296,26 @@ table FactMatriculaHistorica
 				VAR Inicio = [Inicio Periodo B26]
 				VAR Fin = [Fin Periodo B26]
 				VAR CorteReal = MIN([Fecha Corte Datos B26], Fin)
+				VAR MesCorte = MONTH(CorteReal)
 				VAR InicioMes = DATE(YEAR(Inicio), M, 1)
 				VAR CorteMes = MIN(Fin, EOMONTH(InicioMes,0))
-				VAR MesCorte = MONTH(CorteReal)
-				VAR RealCorte = [Matrix B26 Real Contexto]
+				VAR RealCorte =
+					CALCULATE(
+						[B26 Acumulado Mes],
+						REMOVEFILTERS(DimMesPeriodo),
+						TREATAS({MesCorte}, DimMesPeriodo[MesNumero])
+					)
 				VAR DiasCorte = DATEDIFF(Inicio, CorteReal, DAY) + 1
 				VAR RitmoCorte = DIVIDE(RealCorte, DiasCorte)
 				VAR DiasObjetivo = DATEDIFF(Inicio, CorteMes, DAY) + 1
 				RETURN
-				    SWITCH(
-				        TRUE(),
-				        ISBLANK(M) || ISBLANK(CorteReal) || ISBLANK(RealCorte) || InicioMes > Fin || EOMONTH(InicioMes,0) < Inicio, BLANK(),
-				        M < MesCorte, BLANK(),
-				        M = MesCorte, RealCorte,
-				        ROUND(RealCorte + RitmoCorte * (DiasObjetivo - DiasCorte), 0)
-				    )
+					SWITCH(
+						TRUE(),
+						ISBLANK(M) || ISBLANK(CorteReal) || ISBLANK(RealCorte) || InicioMes > Fin || EOMONTH(InicioMes,0) < Inicio, BLANK(),
+						M < MesCorte, BLANK(),
+						M = MesCorte, RealCorte,
+						ROUND(RealCorte + RitmoCorte * (DiasObjetivo - DiasCorte), 0)
+					)
 			```
 		formatString: #,0
 		lineageTag: c9be600a-a0b9-46a3-aa69-b0d0f66f8c9a
