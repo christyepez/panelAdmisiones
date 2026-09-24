@@ -66,22 +66,22 @@ expression FxLoad387 =
 		    LoadOne = (content as binary, fileName as text) as table =>
 		        let
 		            Raw = FxReadNamedSheet(content, "matriz_alumnos_matriculados_por"),
-		            Keep = Table.SelectColumns(Raw, {"IDENTIF.","PERIODO","SEDE","MODALIDAD","CARRERA","MAT.","FECHA DE MATRICULA","FORMALIZADA"}, MissingField.UseNull),
+		            Keep = Table.SelectColumns(Raw, {"IDENTIF.","PERIODO","SEDE","MODALIDAD","CARRERA","MAT.","FECHA DE MATRICULA","FORMALIZADA","NIVEL"}, MissingField.UseNull),
 		            Ren = Table.RenameColumns(Keep,{
 		                {"IDENTIF.","Identificacion"},{"PERIODO","Periodo"},{"SEDE","Sede"},{"MODALIDAD","Modalidad"},
-		                {"CARRERA","Carrera"},{"MAT.","MatriculaId"},{"FECHA DE MATRICULA","FechaMatricula"},{"FORMALIZADA","Formalizada"}
+		                {"CARRERA","Carrera"},{"MAT.","MatriculaId"},{"FECHA DE MATRICULA","FechaMatricula"},{"FORMALIZADA","Formalizada"},{"NIVEL","Nivel"}
 		            }, MissingField.Ignore),
 		            Cleaned = Table.TransformColumns(Ren,{
 		                {"Identificacion", FxCleanText, type text},{"Periodo", each Text.Upper(FxCleanText(_)), type text},
 		                {"Sede", FxCleanText, type text},{"Modalidad", FxCleanText, type text},{"Carrera", FxCleanText, type text},
-		                {"MatriculaId", FxCleanText, type text},{"Formalizada", FxCleanText, type text}
+		                {"MatriculaId", FxCleanText, type text},{"Formalizada", FxCleanText, type text},{"Nivel", FxCleanText, type text}
 		            }),
 		            Dates = Table.TransformColumns(Cleaned,{{"FechaMatricula", each try Date.From(_) otherwise null, type date}}),
 		            Canon = Table.TransformColumns(Dates,{{"Carrera", each FxCarreraCanonica(_), type text}}),
 		            AddTipo = Table.AddColumn(Canon, "TipoPrograma", each FxTipoPrograma([Carrera]), type text),
 		            AddTipoCarrera = Table.AddColumn(AddTipo, "TipoCarrera", each FxTipoCarrera([Carrera]), type text),
 		            AddFile = Table.AddColumn(AddTipoCarrera, "ArchivoOrigen", each fileName, type text),
-		            Valid = Table.SelectRows(AddFile, each [Periodo] <> null and [Identificacion] <> null and [FechaMatricula] <> null),
+		            Valid = Table.SelectRows(AddFile, each [Periodo] <> null and [Identificacion] <> null and [FechaMatricula] <> null and FxNormalizeName([Nivel]) = "1RO NIVEL"),
 		            Dedup = Table.Distinct(Valid, {"Periodo","Identificacion","Carrera","MatriculaId"}),
 		            Result = Table.SelectColumns(Dedup,{"Periodo","Sede","Modalidad","Carrera","Identificacion","FechaMatricula","Formalizada","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull)
 		        in
