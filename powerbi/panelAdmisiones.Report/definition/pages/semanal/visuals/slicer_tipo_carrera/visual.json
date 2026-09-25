@@ -4,10 +4,10 @@
   "position": {
     "x": 785,
     "y": 20,
-    "z": 4,
+    "z": 4000,
     "height": 72,
     "width": 190,
-    "tabOrder": 4
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "slicer",
@@ -99,7 +99,7 @@
                                   "Source": "d"
                                 }
                               },
-                              "Property": "TipoCarrera"
+                              "Property": "TipoPrograma"
                             }
                           }
                         ],
@@ -107,7 +107,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'Grado'"
+                                "Value": "'GRADO'"
                               }
                             }
                           ]

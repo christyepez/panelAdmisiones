@@ -4,10 +4,10 @@
   "position": {
     "x": 19.370459167607375,
     "y": 801.63900247482832,
-    "z": 30,
+    "z": 17000,
     "height": 790,
     "width": 1560,
-    "tabOrder": 30
+    "tabOrder": 17000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -639,121 +639,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "d6040c84cc592ec96d2a",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimCarreraAdm"
-              }
-            },
-            "Property": "Carrera"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "a8bd02af0db59ee00374",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimSedeAdm"
-              }
-            },
-            "Property": "Sede"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "50529c7060ab890488e4",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimModalidadAdm"
-              }
-            },
-            "Property": "Modalidad"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "bd5f6bf894027e79d821",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimFecha"
-              }
-            },
-            "Property": "Mes"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "e613be25020714d4661b",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimFecha"
-              }
-            },
-            "Property": "Dia"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "dc9a32c2e0ae0268989a",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "FactMatriculaHistorica"
-              }
-            },
-            "Property": "Valor Matriz Comparativa"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "393165e8028a04311243",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimMatrixColumn"
-              }
-            },
-            "Property": "Anio"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "f4244a16932ec6918d17",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimMatrixColumn"
-              }
-            },
-            "Property": "Metrica"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

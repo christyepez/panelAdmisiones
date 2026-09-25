@@ -34,8 +34,9 @@ table DimSeguimientoResumenColumn
 							{"TOTAL SEGMENTO","",3,1},
 							{"B25","NE",4,1},
 							{"B25","%",4,2},
-							{"B26","NE",5,1},
-							{"B26","%",5,2}
+							{Character.FromNumber(160),Character.FromNumber(160),5,1},
+							{"B26","NE",6,1},
+							{"B26","%",6,2}
 						}
-					)
+				)
 

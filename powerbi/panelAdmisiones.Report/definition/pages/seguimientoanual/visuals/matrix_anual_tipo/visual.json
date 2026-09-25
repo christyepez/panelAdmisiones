@@ -1,338 +1,409 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
-  "name": "matrix_anual_tipo",
-  "position": {
-    "x": 20,
-    "y": 740,
-    "z": 10,
-    "height": 600,
-    "width": 1560,
-    "tabOrder": 4
-  },
-  "visual": {
-    "visualType": "pivotTable",
-    "query": {
-      "queryState": {
-        "Columns": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimSeguimientoResumenColumn"
-                    }
-                  },
-                  "Property": "Grupo"
-                }
-              },
-              "queryRef": "DimSeguimientoResumenColumn.Grupo",
-              "nativeQueryRef": "Grupo",
-              "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimSeguimientoResumenColumn"
-                    }
-                  },
-                  "Property": "Subgrupo"
-                }
-              },
-              "queryRef": "DimSeguimientoResumenColumn.Subgrupo",
-              "nativeQueryRef": "Detalle",
-              "active": true
-            }
-          ]
-        },
-        "Rows": {
-          "projections": [
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimCarreraAdm"
-                    }
-                  },
-                  "Property": "TipoPrograma"
-                }
-              },
-              "queryRef": "DimCarreraAdm.TipoPrograma",
-              "nativeQueryRef": "Tipo",
-              "active": true
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "DimModalidadAdm"
-                    }
-                  },
-                  "Property": "Modalidad"
-                }
-              },
-              "queryRef": "DimModalidadAdm.Modalidad",
-              "nativeQueryRef": "Modalidad",
-              "active": true
-            }
-          ]
-        },
-        "Values": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "FactMatriculaHistorica"
-                    }
-                  },
-                  "Property": "Valor Resumen Seguimiento Anual"
-                }
-              },
-              "queryRef": "FactMatriculaHistorica.Valor Resumen Seguimiento Anual",
-              "nativeQueryRef": "Valor"
-            }
-          ]
-        }
-      },
-      "sortDefinition": {
-        "isDefaultSort": true
-      }
-    },
-    "expansionStates": [
-      {
-        "roles": [
-          "Rows"
-        ],
-        "levels": [
-          {
-            "queryRefs": [
-              "DimCarreraAdm.TipoPrograma"
-            ],
-            "isPinned": true
-          },
-          {
-            "queryRefs": [
-              "DimModalidadAdm.Modalidad"
-            ],
-            "isCollapsed": true,
-            "isPinned": true
-          }
-        ],
-        "root": {}
-      }
-    ],
-    "objects": {
-      "subTotals": [
-        {
-          "properties": {
-            "rowSubtotals": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "columnSubtotals": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "columnHeaders": [
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'center'"
-                }
-              }
-            },
-            "columnAdjustment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'growToFit'"
-                }
-              }
-            },
-            "autoSizeColumnWidth": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#FFFFFF'"
-                    }
-                  }
-                }
-              }
-            },
-            "backColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#17365D'"
-                    }
-                  }
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "rowHeaders": [
-        {
-          "properties": {
-            "wordWrap": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "values": [
-        {
-          "properties": {
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "visualContainerObjects": {
-      "background": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#FFFFFF'"
-                    }
-                  }
-                }
-              }
-            },
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "border": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#D9D9D9'"
-                    }
-                  }
-                }
-              }
-            },
-            "radius": {
-              "expr": {
-                "Literal": {
-                  "Value": "4D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "title": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Resumen anual - B25 vs B26'"
-                }
-              }
-            },
-            "fontColor": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#111111'"
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      ]
-    },
-    "drillFilterOtherVisuals": true
-  }
+    "$schema":  "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
+    "name":  "matrix_anual_tipo",
+    "position":  {
+                     "x":  20,
+                     "y":  740,
+                     "z":  7000,
+                     "height":  600,
+                     "width":  1560,
+                     "tabOrder":  4000
+                 },
+    "visual":  {
+                   "visualType":  "pivotTable",
+                   "query":  {
+                                 "queryState":  {
+                                                    "Columns":  {
+                                                                    "projections":  [
+                                                                                        {
+                                                                                            "field":  {
+                                                                                                          "Column":  {
+                                                                                                                         "Expression":  {
+                                                                                                                                            "SourceRef":  {
+                                                                                                                                                              "Entity":  "DimSeguimientoResumenColumn"
+                                                                                                                                                          }
+                                                                                                                                        },
+                                                                                                                         "Property":  "Grupo"
+                                                                                                                     }
+                                                                                                      },
+                                                                                            "queryRef":  "DimSeguimientoResumenColumn.Grupo",
+                                                                                            "nativeQueryRef":  "Grupo",
+                                                                                            "active":  true
+                                                                                        },
+                                                                                        {
+                                                                                            "field":  {
+                                                                                                          "Column":  {
+                                                                                                                         "Expression":  {
+                                                                                                                                            "SourceRef":  {
+                                                                                                                                                              "Entity":  "DimSeguimientoResumenColumn"
+                                                                                                                                                          }
+                                                                                                                                        },
+                                                                                                                         "Property":  "Subgrupo"
+                                                                                                                     }
+                                                                                                      },
+                                                                                            "queryRef":  "DimSeguimientoResumenColumn.Subgrupo",
+                                                                                            "nativeQueryRef":  "Detalle",
+                                                                                            "active":  true
+                                                                                        }
+                                                                                    ]
+                                                                },
+                                                    "Rows":  {
+                                                                 "projections":  [
+                                                                                     {
+                                                                                         "field":  {
+                                                                                                       "Column":  {
+                                                                                                                      "Expression":  {
+                                                                                                                                         "SourceRef":  {
+                                                                                                                                                           "Entity":  "DimCarreraAdm"
+                                                                                                                                                       }
+                                                                                                                                     },
+                                                                                                                      "Property":  "TipoPrograma"
+                                                                                                                  }
+                                                                                                   },
+                                                                                         "queryRef":  "DimCarreraAdm.TipoPrograma",
+                                                                                         "nativeQueryRef":  "Tipo",
+                                                                                         "active":  true
+                                                                                     },
+                                                                                     {
+                                                                                         "field":  {
+                                                                                                       "Column":  {
+                                                                                                                      "Expression":  {
+                                                                                                                                         "SourceRef":  {
+                                                                                                                                                           "Entity":  "DimModalidadAdm"
+                                                                                                                                                       }
+                                                                                                                                     },
+                                                                                                                      "Property":  "Modalidad"
+                                                                                                                  }
+                                                                                                   },
+                                                                                         "queryRef":  "DimModalidadAdm.Modalidad",
+                                                                                         "nativeQueryRef":  "Modalidad",
+                                                                                         "active":  true
+                                                                                     }
+                                                                                 ]
+                                                             },
+                                                    "Values":  {
+                                                                   "projections":  [
+                                                                                       {
+                                                                                           "field":  {
+                                                                                                         "Measure":  {
+                                                                                                                         "Expression":  {
+                                                                                                                                            "SourceRef":  {
+                                                                                                                                                              "Entity":  "FactMatriculaHistorica"
+                                                                                                                                                          }
+                                                                                                                                        },
+                                                                                                                         "Property":  "Valor Resumen Seguimiento Anual"
+                                                                                                                     }
+                                                                                                     },
+                                                                                           "queryRef":  "FactMatriculaHistorica.Valor Resumen Seguimiento Anual",
+                                                                                           "nativeQueryRef":  "Valor"
+                                                                                       }
+                                                                                   ]
+                                                               }
+                                                },
+                                 "sortDefinition":  {
+                                                        "isDefaultSort":  true
+                                                    }
+                             },
+                   "expansionStates":  [
+                                           {
+                                               "roles":  [
+                                                             "Rows"
+                                                         ],
+                                               "levels":  [
+                                                              {
+                                                                  "queryRefs":  [
+                                                                                    "DimCarreraAdm.TipoPrograma"
+                                                                                ],
+                                                                  "isPinned":  true
+                                                              },
+                                                              {
+                                                                  "queryRefs":  [
+                                                                                    "DimModalidadAdm.Modalidad"
+                                                                                ],
+                                                                  "isCollapsed":  true,
+                                                                  "isPinned":  true
+                                                              }
+                                                          ],
+                                               "root":  {
+
+                                                        }
+                                           }
+                                       ],
+                   "objects":  {
+                                   "subTotals":  [
+                                                     {
+                                                         "properties":  {
+                                                                            "rowSubtotals":  {
+                                                                                                 "expr":  {
+                                                                                                              "Literal":  {
+                                                                                                                              "Value":  "true"
+                                                                                                                          }
+                                                                                                          }
+                                                                                             },
+                                                                            "columnSubtotals":  {
+                                                                                                    "expr":  {
+                                                                                                                 "Literal":  {
+                                                                                                                                 "Value":  "false"
+                                                                                                                             }
+                                                                                                             }
+                                                                                                }
+                                                                        }
+                                                     }
+                                                 ],
+                                   "columnHeaders":  [
+                                                         {
+                                                             "properties":  {
+                                                                                "autoSizeColumnWidth":  {
+                                                                                                            "expr":  {
+                                                                                                                         "Literal":  {
+                                                                                                                                         "Value":  "true"
+                                                                                                                                     }
+                                                                                                                     }
+                                                                                                        },
+                                                                                "fontSize":  {
+                                                                                                 "expr":  {
+                                                                                                              "Literal":  {
+                                                                                                                              "Value":  "11D"
+                                                                                                                          }
+                                                                                                          }
+                                                                                             },
+                                                                                "fontColor":  {
+                                                                                                  "solid":  {
+                                                                                                                "color":  {
+                                                                                                                              "expr":  {
+                                                                                                                                           "Literal":  {
+                                                                                                                                                           "Value":  "\u0027#FFFFFF\u0027"
+                                                                                                                                                       }
+                                                                                                                                       }
+                                                                                                                          }
+                                                                                                            }
+                                                                                              },
+                                                                                "alignment":  {
+                                                                                                  "expr":  {
+                                                                                                               "Literal":  {
+                                                                                                                               "Value":  "\u0027center\u0027"
+                                                                                                                           }
+                                                                                                           }
+                                                                                              },
+                                                                                "columnAdjustment":  {
+                                                                                                         "expr":  {
+                                                                                                                      "Literal":  {
+                                                                                                                                      "Value":  "\u0027growToFit\u0027"
+                                                                                                                                  }
+                                                                                                                  }
+                                                                                                     },
+                                                                                "backColor":  {
+                                                                                                  "solid":  {
+                                                                                                                "color":  {
+                                                                                                                              "expr":  {
+                                                                                                                                           "Literal":  {
+                                                                                                                                                           "Value":  "\u0027#3D1134\u0027"
+                                                                                                                                                       }
+                                                                                                                                       }
+                                                                                                                          }
+                                                                                                            }
+                                                                                              }
+                                                                            }
+                                                         }
+                                                     ],
+                                   "rowHeaders":  [
+                                                      {
+                                                          "properties":  {
+                                                                             "fontSize":  {
+                                                                                              "expr":  {
+                                                                                                           "Literal":  {
+                                                                                                                           "Value":  "11D"
+                                                                                                                       }
+                                                                                                       }
+                                                                                          },
+                                                                             "wordWrap":  {
+                                                                                              "expr":  {
+                                                                                                           "Literal":  {
+                                                                                                                           "Value":  "false"
+                                                                                                                       }
+                                                                                                       }
+                                                                                          }
+                                                                         }
+                                                      }
+                                                  ],
+                                   "values":  [
+                                                  {
+                                                      "properties":  {
+                                                                         "fontSize":  {
+                                                                                          "expr":  {
+                                                                                                       "Literal":  {
+                                                                                                                       "Value":  "11D"
+                                                                                                                   }
+                                                                                                   }
+                                                                                      }
+                                                                     }
+                                                  },
+                                                  {
+                                                      "properties":  {
+                                                                         "backColor":  {
+                                                                                           "solid":  {
+                                                                                                         "color":  {
+                                                                                                                       "expr":  {
+                                                                                                                                    "Literal":  {
+                                                                                                                                                    "Value":  "\u0027#FFFFFF\u0027"
+                                                                                                                                                }
+                                                                                                                                }
+                                                                                                                   }
+                                                                                                     }
+                                                                                       },
+                                                                         "fontColor":  {
+                                                                                           "solid":  {
+                                                                                                         "color":  {
+                                                                                                                       "expr":  {
+                                                                                                                                    "Literal":  {
+                                                                                                                                                    "Value":  "\u0027#FFFFFF\u0027"
+                                                                                                                                                }
+                                                                                                                                }
+                                                                                                                   }
+                                                                                                     }
+                                                                                       }
+                                                                     },
+                                                      "selector":  {
+                                                                       "data":  [
+                                                                                    {
+                                                                                        "scopeId":  {
+                                                                                                        "Comparison":  {
+                                                                                                                           "ComparisonKind":  0,
+                                                                                                                           "Left":  {
+                                                                                                                                        "Column":  {
+                                                                                                                                                       "Expression":  {
+                                                                                                                                                                          "SourceRef":  {
+                                                                                                                                                                                            "Entity":  "DimSeguimientoResumenColumn"
+                                                                                                                                                                                        }
+                                                                                                                                                                      },
+                                                                                                                                                       "Property":  "Subgrupo"
+                                                                                                                                                   }
+                                                                                                                                    },
+                                                                                                                           "Right":  {
+                                                                                                                                         "Literal":  {
+                                                                                                                                                         "Value":  "\u0027\\u00A0\u0027"
+                                                                                                                                                     }
+                                                                                                                                     }
+                                                                                                                       }
+                                                                                                    }
+                                                                                    }
+                                                                                ],
+                                                                       "hierarchyMatching":  1
+                                                                   }
+                                                  }
+                                              ],
+                                   "columnWidth":  [
+                                                       {
+                                                           "properties":  {
+                                                                              "value":  {
+                                                                                            "expr":  {
+                                                                                                         "Literal":  {
+                                                                                                                         "Value":  "454.92145286835927D"
+                                                                                                                     }
+                                                                                                     }
+                                                                                        }
+                                                                          },
+                                                           "selector":  {
+                                                                            "metadata":  "DimCarreraAdm.TipoCarrera"
+                                                                        }
+                                                       }
+                                                   ]
+                               },
+                   "visualContainerObjects":  {
+                                                  "background":  [
+                                                                     {
+                                                                         "properties":  {
+                                                                                            "show":  {
+                                                                                                         "expr":  {
+                                                                                                                      "Literal":  {
+                                                                                                                                      "Value":  "true"
+                                                                                                                                  }
+                                                                                                                  }
+                                                                                                     },
+                                                                                            "color":  {
+                                                                                                          "solid":  {
+                                                                                                                        "color":  {
+                                                                                                                                      "expr":  {
+                                                                                                                                                   "Literal":  {
+                                                                                                                                                                   "Value":  "\u0027#FFFFFF\u0027"
+                                                                                                                                                               }
+                                                                                                                                               }
+                                                                                                                                  }
+                                                                                                                    }
+                                                                                                      },
+                                                                                            "transparency":  {
+                                                                                                                 "expr":  {
+                                                                                                                              "Literal":  {
+                                                                                                                                              "Value":  "0D"
+                                                                                                                                          }
+                                                                                                                          }
+                                                                                                             }
+                                                                                        }
+                                                                     }
+                                                                 ],
+                                                  "border":  [
+                                                                 {
+                                                                     "properties":  {
+                                                                                        "show":  {
+                                                                                                     "expr":  {
+                                                                                                                  "Literal":  {
+                                                                                                                                  "Value":  "true"
+                                                                                                                              }
+                                                                                                              }
+                                                                                                 },
+                                                                                        "color":  {
+                                                                                                      "solid":  {
+                                                                                                                    "color":  {
+                                                                                                                                  "expr":  {
+                                                                                                                                               "Literal":  {
+                                                                                                                                                               "Value":  "\u0027#D9D9D9\u0027"
+                                                                                                                                                           }
+                                                                                                                                           }
+                                                                                                                              }
+                                                                                                                }
+                                                                                                  },
+                                                                                        "radius":  {
+                                                                                                       "expr":  {
+                                                                                                                    "Literal":  {
+                                                                                                                                    "Value":  "4D"
+                                                                                                                                }
+                                                                                                                }
+                                                                                                   }
+                                                                                    }
+                                                                 }
+                                                             ],
+                                                  "title":  [
+                                                                {
+                                                                    "properties":  {
+                                                                                       "text":  {
+                                                                                                    "expr":  {
+                                                                                                                 "Literal":  {
+                                                                                                                                 "Value":  "\u0027Resumen anual - B25 vs B26\u0027"
+                                                                                                                             }
+                                                                                                             }
+                                                                                                },
+                                                                                       "show":  {
+                                                                                                    "expr":  {
+                                                                                                                 "Literal":  {
+                                                                                                                                 "Value":  "true"
+                                                                                                                             }
+                                                                                                             }
+                                                                                                },
+                                                                                       "fontColor":  {
+                                                                                                         "solid":  {
+                                                                                                                       "color":  {
+                                                                                                                                     "expr":  {
+                                                                                                                                                  "Literal":  {
+                                                                                                                                                                  "Value":  "\u0027#111111\u0027"
+                                                                                                                                                              }
+                                                                                                                                              }
+                                                                                                                                 }
+                                                                                                                   }
+                                                                                                     }
+                                                                                   }
+                                                                }
+                                                            ]
+                                              },
+                   "drillFilterOtherVisuals":  true
+               }
 }

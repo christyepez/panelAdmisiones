@@ -161,21 +161,27 @@ table FactMatriculaHistorica
 			
 				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
 				VAR FechaPunto = [Inicio Periodo B26] + D - 1
-				VAR CorteHoy = MIN(TODAY(), [Fin Periodo B26])
+				VAR CorteDatos = MIN([Fecha Corte Datos B26], [Fin Periodo B26])
 				VAR HayMes = [Hay Filtro Mes] = 1
 				VAR MesVisible = NOT HayMes || CONTAINS(VALUES(DimMesPeriodo[MesNumero]), DimMesPeriodo[MesNumero], MONTH(FechaPunto))
+				VAR VHistorico =
+					IF(
+						ISBLANK(D) || FechaPunto > CorteDatos || D > [Dias Totales B26] || NOT MesVisible,
+						BLANK(),
+						CALCULATE(
+							FactAdmision615[Total Matriculas B26],
+							REMOVEFILTERS(DimPeriodo), REMOVEFILTERS(DimFecha), REMOVEFILTERS(DimMesPeriodo),
+							FactAdmision615[Periodo]="B26",
+							FILTER(ALL(FactAdmision615[FechaMatriculaDay]), FactAdmision615[FechaMatriculaDay] <= FechaPunto)
+						)
+					)
 				VAR V =
-				    IF(
-				        ISBLANK(D) || FechaPunto > CorteHoy || D > [Dias Totales B26] || NOT MesVisible,
-				        BLANK(),
-				        CALCULATE(
-				            FactAdmision615[Total Matriculas],
-				            REMOVEFILTERS(DimPeriodo), REMOVEFILTERS(DimFecha), REMOVEFILTERS(DimMesPeriodo),
-				            FactAdmision615[Periodo]="B26",
-				            FILTER(ALL(FactAdmision615[FechaMatriculaDay]), FactAdmision615[FechaMatriculaDay] <= FechaPunto)
-				        )
-				    )
-				RETURN IF(V=0, BLANK(), V)
+					IF(
+						FechaPunto = CorteDatos,
+						[Matrix B26 Real Contexto],
+						VHistorico
+					)
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
 		lineageTag: d752dd22-44d1-480e-9bd7-b06ec884d94b
@@ -206,7 +212,20 @@ table FactMatriculaHistorica
 
 	measure 'Meta Lineal B26 Dia Periodo' = ```
 				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
-				RETURN IF(ISBLANK(D) || D > [Dias Totales B26], BLANK(), [Meta B26 Contexto Panel] * DIVIDE(D,[Dias Totales B26]))
+				VAR FechaPunto = [Inicio Periodo B26] + D - 1
+				VAR M = MONTH(FechaPunto)
+				VAR MetaMes =
+					CALCULATE(
+						[Meta B26 Mes],
+						REMOVEFILTERS(DimMesPeriodo),
+						TREATAS({M}, DimMesPeriodo[MesNumero])
+					)
+				RETURN
+					IF(
+						ISBLANK(D) || D > [Dias Totales B26],
+						BLANK(),
+						MetaMes
+					)
 			```
 		formatString: #,0
 		lineageTag: 42794983-91a3-40ea-81ec-f795198ec04c
@@ -217,28 +236,35 @@ table FactMatriculaHistorica
 				VAR Inicio = [Inicio Periodo B26]
 				VAR FinPeriodo = [Fin Periodo B26]
 				VAR CorteReal = MIN([Fecha Corte Datos B26], FinPeriodo)
+				VAR MesCorte = MONTH(CorteReal)
 				VAR InicioMes = IF(NOT ISBLANK(M), DATE(YEAR(Inicio), M, 1))
 				VAR FinPunto = IF(NOT ISBLANK(M), MIN(CorteReal, EOMONTH(InicioMes, 0)))
+				VAR VHistorico =
+					IF(
+						ISBLANK(M) ||
+						ISBLANK(InicioMes) ||
+						InicioMes > FinPeriodo ||
+						InicioMes > CorteReal ||
+						ISBLANK(FinPunto) ||
+						FinPunto < Inicio,
+						BLANK(),
+						CALCULATE(
+							FactAdmision615[Total Matriculas B26],
+							REMOVEFILTERS(DimPeriodo),
+							REMOVEFILTERS(DimMesPeriodo),
+							REMOVEFILTERS(DimFecha),
+							REMOVEFILTERS(FactAdmision615[MesNumero]),
+							FactAdmision615[Periodo] = "B26",
+							FactAdmision615[FechaMatriculaDay] >= Inicio,
+							FactAdmision615[FechaMatriculaDay] <= FinPunto
+						)
+					)
 				VAR V =
-				    IF(
-				        ISBLANK(M) ||
-				        ISBLANK(InicioMes) ||
-				        InicioMes > FinPeriodo ||
-				        InicioMes > CorteReal ||
-				        ISBLANK(FinPunto) ||
-				        FinPunto < Inicio,
-				        BLANK(),
-				        CALCULATE(
-				            FactAdmision615[Total Matriculas B26],
-				            REMOVEFILTERS(DimPeriodo),
-				            REMOVEFILTERS(DimMesPeriodo),
-				            REMOVEFILTERS(DimFecha),
-				            REMOVEFILTERS(FactAdmision615[MesNumero]),
-				            FactAdmision615[Periodo] = "B26",
-				            FactAdmision615[FechaMatriculaDay] >= Inicio,
-				            FactAdmision615[FechaMatriculaDay] <= FinPunto
-				        )
-				    )
+					IF(
+						M = MesCorte,
+						[Matrix B26 Real Contexto],
+						VHistorico
+					)
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
@@ -416,13 +442,7 @@ table FactMatriculaHistorica
 		formatString: +0.0%;-0.0%;0.0%
 		lineageTag: 9c038e7a-0e52-4ee3-a333-4251c34436f8
 
-	measure 'Total B26 Actual' = ```
-				CALCULATE(
-				    FactAdmision615[Total Matriculas B26],
-				    REMOVEFILTERS(DimFecha),
-				    REMOVEFILTERS(DimPeriodo)
-				)
-			```
+	measure 'Total B26 Actual' = [Matrix B26 Real Contexto]
 		formatString: #,0
 		lineageTag: 8c6cd9f1-e836-4c0d-a20d-e9c7c254c841
 
@@ -964,18 +984,22 @@ table FactMatriculaHistorica
 			VAR EnModalidad = ISINSCOPE(DimModalidadAdm[Modalidad])
 			RETURN
 				IF(
-					NOT HayDatos,
-					BLANK(),
-					SWITCH(
-						TRUE(),
-						G = "TOTAL NE 2025" && EnCarrera && NOT EnSede, FORMAT([Total NE 2025 Resumen], "#,##0"),
-						G = "SEGMENTO" && EnTipo && NOT EnModalidad, Tipo,
-						G = "TOTAL SEGMENTO" && EnTipo && NOT EnModalidad, FORMAT([Total Segmento 2025 Resumen], "#,##0"),
-						G = "B25" && S = "NE", FORMAT(B25, "#,##0"),
-						G = "B25" && S = "%", FORMAT([% Periodo B25 Seguimiento], "0.0%"),
-						G = "B26" && S = "NE", FORMAT(B26, "#,##0"),
-						G = "B26" && S = "%", FORMAT([% Periodo B26 Seguimiento], "0.0%"),
-						BLANK()
+					G = UNICHAR(160),
+					" ",
+					IF(
+						NOT HayDatos,
+						BLANK(),
+						SWITCH(
+							TRUE(),
+							G = "TOTAL NE 2025" && EnCarrera && NOT EnSede, FORMAT([Total NE 2025 Resumen], "#,##0"),
+							G = "SEGMENTO" && EnTipo && NOT EnModalidad, Tipo,
+							G = "TOTAL SEGMENTO" && EnTipo && NOT EnModalidad, FORMAT([Total Segmento 2025 Resumen], "#,##0"),
+							G = "B25" && S = "NE", FORMAT(B25, "#,##0"),
+							G = "B25" && S = "%", FORMAT([% Periodo B25 Seguimiento], "0.0%"),
+							G = "B26" && S = "NE", FORMAT(B26, "#,##0"),
+							G = "B26" && S = "%", FORMAT([% Periodo B26 Seguimiento], "0.0%"),
+							BLANK()
+						)
 					)
 				)
 		lineageTag: a8fe85bd-3852-4fc4-89ab-f52b8f930f82
@@ -983,6 +1007,7 @@ table FactMatriculaHistorica
 	measure 'Valor Matriculas Seguimiento Anual' =
 			VAR G = SELECTEDVALUE(DimSeguimientoAnualColumn[Grupo])
 			VAR S = SELECTEDVALUE(DimSeguimientoAnualColumn[Subgrupo])
+			VAR EsSeparador = G = UNICHAR(160) || G = UNICHAR(8199)
 			VAR RealA25 = [Real A25 Seguimiento]
 			VAR RealB25 = [Real B25 Seguimiento]
 			VAR RealA26 = [Real A26 Seguimiento]
@@ -991,22 +1016,29 @@ table FactMatriculaHistorica
 			VAR HayFila = COALESCE(Total25,0) + COALESCE(Total26,0) > 0
 			RETURN
 				IF(
-					NOT HayFila,
-					BLANK(),
-					SWITCH(
-						TRUE(),
-						G = "REAL 2025" && S = "A25", RealA25,
-						G = "REAL 2025" && S = "B25", RealB25,
-						G = "REAL 2025" && S = "TOTAL", Total25,
-						G = "PRESUPUESTO 2026" && S IN {"A26","B26","TOTAL"}, 0,
-						G = "META COMERCIAL 2026" && S = "A26 REAL", COALESCE(RealA26,0),
-						G = "META COMERCIAL 2026" && S = "B26 META", [Matrix B26 YTD Objetivo Contexto],
-						G = "META COMERCIAL 2026" && S = "TOTAL", [Matrix B26 Real Contexto],
-						BLANK()
+					EsSeparador,
+					0,
+					IF(
+						NOT HayFila,
+						BLANK(),
+						SWITCH(
+							TRUE(),
+							G = "REAL 2025" && S = "A25", RealA25,
+							G = "REAL 2025" && S = "B25", RealB25,
+							G = "REAL 2025" && S = "TOTAL", Total25,
+							G = "PRESUPUESTO 2026" && S IN {"A26","B26","TOTAL"}, 0,
+							G = "META COMERCIAL 2026" && S = "A26 REAL", COALESCE(RealA26,0),
+							G = "META COMERCIAL 2026" && S = "B26 META", [Matrix B26 YTD Objetivo Contexto],
+							G = "META COMERCIAL 2026" && S = "TOTAL", [Matrix B26 Real Contexto],
+							BLANK()
+						)
 					)
 				)
-		formatString: #,0
 		lineageTag: 7f7c3b76-f675-4f08-a5bf-a9aa2a56a3c2
+
+		formatStringDefinition =
+				VAR G = SELECTEDVALUE(DimSeguimientoAnualColumn[Grupo])
+				RETURN IF(G = UNICHAR(160) || G = UNICHAR(8199),";;;","#,0")
 
 	measure 'Real B25 Semana' = CALCULATE([Total Matriculas Historicas], REMOVEFILTERS(DimPeriodo), FactMatriculaHistorica[Periodo] = "B25")
 		formatString: #,0
@@ -1038,13 +1070,30 @@ table FactMatriculaHistorica
 
 	measure 'Presupuesto B26 Semana' =
 			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
-			RETURN IF(ISBLANK(W) || W > [Semana Actual B26 Numero], BLANK(), 0)
+			VAR WA = [Semana Actual B26 Numero]
+			VAR Actual = [Presupuesto B26 Acumulado Semana]
+			VAR Anterior =
+				IF(
+					W <= 1,
+					0,
+					CALCULATE(
+						[Presupuesto B26 Acumulado Semana],
+						REMOVEFILTERS(DimFecha),
+						DimFecha[SemanaPeriodoNumero] = W - 1
+					)
+				)
+			RETURN
+				IF(
+					ISBLANK(W),
+					BLANK(),
+					COALESCE(Actual,0) - COALESCE(Anterior,0)
+				)
 		formatString: #,0
 		lineageTag: 440edc74-bc9f-43ce-8f20-d37c7ca13344
 
 	measure 'Meta Real Semana' =
-			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
-			RETURN IF(ISBLANK(W) || W > [Semana Actual B26 Numero], BLANK(), 0)
+			VAR V = [Presupuesto B26 Semana]
+			RETURN IF(ISBLANK(V), BLANK(), ROUND(V * 0.70, 0))
 		formatString: #,0
 		lineageTag: 1f38eb42-4022-4fc1-89ff-778cc565f251
 
@@ -1073,37 +1122,70 @@ table FactMatriculaHistorica
 			VAR FinSemanaB26 =
 				CALCULATE(
 					MAX(DimFecha[FinSemana]),
-					KEEPFILTERS(DimFecha[PeriodoSeguimiento] = "B26")
+					FILTER(
+						ALL(DimFecha),
+						DimFecha[PeriodoSeguimiento] = "B26" &&
+						DimFecha[SemanaPeriodoNumero] = W
+					)
 				)
 			VAR CortePunto = MIN(Corte, FinSemanaB26)
-			RETURN
-				IF(
-					ISBLANK(W) || ISBLANK(WA) || W > WA || ISBLANK(FinSemanaB26),
-					BLANK(),
-					CALCULATE(
-						FactAdmision615[Total Matriculas B26],
-						REMOVEFILTERS(DimPeriodo),
-						REMOVEFILTERS(DimFecha),
-						FactAdmision615[Periodo] = "B26",
-						FILTER(
-							ALL(FactAdmision615[FechaMatriculaDay]),
-							FactAdmision615[FechaMatriculaDay] >= Inicio &&
-							FactAdmision615[FechaMatriculaDay] <= CortePunto
-						)
+			VAR VHistorico =
+				CALCULATE(
+					FactAdmision615[Total Matriculas B26],
+					REMOVEFILTERS(DimPeriodo),
+					REMOVEFILTERS(DimFecha),
+					FactAdmision615[Periodo] = "B26",
+					FILTER(
+						ALL(FactAdmision615[FechaMatriculaDay]),
+						FactAdmision615[FechaMatriculaDay] >= Inicio &&
+						FactAdmision615[FechaMatriculaDay] <= CortePunto
 					)
+				)
+			RETURN
+				SWITCH(
+					TRUE(),
+					ISBLANK(W) || ISBLANK(WA) || W > WA || ISBLANK(FinSemanaB26), BLANK(),
+					W = WA, [Matrix B26 Real Contexto],
+					VHistorico
 				)
 		formatString: #,0
 		lineageTag: 501d9bf0-0b05-4a8f-9e4e-7559041419cd
 
 	measure 'Presupuesto B26 Acumulado Semana' =
 			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
-			RETURN IF(ISBLANK(W) || W > [Semana Actual B26 Numero], BLANK(), 0)
+			VAR WA = [Semana Actual B26 Numero]
+			VAR Inicio = [Inicio Periodo B26]
+			VAR Fin = [Fin Periodo B26]
+			VAR MetaTotal = [Meta B26 Base Contexto]
+			VAR FinSemanaB26 =
+				CALCULATE(
+					MAX(DimFecha[FinSemana]),
+					FILTER(
+						ALL(DimFecha),
+						DimFecha[PeriodoSeguimiento] = "B26" &&
+						DimFecha[SemanaPeriodoNumero] = W
+					)
+				)
+			VAR CortePunto = MIN(Fin, FinSemanaB26)
+			VAR DiasTotal = DATEDIFF(Inicio, Fin, DAY) + 1
+			VAR DiasAcum =
+				IF(
+					ISBLANK(CortePunto) || CortePunto < Inicio,
+					BLANK(),
+					DATEDIFF(Inicio, CortePunto, DAY) + 1
+				)
+			RETURN
+				IF(
+					ISBLANK(W) || ISBLANK(MetaTotal) || ISBLANK(DiasAcum),
+					BLANK(),
+					ROUND(MetaTotal * DIVIDE(DiasAcum, DiasTotal), 0)
+				)
 		formatString: #,0
 		lineageTag: 4afdb93a-0ee7-48bc-9351-bc37bbbaf08e
 
 	measure 'Meta Real Acumulado Semana' =
-			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
-			RETURN IF(ISBLANK(W) || W > [Semana Actual B26 Numero], BLANK(), 0)
+			VAR V = [Presupuesto B26 Acumulado Semana]
+			RETURN IF(ISBLANK(V), BLANK(), ROUND(V * 0.70, 0))
 		formatString: #,0
 		lineageTag: 478bce37-e839-4a58-a9ad-bfd11f0d9a94
 
@@ -1114,24 +1196,21 @@ table FactMatriculaHistorica
 			VAR B25 = [Real B25 Semana]
 			VAR B26 = [Real B26 Semana]
 			RETURN
-				IF(
-					ISBLANK(W) || ISBLANK(WA) || W > WA,
-					BLANK(),
-					SWITCH(
-						M,
-						"NE real B2025", COALESCE(B25,0),
-						"Presupuesto B2026", COALESCE([Presupuesto B26 Semana],0),
-						"Meta neta (70%)", COALESCE([Meta Real Semana],0),
-						"NE real B2026", COALESCE(B26,0),
-						"% sobre presupuesto", DIVIDE(COALESCE(B26,0),COALESCE([Presupuesto B26 Semana],0),0),
-						BLANK()
-					)
+				SWITCH(
+					TRUE(),
+					ISBLANK(W), BLANK(),
+					M = "NE real B2025", COALESCE(B25,0),
+					M = "Presupuesto B2026", COALESCE([Presupuesto B26 Semana],0),
+					M = "Meta neta (70%)", COALESCE([Meta Real Semana],0),
+					M = "NE real B2026", IF(ISBLANK(WA) || W > WA, BLANK(), COALESCE(B26,0)),
+					M = "% sobre presupuesto", IF(ISBLANK(WA) || W > WA, BLANK(), DIVIDE(COALESCE(B26,0),COALESCE([Presupuesto B26 Semana],0),0)),
+					BLANK()
 				)
 		lineageTag: e458ce39-0432-42d2-b0d7-fb77a74c5472
 
 		formatStringDefinition =
 				VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
-				RETURN IF(CONTAINSSTRING(M,"%"),"0.0%","#,##0")
+				RETURN IF(M = "% sobre presupuesto","0.0%","#,##0")
 
 	measure 'Valor Semanal Acumulado' =
 			VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
@@ -1140,24 +1219,21 @@ table FactMatriculaHistorica
 			VAR B25 = [Real B25 Acumulado Semana]
 			VAR B26 = [Real B26 Acumulado Semana]
 			RETURN
-				IF(
-					ISBLANK(W) || ISBLANK(WA) || W > WA,
-					BLANK(),
-					SWITCH(
-						M,
-						"NE real B2025", COALESCE(B25,0),
-						"Presupuesto B2026", COALESCE([Presupuesto B26 Acumulado Semana],0),
-						"Meta neta (70%)", COALESCE([Meta Real Acumulado Semana],0),
-						"NE real B2026", COALESCE(B26,0),
-						"% sobre presupuesto", DIVIDE(COALESCE(B26,0),COALESCE([Presupuesto B26 Acumulado Semana],0),0),
-						BLANK()
-					)
+				SWITCH(
+					TRUE(),
+					ISBLANK(W), BLANK(),
+					M = "NE real B2025", COALESCE(B25,0),
+					M = "Presupuesto B2026", COALESCE([Presupuesto B26 Acumulado Semana],0),
+					M = "Meta neta (70%)", COALESCE([Meta Real Acumulado Semana],0),
+					M = "NE real B2026", IF(ISBLANK(WA) || W > WA, BLANK(), COALESCE(B26,0)),
+					M = "% sobre presupuesto", IF(ISBLANK(WA) || W > WA, BLANK(), DIVIDE(COALESCE(B26,0),COALESCE([Presupuesto B26 Acumulado Semana],0),0)),
+					BLANK()
 				)
 		lineageTag: 7df4df99-8ba1-4b7b-b60e-11fb2cbaae2f
 
 		formatStringDefinition =
 				VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
-				RETURN IF(CONTAINSSTRING(M,"%"),"0.0%","#,##0")
+				RETURN IF(M = "% sobre presupuesto","0.0%","#,##0")
 
 	measure 'Proyeccion B26 Dia Periodo Seguimiento' =
 			VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
@@ -1266,6 +1342,33 @@ table FactMatriculaHistorica
 	measure '% Presupuesto Semana Actual' = DIVIDE([NE B26 Semana Actual],[Presupuesto B26 Semana Actual],0)
 		formatString: 0.0%
 		lineageTag: d60e2fb5-3752-4422-9475-49b280fbd645
+
+	measure 'Meta B26 Acumulada Semana Linea' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			VAR Fin = [Fin Periodo B26]
+			VAR FinSemanaB26 =
+				CALCULATE(
+					MAX(DimFecha[FinSemana]),
+					FILTER(
+						ALL(DimFecha),
+						DimFecha[PeriodoSeguimiento] = "B26" &&
+						DimFecha[SemanaPeriodoNumero] = W
+					)
+				)
+			VAR FechaPunto = MIN(Fin, FinSemanaB26)
+			VAR M = MONTH(FechaPunto)
+			RETURN
+				IF(
+					ISBLANK(W) || ISBLANK(FinSemanaB26),
+					BLANK(),
+					CALCULATE(
+						[Meta B26 Mes],
+						REMOVEFILTERS(DimMesPeriodo),
+						TREATAS({M}, DimMesPeriodo[MesNumero])
+					)
+				)
+		formatString: #,0
+		lineageTag: 7e8f2a9b-6113-4b2f-b72f-8d875481f7ab
 
 	column Periodo
 		dataType: string

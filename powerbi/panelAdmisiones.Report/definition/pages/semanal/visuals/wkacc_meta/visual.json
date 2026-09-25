@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "wkacc_meta",
   "position": {
-    "x": 640,
-    "y": 330,
-    "z": 10,
+    "x": 770.34826074253942,
+    "y": 329.29780584932536,
+    "z": 11000,
     "height": 65,
     "width": 300,
-    "tabOrder": 740
+    "tabOrder": 13000
   },
   "visual": {
     "visualType": "card",

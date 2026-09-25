@@ -4,10 +4,10 @@
   "position": {
     "x": 720,
     "y": 935,
-    "z": 31,
+    "z": 17000,
     "height": 300,
     "width": 700,
-    "tabOrder": 31
+    "tabOrder": 17000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -63,6 +63,23 @@
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactAdmision615"
+                  }
+                },
+                "Property": "Total Matriculas B26 Vis"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "objects": {
@@ -87,6 +104,19 @@
               "expr": {
                 "Literal": {
                   "Value": "10D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "layout": [
+        {
+          "properties": {
+            "seriesOrderReversed": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             }

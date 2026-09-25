@@ -4,10 +4,10 @@
   "position": {
     "x": 1039.57925957206,
     "y": 20.043301919769792,
-    "z": 4,
+    "z": 3000,
     "height": 65.474786271247993,
     "width": 195.0881386857593,
-    "tabOrder": 5
+    "tabOrder": 4000
   },
   "visual": {
     "visualType": "slicer",
@@ -189,23 +189,5 @@
         }
       ]
     }
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "f0ec8e7deb44502d6313",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimMesPeriodo"
-              }
-            },
-            "Property": "Mes"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

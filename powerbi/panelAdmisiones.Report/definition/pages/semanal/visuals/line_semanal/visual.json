@@ -4,10 +4,10 @@
   "position": {
     "x": 20,
     "y": 725,
-    "z": 20,
+    "z": 18000,
     "height": 520,
     "width": 1560,
-    "tabOrder": 20
+    "tabOrder": 8000
   },
   "visual": {
     "visualType": "lineChart",
@@ -70,10 +70,10 @@
                       "Entity": "FactMatriculaHistorica"
                     }
                   },
-                  "Property": "Meta Real Acumulado Semana"
+                  "Property": "Meta B26 Acumulada Semana Linea"
                 }
               },
-              "queryRef": "FactMatriculaHistorica.Meta Real Acumulado Semana",
+              "queryRef": "FactMatriculaHistorica.Meta B26 Acumulada Semana Linea",
               "nativeQueryRef": "Meta B26"
             },
             {

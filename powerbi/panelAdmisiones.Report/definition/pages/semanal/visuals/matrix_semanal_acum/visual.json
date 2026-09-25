@@ -4,10 +4,10 @@
   "position": {
     "x": 20,
     "y": 115,
-    "z": 10,
+    "z": 6000,
     "height": 210,
     "width": 1560,
-    "tabOrder": 4
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -113,24 +113,17 @@
       "columnHeaders": [
         {
           "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'center'"
-                }
-              }
-            },
-            "columnAdjustment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'growToFit'"
-                }
-              }
-            },
             "autoSizeColumnWidth": {
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -150,16 +143,23 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#17365D'"
+                      "Value": "'#3D1134'"
                     }
                   }
                 }
               }
             },
-            "fontSize": {
+            "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
+                  "Value": "'center'"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
                 }
               }
             }
@@ -169,17 +169,17 @@
       "rowHeaders": [
         {
           "properties": {
-            "wordWrap": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            },
             "fontSize": {
               "expr": {
                 "Literal": {
                   "Value": "11D"
+                }
+              }
+            },
+            "wordWrap": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -196,6 +196,22 @@
                 }
               }
             }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "454.92145286835927D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimCarreraAdm.TipoCarrera"
           }
         }
       ]
@@ -266,17 +282,17 @@
       "title": [
         {
           "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
             "text": {
               "expr": {
                 "Literal": {
                   "Value": "'Acumulado'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             },

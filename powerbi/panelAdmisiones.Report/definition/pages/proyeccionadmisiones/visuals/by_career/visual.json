@@ -4,10 +4,10 @@
   "position": {
     "x": 20,
     "y": 935,
-    "z": 30,
+    "z": 16000,
     "height": 300,
     "width": 680,
-    "tabOrder": 30
+    "tabOrder": 16000
   },
   "visual": {
     "visualType": "clusteredBarChart",
@@ -63,6 +63,23 @@
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "FactAdmision615"
+                  }
+                },
+                "Property": "Total Matriculas B26 Vis"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "objects": {

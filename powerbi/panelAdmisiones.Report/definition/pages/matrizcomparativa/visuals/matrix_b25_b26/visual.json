@@ -4,10 +4,10 @@
   "position": {
     "x": 19.370459167607375,
     "y": 114.73271968505907,
-    "z": 10,
+    "z": 6000,
     "height": 652.63547041631,
     "width": 1580.9274751408789,
-    "tabOrder": 4
+    "tabOrder": 3000
   },
   "visual": {
     "visualType": "pivotTable",
@@ -227,253 +227,20 @@
           }
         }
       ],
-      "columnFormatting": [
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Total B25 Final"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Matriculas B25 Mismo Dia"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.% Real B25 YTD"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Delta B25 %"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMetaAdmision.Meta B26 Contexto Panel"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Matriculas B26 Mismo Dia"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Total B26 Actual"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.% Real B26 Budget"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Delta Budget B26"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Completion B26"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Real B26 vs LY %"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Varianza B26 vs LY"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Meta B26 vs Total B25 % Vis"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Real B26 vs YTD B26 % Vis"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.YTD B26 vs YTD B25 % Vis"
-          }
-        },
-        {
-          "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'right'"
-                }
-              }
-            }
-          },
-          "selector": {
-            "metadata": "FactMatriculaHistorica.Delta YTD B26 vs B25 Vis"
-          }
-        }
-      ],
       "columnHeaders": [
         {
           "properties": {
-            "alignment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'center'"
-                }
-              }
-            },
-            "columnAdjustment": {
-              "expr": {
-                "Literal": {
-                  "Value": "'growToFit'"
-                }
-              }
-            },
             "autoSizeColumnWidth": {
               "expr": {
                 "Literal": {
                   "Value": "true"
+                }
+              }
+            },
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
                 }
               }
             },
@@ -493,16 +260,23 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#17365D'"
+                      "Value": "'#3D1134'"
                     }
                   }
                 }
               }
             },
-            "fontSize": {
+            "alignment": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
+                  "Value": "'center'"
+                }
+              }
+            },
+            "columnAdjustment": {
+              "expr": {
+                "Literal": {
+                  "Value": "'growToFit'"
                 }
               }
             }
@@ -512,6 +286,13 @@
       "rowHeaders": [
         {
           "properties": {
+            "fontSize": {
+              "expr": {
+                "Literal": {
+                  "Value": "11D"
+                }
+              }
+            },
             "wordWrap": {
               "expr": {
                 "Literal": {
@@ -519,10 +300,14 @@
                 }
               }
             },
-            "fontSize": {
-              "expr": {
-                "Literal": {
-                  "Value": "11D"
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "null"
+                    }
+                  }
                 }
               }
             }
@@ -536,6 +321,35 @@
               "expr": {
                 "Literal": {
                   "Value": "11D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "454.92145286835927D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "DimCarreraAdm.TipoCarrera"
+          }
+        }
+      ],
+      "blankRows": [
+        {
+          "properties": {
+            "showBlankRows": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
                 }
               }
             }
@@ -609,17 +423,17 @@
       "title": [
         {
           "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
             "text": {
               "expr": {
                 "Literal": {
                   "Value": "'B25 vs B26'"
+                }
+              }
+            },
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
                 }
               }
             },
@@ -639,121 +453,5 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "43978890bb6b1080c744",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimCarreraAdm"
-              }
-            },
-            "Property": "Carrera"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "d8d39ea8016675eb85a2",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimSedeAdm"
-              }
-            },
-            "Property": "Sede"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "9c27a0f4737409dee353",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimModalidadAdm"
-              }
-            },
-            "Property": "Modalidad"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "5c6aa489b95b1a1b7b10",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimFecha"
-              }
-            },
-            "Property": "Mes"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "5953086c67e20a7c38e0",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimFecha"
-              }
-            },
-            "Property": "Dia"
-          }
-        },
-        "type": "Categorical"
-      },
-      {
-        "name": "4c68d4d244cbc8bd60cb",
-        "field": {
-          "Measure": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "FactMatriculaHistorica"
-              }
-            },
-            "Property": "Valor Matriz Comparativa"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "7b2f6f24eec03bd217d5",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimMatrixColumn"
-              }
-            },
-            "Property": "Anio"
-          }
-        },
-        "type": "Advanced"
-      },
-      {
-        "name": "adc5b596cde976b8dbb3",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimMatrixColumn"
-              }
-            },
-            "Property": "Metrica"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }

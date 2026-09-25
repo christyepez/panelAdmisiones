@@ -4,10 +4,10 @@
   "position": {
     "x": 1256.0469203055736,
     "y": 20.043301919769792,
-    "z": 5,
+    "z": 5000,
     "height": 65,
     "width": 145,
-    "tabOrder": 6
+    "tabOrder": 5000
   },
   "visual": {
     "visualType": "slicer",
@@ -237,23 +237,5 @@
         }
       ]
     }
-  },
-  "filterConfig": {
-    "filters": [
-      {
-        "name": "oferta_b26_filter",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "DimOfertaAdm"
-              }
-            },
-            "Property": "Oferta"
-          }
-        },
-        "type": "Categorical"
-      }
-    ]
   }
 }
