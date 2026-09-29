@@ -1,0 +1,208 @@
+table FactMetaAdmision
+	lineageTag: f0276bab-c62b-46f7-bc14-65f287b2857a
+
+	measure 'Meta Oficial B26 Panel' = 2400
+		formatString: #,0
+		lineageTag: 434b656a-1f15-405c-b72c-33a332bea78c
+
+	measure 'Meta Oferta Excel B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE"),0)
+		formatString: #,0
+		lineageTag: 99afda95-bf44-49e0-85b1-a2a7f0880c00
+
+	measure 'Meta Oficial Carrera B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE"),0)
+		formatString: #,0
+		lineageTag: 9d77e190-5fc3-40e2-9729-ebfd45f7baef
+
+	measure 'Meta Sede Excel B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE", NOT ISBLANK(FactMetaAdmision[Sede])),0)
+		formatString: #,0
+		lineageTag: 698b5cb1-8b65-4aea-b146-5a5980047976
+
+	measure 'Meta Modalidad Excel B26' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo]="B26", FactMetaAdmision[NivelMeta]="DETALLE_FUENTE", NOT ISBLANK(FactMetaAdmision[Modalidad])),0)
+		formatString: #,0
+		lineageTag: 4f43d821-0fc6-487a-98d6-952f6d9c9fa4
+
+	measure 'Meta B26 Base Contexto' =
+			VAR PeriodoActivo =
+				COALESCE(
+					SELECTEDVALUE(DimPeriodo[Periodo]),
+					CALCULATE(
+						MAX(DimPeriodo[Periodo]),
+						FILTER(ALL(DimPeriodo), DimPeriodo[EsPeriodoActivo] = TRUE())
+					),
+					"B26"
+				)
+			VAR MetaExcel =
+				CALCULATE(
+					SUM(FactMetaAdmision[Meta]),
+					REMOVEFILTERS(DimPeriodo),
+					FactMetaAdmision[Periodo] = PeriodoActivo,
+					FactMetaAdmision[NivelMeta] = "DETALLE_FUENTE"
+				)
+			RETURN MetaExcel
+		formatString: #,0
+		lineageTag: a4c6f31b-c07a-40a2-a748-5258332e8533
+
+	measure 'Meta B26 Contexto Panel' = ```
+				VAR BaseMeta = [Meta B26 Base Contexto]
+				VAR FactorMes = IF([Hay Filtro Mes]=1, DIVIDE([Dias Objetivo B26 Contexto],[Dias Totales B26]), 1)
+				RETURN BaseMeta * FactorMes
+			```
+		formatString: #,0
+		lineageTag: 3e04af53-b5ed-4a45-a58f-4f86af864b8b
+
+	measure 'Meta Excel B26 Matriz' = ```
+				VAR MetaDetalle =
+				    CALCULATE(
+				        SUM(FactMetaAdmision[Meta]),
+				        FactMetaAdmision[Periodo] = "B26",
+				        FactMetaAdmision[NivelMeta] = "DETALLE_FUENTE"
+				    )
+				VAR MetaCarreraFuente =
+				    CALCULATE(
+				        SUM(FactMetaAdmision[Meta]),
+				        FactMetaAdmision[Periodo] = "B26",
+				        FactMetaAdmision[NivelMeta] = "DETALLE_FUENTE"
+				    )
+				VAR EnModalidad = ISINSCOPE(DimModalidadAdm[Modalidad])
+				VAR EnSede = ISINSCOPE(DimSedeAdm[Sede])
+				VAR EnCarrera = ISINSCOPE(DimCarreraAdm[Carrera])
+				VAR HayOferta = ISFILTERED(DimOfertaAdm[Oferta])
+				VAR HayFiltroDetalle =
+				    ISFILTERED(DimCarreraAdm[Carrera]) ||
+				    ISFILTERED(DimSedeAdm[Sede]) ||
+				    ISFILTERED(DimModalidadAdm[Modalidad]) ||
+				    HayOferta
+				VAR V =
+				    SWITCH(
+				        TRUE(),
+				        EnModalidad, MetaDetalle,
+				        EnSede, MetaDetalle,
+				        EnCarrera, IF(HayOferta, MetaDetalle, COALESCE(MetaDetalle, MetaCarreraFuente)),
+				        HayFiltroDetalle, IF(HayOferta, MetaDetalle, COALESCE(MetaDetalle, MetaCarreraFuente)),
+				        [Meta Oficial B26 Panel]
+				    )
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: 70237983-1d45-468e-9417-69d56df270e1
+
+	measure 'Meta Oficial Carrera B26 Vis' = ```
+				VAR V = [Meta Oficial Carrera B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: 9cb62522-54cf-4b25-a034-12b707662c6e
+
+	measure 'Meta Sede Excel B26 Vis' = ```
+				VAR V = [Meta Sede Excel B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: d381c39c-853b-4e69-906a-27d677166252
+
+	measure 'Meta Modalidad Excel B26 Vis' = ```
+				VAR V = [Meta Modalidad Excel B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: ecbd2e4e-9bb5-4769-aa69-56ebd83aa851
+
+	measure 'Meta B26 Contexto Panel Vis' = ```
+				VAR V = [Meta B26 Contexto Panel]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: 686f7685-9701-484d-bdf8-9113de9eb9c5
+
+	measure 'Meta Excel B26 Matriz Vis' = ```
+				VAR V = [Meta Excel B26 Matriz]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: 3fad6dc8-f179-4d34-9e2a-560b0980e5ef
+
+	measure 'Meta B26 Seguimiento' = COALESCE(CALCULATE(SUM(FactMetaAdmision[Meta]), FactMetaAdmision[Periodo] = "B26"),0)
+		formatString: #,0
+		lineageTag: f3d99577-ff39-4fba-a8c6-c43c2cb3c77d
+
+	measure 'Meta B26 Acumulada Hoy Seguimiento' =
+			VAR Inicio = CALCULATE(MAX(DimPeriodo[FechaInicio]), DimPeriodo[Periodo] = "B26")
+			VAR Fin = CALCULATE(MAX(DimPeriodo[FechaFin]), DimPeriodo[Periodo] = "B26")
+			VAR Corte = MIN(TODAY(), Fin)
+			VAR DiasTotal = IF(NOT ISBLANK(Inicio) && NOT ISBLANK(Fin), DATEDIFF(Inicio, Fin, DAY) + 1)
+			VAR DiasTrans = IF(NOT ISBLANK(Inicio) && Corte >= Inicio, DATEDIFF(Inicio, Corte, DAY) + 1, 0)
+			VAR Factor = MIN(1, DIVIDE(DiasTrans, DiasTotal, 0))
+			RETURN ROUND([Meta B26 Seguimiento] * Factor, 0)
+		formatString: #,0
+		lineageTag: 6a128751-48e0-4bbb-bc5a-c0ae2a990e0f
+
+	column Periodo
+		dataType: string
+		lineageTag: db465e28-425e-4cea-ab3a-92ccb2bcf96c
+		sourceColumn: Periodo
+
+	column TipoPrograma
+		dataType: string
+		lineageTag: 7b36050d-136f-4f21-9456-38b4d79d13de
+		sourceColumn: TipoPrograma
+
+	column TipoCarrera
+		dataType: string
+		lineageTag: efc7b7d8-6f3a-467d-8a09-b7b486e37909
+		sourceColumn: TipoCarrera
+
+	column Carrera
+		dataType: string
+		lineageTag: 6bb8de09-7f48-458c-93ef-7961971feadf
+		sourceColumn: Carrera
+
+	column Sede
+		dataType: string
+		lineageTag: f1687c6a-0eef-4a65-adfb-7da1695c4a66
+		sourceColumn: Sede
+
+	column Modalidad
+		dataType: string
+		lineageTag: 1145a4f1-820e-4f7f-90c1-7fc38cca506a
+		sourceColumn: Modalidad
+
+	column ModalidadMeta
+		dataType: string
+		lineageTag: 2e37c797-9236-429b-a8f8-7774c3810121
+		sourceColumn: ModalidadMeta
+
+	column NivelMeta
+		dataType: string
+		lineageTag: 9a7fa1ca-b17d-4da3-8f46-e3ef27a71fc6
+		sourceColumn: NivelMeta
+
+	column Meta
+		dataType: double
+		lineageTag: 0a120052-06d1-47ca-8e51-b8c9170ff0ac
+		sourceColumn: Meta
+
+	column MetaOficial
+		dataType: double
+		formatString: #,0
+		lineageTag: d26590d2-8999-4dfa-a2aa-1bccf378fa54
+		sourceColumn: MetaOficial
+
+	column ArchivoOrigen
+		dataType: string
+		isHidden
+		lineageTag: 17bfb95a-566d-4bd3-8e83-5ec989a5e3f1
+		sourceColumn: ArchivoOrigen
+
+	column OfertaB26 = COALESCE(LOOKUPVALUE(DimOfertaMap[OfertaB26], DimOfertaMap[Carrera], FactMetaAdmision[Carrera], DimOfertaMap[Sede], FactMetaAdmision[Sede], DimOfertaMap[Modalidad], FactMetaAdmision[Modalidad]), "NO")
+		dataType: string
+		lineageTag: 0dac094d-4407-4104-b0c1-b0359e4d1895
+
+	partition FactMetaAdmision = m
+		mode: import
+		source =
+				let
+				    S0 = FxLoadMetas(),
+				    R = Table.SelectColumns(S0,{"Periodo","TipoPrograma","TipoCarrera","Carrera","Sede","Modalidad","ModalidadMeta","NivelMeta","Meta","MetaOficial","ArchivoOrigen"},MissingField.UseNull)
+				in
+				    R
+

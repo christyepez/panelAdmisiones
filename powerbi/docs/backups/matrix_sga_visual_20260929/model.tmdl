@@ -1,0 +1,32 @@
+model Model
+	culture: es-EC
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: es-EC
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["PanelesPowerBISiteUrl","FxSharePointAdmisionesFiles","FxCleanText","FxReadNamedSheet","FxNormalizeName","FxCarreraCanonica","FxCanal","FxFindColumn","FxTipoPrograma","FxTipoCarrera","FxLoad387","FxLoad615","FxLoadMetas","FxOfertaMap","DimPeriodo","DimDiaPeriodo","DimMesPeriodo","DimFecha","DimMatrixColumn","DimCarreraAdm","DimSedeAdm","DimModalidadAdm","DimOfertaMap","DimOfertaAdm","FactAdmision615","FactMatriculaHistorica","FactMetaAdmision","DimSeguimientoAnualColumn","DimSeguimientoSemanalMetric","DimSeguimientoResumenColumn"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table DimPeriodo
+ref table DimDiaPeriodo
+ref table DimMesPeriodo
+ref table DimFecha
+ref table DimMatrixColumn
+ref table DimCarreraAdm
+ref table DimSedeAdm
+ref table DimModalidadAdm
+ref table DimOfertaMap
+ref table DimOfertaAdm
+ref table FactAdmision615
+ref table FactMatriculaHistorica
+ref table FactMetaAdmision
+ref table DimSeguimientoAnualColumn
+ref table DimSeguimientoSemanalMetric
+ref table DimSeguimientoResumenColumn
+

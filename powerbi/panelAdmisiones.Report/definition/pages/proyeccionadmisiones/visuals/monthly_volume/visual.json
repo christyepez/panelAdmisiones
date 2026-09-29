@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "monthly_volume",
   "position": {
-    "x": 20,
-    "y": 635,
+    "x": 20.115476827899965,
+    "y": 659.78763995511883,
     "z": 15000,
     "height": 260,
     "width": 1400,

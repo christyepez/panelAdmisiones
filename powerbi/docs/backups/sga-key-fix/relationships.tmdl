@@ -1,0 +1,81 @@
+relationship rel-current-period
+	fromColumn: FactAdmision615.Periodo
+	toColumn: DimPeriodo.Periodo
+
+relationship rel-current-sede
+	fromColumn: FactAdmision615.Sede
+	toColumn: DimSedeAdm.Sede
+
+relationship rel-current-modalidad
+	fromColumn: FactAdmision615.Modalidad
+	toColumn: DimModalidadAdm.Modalidad
+
+relationship rel-current-carrera
+	fromColumn: FactAdmision615.Carrera
+	toColumn: DimCarreraAdm.Carrera
+
+relationship rel-current-matricula-date
+	fromColumn: FactAdmision615.FechaMatriculaDay
+	toColumn: DimFecha.Date
+
+relationship rel-current-inscripcion-date
+	isActive: false
+	fromColumn: FactAdmision615.FechaInscripcionDay
+	toColumn: DimFecha.Date
+
+relationship rel-hist-period
+	fromColumn: FactMatriculaHistorica.Periodo
+	toColumn: DimPeriodo.Periodo
+
+relationship rel-hist-sede
+	fromColumn: FactMatriculaHistorica.Sede
+	toColumn: DimSedeAdm.Sede
+
+relationship rel-hist-modalidad
+	fromColumn: FactMatriculaHistorica.Modalidad
+	toColumn: DimModalidadAdm.Modalidad
+
+relationship rel-hist-carrera
+	fromColumn: FactMatriculaHistorica.Carrera
+	toColumn: DimCarreraAdm.Carrera
+
+relationship rel-hist-date
+	fromColumn: FactMatriculaHistorica.FechaMatricula
+	toColumn: DimFecha.Date
+
+relationship rel-meta-period
+	fromColumn: FactMetaAdmision.Periodo
+	toColumn: DimPeriodo.Periodo
+
+relationship rel-meta-sede
+	fromColumn: FactMetaAdmision.Sede
+	toColumn: DimSedeAdm.Sede
+
+relationship rel-meta-modalidad
+	fromColumn: FactMetaAdmision.Modalidad
+	toColumn: DimModalidadAdm.Modalidad
+
+relationship rel-meta-carrera
+	fromColumn: FactMetaAdmision.Carrera
+	toColumn: DimCarreraAdm.Carrera
+
+relationship rel-current-month
+	fromColumn: FactAdmision615.MesNumero
+	toColumn: DimMesPeriodo.MesNumero
+
+relationship rel-hist-month
+	fromColumn: FactMatriculaHistorica.MesNumero
+	toColumn: DimMesPeriodo.MesNumero
+
+relationship rel-current-oferta
+	fromColumn: FactAdmision615.OfertaB26
+	toColumn: DimOfertaAdm.Oferta
+
+relationship rel-hist-oferta
+	fromColumn: FactMatriculaHistorica.OfertaB26
+	toColumn: DimOfertaAdm.Oferta
+
+relationship rel-meta-oferta
+	fromColumn: FactMetaAdmision.OfertaB26
+	toColumn: DimOfertaAdm.Oferta
+

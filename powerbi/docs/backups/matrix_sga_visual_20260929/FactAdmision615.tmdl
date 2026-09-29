@@ -1,0 +1,155 @@
+table FactAdmision615
+	lineageTag: f48aa267-dfdb-41dc-a5c6-cb1f89dbd305
+
+	measure 'Total Matriculas' = ```
+				CALCULATE(
+				    COUNTROWS(FactAdmision615),
+				    KEEPFILTERS(UPPER(FactAdmision615[MatriculaEnPrimero]) = "SI"),
+				    KEEPFILTERS(NOT ISBLANK(FactAdmision615[FechaMatriculaDay]))
+				)
+			```
+		formatString: #,0
+		lineageTag: c56abcc9-8db1-4e56-bbbe-38bc30df1e5f
+
+	measure 'Total Matriculas B26' = ```
+				CALCULATE(
+				    [Total Matriculas],
+				    REMOVEFILTERS(DimPeriodo),
+				    FactAdmision615[Periodo] = "B26"
+				)
+			```
+		formatString: #,0
+		lineageTag: 62765ebe-de49-4ce8-b072-c20251ffe812
+
+	measure 'Matriculas Formalizadas' = CALCULATE([Total Matriculas], UPPER(FactAdmision615[Formalizado]) = "SI")
+		formatString: #,0
+		lineageTag: e5d4a7ca-cfbf-4094-bad9-adc96eb03aa1
+
+	measure 'Total Matriculas B26 Vis' = ```
+				VAR V = [Total Matriculas B26]
+				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
+			```
+		formatString: #,0
+		lineageTag: 465e2781-3202-45cb-a28f-b79211e90be9
+
+	column Periodo
+		dataType: string
+		lineageTag: 4dc0d5d1-4fe8-4761-895f-168fb1672031
+		sourceColumn: Periodo
+
+	column Sede
+		dataType: string
+		lineageTag: 94314b5a-2f2b-4e27-8190-5ace9bf8b42a
+		sourceColumn: Sede
+
+	column Carrera
+		dataType: string
+		lineageTag: 4d6eb77a-da14-4165-8424-b18c33ea9b77
+		sourceColumn: Carrera
+
+	column Modalidad
+		dataType: string
+		lineageTag: 9a8c8533-82a5-4c01-8a8d-fc1ae6ea3bbf
+		sourceColumn: Modalidad
+
+	column Identificacion
+		dataType: string
+		isHidden
+		lineageTag: eee801d5-a06c-48aa-bb02-1a424d452621
+		sourceColumn: Identificacion
+
+	column FechaInscripcionDay
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 347c7013-2092-4343-8ef4-cc594ff5aff8
+		summarizeBy: none
+		sourceColumn: FechaInscripcionDay
+
+	column FechaMatriculaDay
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 39beb98e-fbd4-4da2-858d-1cb8138b3728
+		summarizeBy: none
+		sourceColumn: FechaMatriculaDay
+
+	column AnioMatricula
+		dataType: int64
+		lineageTag: 01f38863-28d1-421f-a261-2deb6654fcdf
+		summarizeBy: none
+		sourceColumn: AnioMatricula
+
+	column MesNumero
+		dataType: int64
+		lineageTag: de1b1208-7cc3-4721-8deb-183f6c4ef023
+		summarizeBy: none
+		sourceColumn: MesNumero
+
+	column AnioMesKey
+		dataType: int64
+		lineageTag: d8467413-d7f2-462d-95f1-a5dc670e3223
+		summarizeBy: none
+		sourceColumn: AnioMesKey
+
+	column MesInscripcionNumero
+		dataType: int64
+		lineageTag: b8dc385b-2c6c-4c4f-b559-72623ca1a46c
+		summarizeBy: none
+		sourceColumn: MesInscripcionNumero
+
+	column MatriculaEnPrimero
+		dataType: string
+		lineageTag: 8b17a134-0815-4b29-807a-11ded064ccf4
+		sourceColumn: MatriculaEnPrimero
+
+	column Formalizado
+		dataType: string
+		lineageTag: ed8e416a-8500-467d-9819-10a56b9c5709
+		sourceColumn: Formalizado
+
+	column Fuente
+		dataType: string
+		lineageTag: b1e48471-40de-40b3-bb4c-024c213a2088
+		sourceColumn: Fuente
+
+	column TipoPrograma
+		dataType: string
+		lineageTag: 71983553-f0cb-4ba0-8993-125fbc6a6d7d
+		sourceColumn: TipoPrograma
+
+	column TipoCarrera
+		dataType: string
+		lineageTag: a8e0c77c-c2aa-4964-86fa-482c18745d98
+		sourceColumn: TipoCarrera
+
+	column ArchivoOrigen
+		dataType: string
+		isHidden
+		lineageTag: 67934fe6-a1cd-41b1-a654-a29fd517fbb2
+		sourceColumn: ArchivoOrigen
+
+	column OfertaB26 = COALESCE(LOOKUPVALUE(DimOfertaMap[OfertaB26], DimOfertaMap[Carrera], FactAdmision615[Carrera], DimOfertaMap[Sede], FactAdmision615[Sede], DimOfertaMap[Modalidad], FactAdmision615[Modalidad]), "NO")
+		dataType: string
+		lineageTag: 05e93ba4-a96a-4b9b-ae74-6001e47f7bdb
+
+	partition FactAdmision615 = m
+		mode: import
+		source =
+				let
+				    Base = FxLoad615(),
+				    KeepFact = Table.SelectColumns(Base,{"Periodo","Sede","Carrera","Modalidad","Identificacion","FechaInscripcion","FechaMatricula","MatriculaEnPrimero","Formalizado","Fuente","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
+				    I = Table.AddColumn(KeepFact,"FechaInscripcionDay", each try DateTime.From(Date.From([FechaInscripcion])) otherwise null, type nullable datetime),
+				    M = Table.AddColumn(I,"FechaMatriculaDay", each try DateTime.From(Date.From([FechaMatricula])) otherwise null, type nullable datetime),
+				    AddAnio = Table.AddColumn(M,"AnioMatricula", each if [FechaMatriculaDay]=null then null else Date.Year(Date.From([FechaMatriculaDay])), Int64.Type),
+				    AddMes = Table.AddColumn(AddAnio,"MesNumero", each if [FechaMatriculaDay]=null then null else Date.Month(Date.From([FechaMatriculaDay])), Int64.Type),
+				    AddYM = Table.AddColumn(AddMes,"AnioMesKey", each if [FechaMatriculaDay]=null then null else Date.Year(Date.From([FechaMatriculaDay]))*100 + Date.Month(Date.From([FechaMatriculaDay])), Int64.Type),
+				    AddMesIns = Table.AddColumn(AddYM,"MesInscripcionNumero", each if [FechaInscripcionDay]=null then null else Date.Month(Date.From([FechaInscripcionDay])), Int64.Type),
+				    R0 = Table.RemoveColumns(AddMesIns,{"FechaInscripcion","FechaMatricula"}),
+				    R = Table.TransformColumnTypes(R0,{
+				        {"Periodo", type text},{"Sede", type text},{"Carrera", type text},{"Modalidad", type text},{"Identificacion", type text},
+				        {"FechaInscripcionDay", type datetime},{"FechaMatriculaDay", type datetime},
+				        {"AnioMatricula", Int64.Type},{"MesNumero", Int64.Type},{"AnioMesKey", Int64.Type},{"MesInscripcionNumero", Int64.Type},
+				        {"MatriculaEnPrimero", type text},{"Formalizado", type text},{"Fuente", type text},{"TipoPrograma", type text},{"TipoCarrera", type text},{"ArchivoOrigen", type text}
+				    })
+				in
+				    R
+
