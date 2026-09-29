@@ -69,20 +69,6 @@
                       "Entity": "FactMatriculaHistorica"
                     }
                   },
-                  "Property": "Proyeccion B26 Mes Vis"
-                }
-              },
-              "queryRef": "FactMatriculaHistorica.Proyeccion B26 Mes Vis",
-              "nativeQueryRef": "B26 proy."
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "FactMatriculaHistorica"
-                    }
-                  },
                   "Property": "Meta B26 Mes Vis"
                 }
               },
@@ -91,24 +77,6 @@
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "DimMesPeriodo"
-                  }
-                },
-                "Property": "Mes"
-              }
-            },
-            "direction": "Ascending"
-          }
-        ],
-        "isDefaultSort": true
       }
     },
     "objects": {

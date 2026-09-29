@@ -212,19 +212,13 @@ table FactMatriculaHistorica
 
 	measure 'Meta Lineal B26 Dia Periodo' = ```
 				VAR D = SELECTEDVALUE(DimDiaPeriodo[DiaPeriodo])
-				VAR FechaPunto = [Inicio Periodo B26] + D - 1
-				VAR M = MONTH(FechaPunto)
-				VAR MetaMes =
-					CALCULATE(
-						[Meta B26 Mes],
-						REMOVEFILTERS(DimMesPeriodo),
-						TREATAS({M}, DimMesPeriodo[MesNumero])
-					)
+				VAR DiasTotal = [Dias Totales B26]
+				VAR MetaTotal = [Meta Excel B26 Matriz]
 				RETURN
 					IF(
-						ISBLANK(D) || D > [Dias Totales B26],
+						ISBLANK(D) || ISBLANK(DiasTotal) || ISBLANK(MetaTotal) || D > DiasTotal,
 						BLANK(),
-						MetaMes
+						ROUND(MetaTotal * DIVIDE(D, DiasTotal), 0)
 					)
 			```
 		formatString: #,0
@@ -1425,7 +1419,9 @@ table FactMatriculaHistorica
 
 	measure 'Meta B26 Acumulada Semana Linea' =
 			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			VAR Inicio = [Inicio Periodo B26]
 			VAR Fin = [Fin Periodo B26]
+			VAR MetaTotal = [Meta Excel B26 Matriz]
 			VAR FinSemanaB26 =
 				CALCULATE(
 					MAX(DimFecha[FinSemana]),
@@ -1436,16 +1432,18 @@ table FactMatriculaHistorica
 					)
 				)
 			VAR FechaPunto = MIN(Fin, FinSemanaB26)
-			VAR M = MONTH(FechaPunto)
+			VAR DiasTotal = DATEDIFF(Inicio, Fin, DAY) + 1
+			VAR DiasAcum =
+				IF(
+					ISBLANK(FechaPunto) || FechaPunto < Inicio,
+					BLANK(),
+					DATEDIFF(Inicio, FechaPunto, DAY) + 1
+				)
 			RETURN
 				IF(
-					ISBLANK(W) || ISBLANK(FinSemanaB26),
+					ISBLANK(W) || ISBLANK(FinSemanaB26) || ISBLANK(MetaTotal) || ISBLANK(DiasAcum),
 					BLANK(),
-					CALCULATE(
-						[Meta B26 Mes],
-						REMOVEFILTERS(DimMesPeriodo),
-						TREATAS({M}, DimMesPeriodo[MesNumero])
-					)
+					ROUND(MetaTotal * DIVIDE(DiasAcum, DiasTotal), 0)
 				)
 		formatString: #,0
 		lineageTag: 7e8f2a9b-6113-4b2f-b72f-8d875481f7ab

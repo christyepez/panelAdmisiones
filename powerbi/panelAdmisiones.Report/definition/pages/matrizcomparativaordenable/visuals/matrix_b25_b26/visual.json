@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "matrix_b25_b26",
   "position": {
-    "x": 19.370459167607375,
-    "y": 174.33413250846638,
+    "x": 0,
+    "y": 9.4444444444444535,
     "z": 5500,
-    "height": 652.63547041631,
-    "width": 1580.9274751408789,
+    "height": 651.66666666666674,
+    "width": 1555,
     "tabOrder": 3000
   },
   "visual": {
@@ -281,42 +281,16 @@
         "sort": [
           {
             "field": {
-              "Column": {
+              "Measure": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "DimCarreraMatriz"
+                    "Entity": "FactMatriculaHistorica"
                   }
                 },
-                "Property": "CarreraVisual"
+                "Property": "Matrix B25 Real % Contexto"
               }
             },
-            "direction": "Ascending"
-          },
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "DimSedeAdm"
-                  }
-                },
-                "Property": "Sede"
-              }
-            },
-            "direction": "Ascending"
-          },
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "DimModalidadAdm"
-                  }
-                },
-                "Property": "Modalidad"
-              }
-            },
-            "direction": "Ascending"
+            "direction": "Descending"
           }
         ]
       }
@@ -610,5 +584,6 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  }
+  },
+  "parentGroupName": "35b29bf4499a30281889"
 }

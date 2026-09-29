@@ -5,7 +5,7 @@
     "x": 19.370459167607375,
     "y": 320.35759392581429,
     "z": 16000,
-    "height": 430.62020764911779,
+    "height": 365.05865354336976,
     "width": 1560.0669806526862,
     "tabOrder": 16000
   },
@@ -55,20 +55,6 @@
                       "Entity": "FactMatriculaHistorica"
                     }
                   },
-                  "Property": "Proyeccion B26 Dia Periodo Seguimiento"
-                }
-              },
-              "queryRef": "FactMatriculaHistorica.Proyeccion B26 Dia Periodo Seguimiento",
-              "nativeQueryRef": "B26 proy."
-            },
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "FactMatriculaHistorica"
-                    }
-                  },
                   "Property": "B25 Acumulado Dia Periodo"
                 }
               },
@@ -91,24 +77,6 @@
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "DimDiaPeriodo"
-                  }
-                },
-                "Property": "DiaPeriodo"
-              }
-            },
-            "direction": "Ascending"
-          }
-        ],
-        "isDefaultSort": true
       }
     },
     "objects": {
