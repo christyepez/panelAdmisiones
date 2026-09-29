@@ -32,3 +32,5 @@ ref table DimSeguimientoResumenColumn
 ref table DimCarreraMatriz
 ref table FactMetaMatriz
 
+ref cultureInfo es-EC
+

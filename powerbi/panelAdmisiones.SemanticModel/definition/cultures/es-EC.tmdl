@@ -1,0 +1,263 @@
+cultureInfo es-EC
+
+	linguisticMetadata =
+			{
+			  "Version": "2.0.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "factmatriculahistorica.matrix_b25_total_contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix B25 Total Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "TOTAL": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_b25_ytd_contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix B25 YTD Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "YTD": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_b25_real__contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix B25 Real % Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "REAL %": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_delta_b25__contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix Delta B25 % Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "DELTA %": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmetaadmision.meta_excel_b26_matriz_vis": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMetaAdmision",
+			          "ConceptualProperty": "Meta Excel B26 Matriz Vis"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "BUDGET": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_b26_ytd_objetivo_contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix B26 YTD Objetivo Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "YTD": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_b26_real_contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix B26 Real Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "REAL": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_b26_real__contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix B26 Real % Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "REAL %": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_delta_budget_contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix Delta Budget Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "DELTA BUDGET": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_completion_contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix Completion Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "COMPLETION": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_real_vs_ly_contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix Real vs LY Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "REAL vs LY": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "factmatriculahistorica.matrix_varianza_contexto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "FactMatriculaHistorica",
+			          "ConceptualProperty": "Matrix Varianza Contexto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "VARIANZA": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    }
+			  }
+			}
+		contentType: json
+
