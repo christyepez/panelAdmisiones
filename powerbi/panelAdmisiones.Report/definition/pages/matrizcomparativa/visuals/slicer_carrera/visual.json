@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimCarreraAdm"
+                      "Entity": "DimCarreraMatriz"
                     }
                   },
-                  "Property": "Carrera"
+                  "Property": "CarreraVisual"
                 }
               },
-              "queryRef": "DimCarreraAdm.Carrera",
+              "queryRef": "DimCarreraMatriz.CarreraVisual",
               "active": true
             }
           ]

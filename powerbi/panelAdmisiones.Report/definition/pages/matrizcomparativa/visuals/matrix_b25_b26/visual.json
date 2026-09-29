@@ -54,14 +54,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimCarreraAdm"
+                      "Entity": "DimCarreraMatriz"
                     }
                   },
-                  "Property": "Carrera"
+                  "Property": "CarreraVisual"
                 }
               },
-              "queryRef": "DimCarreraAdm.Carrera",
-              "nativeQueryRef": "Carrera",
+              "queryRef": "DimCarreraMatriz.CarreraVisual",
+              "nativeQueryRef": "Carrera Visual",
               "active": true
             },
             {
@@ -152,10 +152,10 @@
               "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "DimCarreraAdm"
+                    "Entity": "DimCarreraMatriz"
                   }
                 },
-                "Property": "Carrera"
+                "Property": "CarreraVisual"
               }
             },
             "direction": "Ascending"
@@ -172,7 +172,7 @@
         "levels": [
           {
             "queryRefs": [
-              "DimCarreraAdm.Carrera"
+              "DimCarreraMatriz.CarreraVisual"
             ],
             "isPinned": true
           },
@@ -339,7 +339,7 @@
             }
           },
           "selector": {
-            "metadata": "DimCarreraAdm.TipoCarrera"
+            "metadata": "DimCarreraMatriz.CarreraVisual"
           }
         }
       ],

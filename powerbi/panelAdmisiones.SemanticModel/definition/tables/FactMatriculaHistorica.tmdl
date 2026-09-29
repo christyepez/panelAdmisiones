@@ -726,12 +726,14 @@ table FactMatriculaHistorica
 		lineageTag: b85cd687-5672-4cb6-a41e-8efd8c1da5bc
 
 	measure 'Matrix B25 Total Contexto' = ```
+				VAR CarreraSGA = VALUES(DimCarreraMatriz[CarreraSGA])
 				VAR V =
 					CALCULATE(
 						[Total Matriculas Historicas],
 						REMOVEFILTERS(DimPeriodo),
 						REMOVEFILTERS(DimFecha),
 						REMOVEFILTERS(DimMesPeriodo),
+						TREATAS(CarreraSGA, FactMatriculaHistorica[CarreraSGA]),
 						FactMatriculaHistorica[Periodo] = "B25"
 					)
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
@@ -742,6 +744,7 @@ table FactMatriculaHistorica
 	measure 'Matrix B25 YTD Contexto' =
 			
 			VAR Corte25 = [Matrix Corte Nivel B25]
+			VAR CarreraSGA = VALUES(DimCarreraMatriz[CarreraSGA])
 			VAR V =
 				IF(
 					ISBLANK(Corte25),
@@ -751,6 +754,7 @@ table FactMatriculaHistorica
 						REMOVEFILTERS(DimPeriodo),
 						REMOVEFILTERS(DimFecha),
 						REMOVEFILTERS(DimMesPeriodo),
+						TREATAS(CarreraSGA, FactMatriculaHistorica[CarreraSGA]),
 						FactMatriculaHistorica[Periodo] = "B25",
 						FILTER(
 							ALL(FactMatriculaHistorica[FechaMatricula]),
@@ -765,6 +769,7 @@ table FactMatriculaHistorica
 	measure 'Matrix B26 Real Contexto' =
 			
 			VAR Corte26 = [Matrix Corte Nivel B26]
+			VAR CarreraSGA = VALUES(DimCarreraMatriz[CarreraSGA])
 			VAR V =
 				IF(
 					ISBLANK(Corte26),
@@ -774,6 +779,7 @@ table FactMatriculaHistorica
 						REMOVEFILTERS(DimPeriodo),
 						REMOVEFILTERS(DimFecha),
 						REMOVEFILTERS(DimMesPeriodo),
+						TREATAS(CarreraSGA, FactAdmision615[CarreraSGA]),
 						FactAdmision615[Periodo] = "B26",
 						FILTER(
 							ALL(FactAdmision615[FechaMatriculaDay]),
@@ -795,11 +801,25 @@ table FactMatriculaHistorica
 
 	measure 'Matrix B26 YTD Objetivo Contexto' = ```
 				VAR Meta = [Meta Excel B26 Matriz]
-				VAR YTD25 = [Matrix B25 YTD Contexto]
-				VAR Total25 = [Matrix B25 Total Contexto]
-				VAR Avance25 = DIVIDE(YTD25,Total25)
-				VAR V = ROUND(Meta * Avance25,0)
-				RETURN IF(ISBLANK(Meta) || ISBLANK(Avance25) || V = 0, BLANK(), V)
+				VAR YTD25Seleccion =
+				    CALCULATE(
+				        [Matrix B25 YTD Contexto],
+				        ALLSELECTED(DimCarreraMatriz),
+				        ALLSELECTED(DimSedeAdm),
+				        ALLSELECTED(DimModalidadAdm),
+				        ALLSELECTED(DimOfertaAdm)
+				    )
+				VAR Total25Seleccion =
+				    CALCULATE(
+				        [Matrix B25 Total Contexto],
+				        ALLSELECTED(DimCarreraMatriz),
+				        ALLSELECTED(DimSedeAdm),
+				        ALLSELECTED(DimModalidadAdm),
+				        ALLSELECTED(DimOfertaAdm)
+				    )
+				VAR Avance25Seleccion = DIVIDE(YTD25Seleccion, Total25Seleccion)
+				VAR V = Meta * Avance25Seleccion
+				RETURN IF(ISBLANK(Meta) || ISBLANK(Avance25Seleccion) || V = 0, BLANK(), V)
 			```
 		formatString: #,0
 		lineageTag: 2a7cdeb7-8bad-412e-a34e-99f32848c46f
@@ -854,12 +874,14 @@ table FactMatriculaHistorica
 
 	measure 'Matrix Hay Datos' = ```
 				VAR EnTiempo = ISINSCOPE(DimFecha[Mes]) || ISINSCOPE(DimFecha[Dia])
+				VAR CarreraSGA = VALUES(DimCarreraMatriz[CarreraSGA])
 				VAR V25Nivel =
 					IF(
 						EnTiempo,
 						CALCULATE(
 							[Total Matriculas Historicas],
 							REMOVEFILTERS(DimPeriodo),
+							TREATAS(CarreraSGA, FactMatriculaHistorica[CarreraSGA]),
 							FactMatriculaHistorica[Periodo] = "B25"
 						),
 						[Matrix B25 Total Contexto]
@@ -870,11 +892,13 @@ table FactMatriculaHistorica
 						CALCULATE(
 							FactAdmision615[Total Matriculas B26],
 							REMOVEFILTERS(DimPeriodo),
+							TREATAS(CarreraSGA, FactAdmision615[CarreraSGA]),
 							FactAdmision615[Periodo] = "B26"
 						),
 						[Matrix B26 Real Contexto]
 					)
-				RETURN IF(COALESCE(V25Nivel,0)+COALESCE(V26Nivel,0)>0,1,0)
+				VAR VMetaNivel = IF(EnTiempo, BLANK(), [Meta Excel B26 Matriz])
+				RETURN IF(COALESCE(V25Nivel,0)+COALESCE(V26Nivel,0)+COALESCE(VMetaNivel,0)>0,1,0)
 			```
 		formatString: 0
 		lineageTag: 528fb289-cbe3-42c1-8cf3-323e1298c395
@@ -923,7 +947,7 @@ table FactMatriculaHistorica
 		formatString: #,0
 		lineageTag: 25a5e227-4f33-454b-a604-13e4dac790ce
 
-	measure 'Real A26 Seguimiento' = CALCULATE(FactAdmision615[Total Matriculas], REMOVEFILTERS(DimPeriodo), FactAdmision615[Periodo] = "A26")
+	measure 'Real A26 Seguimiento' = CALCULATE([Total Matriculas Historicas], REMOVEFILTERS(DimPeriodo), FactMatriculaHistorica[Periodo] = "A26")
 		formatString: #,0
 		lineageTag: 7a53170f-c695-4d04-bc08-ddc4ae5a60c6
 
@@ -1070,7 +1094,12 @@ table FactMatriculaHistorica
 
 	measure 'Presupuesto B26 Semana' =
 			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
-			VAR WA = [Semana Actual B26 Numero]
+			VAR UltimaSemana =
+				CALCULATE(
+					MAX(DimFecha[SemanaPeriodoNumero]),
+					FILTER(ALL(DimFecha), DimFecha[PeriodoSeguimiento] = "B26")
+				)
+			VAR MetaTotal = [Meta B26 Base Contexto]
 			VAR Actual = [Presupuesto B26 Acumulado Semana]
 			VAR Anterior =
 				IF(
@@ -1082,18 +1111,55 @@ table FactMatriculaHistorica
 						DimFecha[SemanaPeriodoNumero] = W - 1
 					)
 				)
+			VAR ValorBase = COALESCE(Actual,0) - COALESCE(Anterior,0)
+			VAR AcumuladoPrevio =
+				IF(
+					W = UltimaSemana,
+					CALCULATE(
+						[Presupuesto B26 Acumulado Semana],
+						REMOVEFILTERS(DimFecha),
+						DimFecha[SemanaPeriodoNumero] = UltimaSemana - 1
+					),
+					BLANK()
+				)
 			RETURN
 				IF(
 					ISBLANK(W),
 					BLANK(),
-					COALESCE(Actual,0) - COALESCE(Anterior,0)
+					IF(W = UltimaSemana, MetaTotal - COALESCE(AcumuladoPrevio,0), ValorBase)
 				)
 		formatString: #,0
 		lineageTag: 440edc74-bc9f-43ce-8f20-d37c7ca13344
 
 	measure 'Meta Real Semana' =
+			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
+			VAR UltimaSemana =
+				CALCULATE(
+					MAX(DimFecha[SemanaPeriodoNumero]),
+					FILTER(ALL(DimFecha), DimFecha[PeriodoSeguimiento] = "B26")
+				)
+			VAR MetaTotal = [Meta B26 Base Contexto]
+			VAR MetaNetaTotal = ROUND(MetaTotal * 0.70, 0)
 			VAR V = [Presupuesto B26 Semana]
-			RETURN IF(ISBLANK(V), BLANK(), ROUND(V * 0.70, 0))
+			VAR MetaNetaBase = ROUND(V * 0.70, 0)
+			VAR MetaNetaPrevias =
+				SUMX(
+					FILTER(ALL(DimFecha[SemanaPeriodoNumero]), DimFecha[SemanaPeriodoNumero] < UltimaSemana),
+					VAR SemanaIter = DimFecha[SemanaPeriodoNumero]
+					VAR PresupuestoIter =
+						CALCULATE(
+							[Presupuesto B26 Semana],
+							REMOVEFILTERS(DimFecha),
+							DimFecha[SemanaPeriodoNumero] = SemanaIter
+						)
+					RETURN ROUND(PresupuestoIter * 0.70, 0)
+				)
+			RETURN
+				IF(
+					ISBLANK(V),
+					BLANK(),
+					IF(W = UltimaSemana, MetaNetaTotal - MetaNetaPrevias, MetaNetaBase)
+				)
 		formatString: #,0
 		lineageTag: 1f38eb42-4022-4fc1-89ff-778cc565f251
 
@@ -1193,17 +1259,31 @@ table FactMatriculaHistorica
 			VAR M = SELECTEDVALUE(DimSeguimientoSemanalMetric[Metrica])
 			VAR W = MAX(DimFecha[SemanaPeriodoNumero])
 			VAR WA = [Semana Actual B26 Numero]
-			VAR B25 = [Real B25 Semana]
-			VAR B26 = [Real B26 Semana]
+			VAR B25Acum = [Real B25 Acumulado Semana]
+			VAR B25AcumAnt =
+				IF(W <= 1, 0,
+					CALCULATE([Real B25 Acumulado Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W - 1))
+			VAR PresAcum = [Presupuesto B26 Acumulado Semana]
+			VAR PresAcumAnt =
+				IF(W <= 1, 0,
+					CALCULATE([Presupuesto B26 Acumulado Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W - 1))
+			VAR B26Acum = [Real B26 Acumulado Semana]
+			VAR B26AcumAnt =
+				IF(W <= 1, 0,
+					CALCULATE([Real B26 Acumulado Semana], REMOVEFILTERS(DimFecha), DimFecha[SemanaPeriodoNumero] = W - 1))
+			VAR B25Semana = COALESCE(B25Acum,0) - COALESCE(B25AcumAnt,0)
+			VAR PresSemana = COALESCE(PresAcum,0) - COALESCE(PresAcumAnt,0)
+			VAR B26Semana = COALESCE(B26Acum,0) - COALESCE(B26AcumAnt,0)
+			VAR MetaNetaSemana = PresSemana * 0.70
 			RETURN
 				SWITCH(
 					TRUE(),
 					ISBLANK(W), BLANK(),
-					M = "NE real B2025", COALESCE(B25,0),
-					M = "Presupuesto B2026", COALESCE([Presupuesto B26 Semana],0),
-					M = "Meta neta (70%)", COALESCE([Meta Real Semana],0),
-					M = "NE real B2026", IF(ISBLANK(WA) || W > WA, BLANK(), COALESCE(B26,0)),
-					M = "% sobre presupuesto", IF(ISBLANK(WA) || W > WA, BLANK(), DIVIDE(COALESCE(B26,0),COALESCE([Presupuesto B26 Semana],0),0)),
+					M = "NE real B2025", B25Semana,
+					M = "Presupuesto B2026", PresSemana,
+					M = "Meta neta (70%)", MetaNetaSemana,
+					M = "NE real B2026", IF(ISBLANK(WA) || W > WA, BLANK(), B26Semana),
+					M = "% sobre presupuesto", IF(ISBLANK(WA) || W > WA, BLANK(), DIVIDE(B26Semana,PresSemana)),
 					BLANK()
 				)
 		lineageTag: e458ce39-0432-42d2-b0d7-fb77a74c5472
@@ -1446,18 +1526,23 @@ table FactMatriculaHistorica
 		dataType: string
 		lineageTag: f53f9596-7cc7-4447-83bc-5db7ee06fabd
 
+	column CarreraSGA
+		dataType: string
+		lineageTag: bfe7d0ee-cd43-482b-bf27-152e49f9c296
+		sourceColumn: CarreraSGA
+
 	partition FactMatriculaHistorica = m
 		mode: import
 		source =
 				let
 				    S0 = FxLoad387(),
-				    K = Table.SelectColumns(S0,{"Periodo","Sede","Modalidad","Carrera","Identificacion","FechaMatricula","Formalizada","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
+				    K = Table.SelectColumns(S0,{"Periodo","Sede","Modalidad","CarreraSGA","Carrera","Identificacion","FechaMatricula","Formalizada","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
 				    D = Table.TransformColumns(K,{{"FechaMatricula", each try DateTime.From(Date.From(_)) otherwise null, type nullable datetime}}),
 				    AddAnio = Table.AddColumn(D,"AnioMatricula", each if [FechaMatricula]=null then null else Date.Year(Date.From([FechaMatricula])), Int64.Type),
 				    AddMes = Table.AddColumn(AddAnio,"MesNumero", each if [FechaMatricula]=null then null else Date.Month(Date.From([FechaMatricula])), Int64.Type),
 				    AddYM = Table.AddColumn(AddMes,"AnioMesKey", each if [FechaMatricula]=null then null else Date.Year(Date.From([FechaMatricula]))*100 + Date.Month(Date.From([FechaMatricula])), Int64.Type),
 				    R = Table.TransformColumnTypes(AddYM,{
-				        {"Periodo", type text},{"Sede", type text},{"Modalidad", type text},{"Carrera", type text},{"Identificacion", type text},
+				        {"Periodo", type text},{"Sede", type text},{"Modalidad", type text},{"CarreraSGA", type text},{"Carrera", type text},{"Identificacion", type text},
 				        {"FechaMatricula", type datetime},{"AnioMatricula", Int64.Type},{"MesNumero", Int64.Type},{"AnioMesKey", Int64.Type},
 				        {"Formalizada", type text},{"TipoPrograma", type text},{"TipoCarrera", type text},{"ArchivoOrigen", type text}
 				    })

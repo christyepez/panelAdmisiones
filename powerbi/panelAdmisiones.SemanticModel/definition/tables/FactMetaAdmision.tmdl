@@ -51,36 +51,19 @@ table FactMetaAdmision
 		lineageTag: 3e04af53-b5ed-4a45-a58f-4f86af864b8b
 
 	measure 'Meta Excel B26 Matriz' = ```
+				VAR CarreraVisual = VALUES(DimCarreraMatriz[CarreraVisual])
+				VAR Sedes = VALUES(DimSedeAdm[Sede])
+				VAR Modalidades = VALUES(DimModalidadAdm[Modalidad])
+				VAR Ofertas = VALUES(DimOfertaAdm[Oferta])
 				VAR MetaDetalle =
 				    CALCULATE(
-				        SUM(FactMetaAdmision[Meta]),
-				        FactMetaAdmision[Periodo] = "B26",
-				        FactMetaAdmision[NivelMeta] = "DETALLE_FUENTE"
+				        SUM(FactMetaMatriz[Meta]),
+				        TREATAS(CarreraVisual, FactMetaMatriz[CarreraVisual]),
+				        TREATAS(Sedes, FactMetaMatriz[Sede]),
+				        TREATAS(Modalidades, FactMetaMatriz[Modalidad]),
+				        TREATAS(Ofertas, FactMetaMatriz[OfertaB26])
 				    )
-				VAR MetaCarreraFuente =
-				    CALCULATE(
-				        SUM(FactMetaAdmision[Meta]),
-				        FactMetaAdmision[Periodo] = "B26",
-				        FactMetaAdmision[NivelMeta] = "DETALLE_FUENTE"
-				    )
-				VAR EnModalidad = ISINSCOPE(DimModalidadAdm[Modalidad])
-				VAR EnSede = ISINSCOPE(DimSedeAdm[Sede])
-				VAR EnCarrera = ISINSCOPE(DimCarreraAdm[Carrera])
-				VAR HayOferta = ISFILTERED(DimOfertaAdm[Oferta])
-				VAR HayFiltroDetalle =
-				    ISFILTERED(DimCarreraAdm[Carrera]) ||
-				    ISFILTERED(DimSedeAdm[Sede]) ||
-				    ISFILTERED(DimModalidadAdm[Modalidad]) ||
-				    HayOferta
-				VAR V =
-				    SWITCH(
-				        TRUE(),
-				        EnModalidad, MetaDetalle,
-				        EnSede, MetaDetalle,
-				        EnCarrera, IF(HayOferta, MetaDetalle, COALESCE(MetaDetalle, MetaCarreraFuente)),
-				        HayFiltroDetalle, IF(HayOferta, MetaDetalle, COALESCE(MetaDetalle, MetaCarreraFuente)),
-				        [Meta Oficial B26 Panel]
-				    )
+				VAR V = MetaDetalle
 				RETURN IF(ISBLANK(V) || V = 0, BLANK(), V)
 			```
 		formatString: #,0

@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimCarreraAdm"
+                      "Entity": "DimCarreraMatriz"
                     }
                   },
                   "Property": "TipoCarrera"
                 }
               },
-              "queryRef": "DimCarreraAdm.TipoCarrera",
+              "queryRef": "DimCarreraMatriz.TipoCarrera",
               "active": true
             }
           ]
@@ -83,7 +83,7 @@
                 "From": [
                   {
                     "Name": "d",
-                    "Entity": "DimCarreraAdm",
+                    "Entity": "DimCarreraMatriz",
                     "Type": 0
                   }
                 ],

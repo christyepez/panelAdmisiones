@@ -62,32 +62,36 @@ expression FxLoad387 =
 		    Files1 = Table.SelectRows(Files0, each
 		        Text.Contains(Text.Lower([Folder Path]), "/general/paneles/admisiones/historicos/") and
 		        not Text.StartsWith([Name], "~$") and
-		        List.Contains({"387 a24.xlsx","387 b24.xlsx","387 a25.xlsx","387 b25.xlsx"}, Text.Lower([Name]))),
+		        List.Contains({"387 a24.xlsx","387 b24.xlsx","387 a25.xlsx","387 b25.xlsx","387 a26.xlsx"}, Text.Lower([Name]))),
 		    LoadOne = (content as binary, fileName as text) as table =>
 		        let
 		            Raw = FxReadNamedSheet(content, "matriz_alumnos_matriculados_por"),
 		            Keep = Table.SelectColumns(Raw, {"IDENTIF.","PERIODO","SEDE","MODALIDAD","CARRERA","MAT.","FECHA DE MATRICULA","FORMALIZADA","NIVEL"}, MissingField.UseNull),
 		            Ren = Table.RenameColumns(Keep,{
 		                {"IDENTIF.","Identificacion"},{"PERIODO","Periodo"},{"SEDE","Sede"},{"MODALIDAD","Modalidad"},
-		                {"CARRERA","Carrera"},{"MAT.","MatriculaId"},{"FECHA DE MATRICULA","FechaMatricula"},{"FORMALIZADA","Formalizada"},{"NIVEL","Nivel"}
+		                {"CARRERA","CarreraSGAOrigen"},{"MAT.","MatriculaId"},{"FECHA DE MATRICULA","FechaMatricula"},{"FORMALIZADA","Formalizada"},{"NIVEL","Nivel"}
 		            }, MissingField.Ignore),
 		            Cleaned = Table.TransformColumns(Ren,{
 		                {"Identificacion", FxCleanText, type text},{"Periodo", each Text.Upper(FxCleanText(_)), type text},
-		                {"Sede", FxCleanText, type text},{"Modalidad", FxCleanText, type text},{"Carrera", FxCleanText, type text},
+		                {"Sede", FxCleanText, type text},{"Modalidad", FxCleanText, type text},{"CarreraSGAOrigen", FxCleanText, type text},
 		                {"MatriculaId", FxCleanText, type text},{"Formalizada", FxCleanText, type text},{"Nivel", FxCleanText, type text}
 		            }),
 		            Dates = Table.TransformColumns(Cleaned,{{"FechaMatricula", each try Date.From(_) otherwise null, type date}}),
-		            Canon = Table.TransformColumns(Dates,{{"Carrera", each FxCarreraCanonica(_), type text}}),
-		            AddTipo = Table.AddColumn(Canon, "TipoPrograma", each FxTipoPrograma([Carrera]), type text),
-		            AddTipoCarrera = Table.AddColumn(AddTipo, "TipoCarrera", each FxTipoCarrera([Carrera]), type text),
-		            AddFile = Table.AddColumn(AddTipoCarrera, "ArchivoOrigen", each fileName, type text),
+		            AddSGA = Table.AddColumn(Dates,"CarreraSGA",each FxNormalizeName([CarreraSGAOrigen]),type text),
+		            Catalog = FxLoadCarreraCatalog(),
+		            MergeCarrera = Table.NestedJoin(AddSGA,{"CarreraSGA"},Catalog,{"CarreraSGA"},"CarreraCatalog",JoinKind.LeftOuter),
+		            ExpandCarrera = Table.ExpandTableColumn(MergeCarrera,"CarreraCatalog",{"CarreraVisual"},{"CarreraVisual"}),
+		            AddCarrera = Table.AddColumn(ExpandCarrera,"Carrera",each if [CarreraVisual]<>null then [CarreraVisual] else FxCarreraCanonica([CarreraSGAOrigen]),type text),
+		            AddTipo = Table.AddColumn(AddCarrera,"TipoPrograma",each FxTipoPrograma([Carrera]),type text),
+		            AddTipoCarrera = Table.AddColumn(AddTipo,"TipoCarrera",each FxTipoCarrera([Carrera]),type text),
+		            AddFile = Table.AddColumn(AddTipoCarrera,"ArchivoOrigen",each fileName,type text),
 		            Valid = Table.SelectRows(AddFile, each [Periodo] <> null and [Identificacion] <> null and [FechaMatricula] <> null and FxNormalizeName([Nivel]) = "1RO NIVEL"),
-		            Dedup = Table.Distinct(Valid, {"Periodo","Identificacion","Carrera","MatriculaId"}),
-		            Result = Table.SelectColumns(Dedup,{"Periodo","Sede","Modalidad","Carrera","Identificacion","FechaMatricula","Formalizada","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull)
+		            Dedup = Table.Distinct(Valid,{"Periodo","Identificacion","CarreraSGA","MatriculaId"}),
+		            Result = Table.SelectColumns(Dedup,{"Periodo","Sede","Modalidad","CarreraSGA","Carrera","Identificacion","FechaMatricula","Formalizada","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull)
 		        in
 		            Result,
 		    Tables = List.Transform(Table.ToRecords(Files1), each LoadOne(_[Content], _[Name])),
-		    Result = if List.Count(Tables)=0 then #table(type table [Periodo=text,Sede=text,Modalidad=text,Carrera=text,Identificacion=text,FechaMatricula=date,Formalizada=text,TipoPrograma=text,TipoCarrera=text,ArchivoOrigen=text], {}) else Table.Combine(Tables)
+		    Result = if List.Count(Tables)=0 then #table(type table [Periodo=text,Sede=text,Modalidad=text,CarreraSGA=text,Carrera=text,Identificacion=text,FechaMatricula=date,Formalizada=text,TipoPrograma=text,TipoCarrera=text,ArchivoOrigen=text], {}) else Table.Combine(Tables)
 		in
 		    Result
 	lineageTag: da1e8591-e9bb-437a-9f6e-4ac4d241ba78
@@ -115,14 +119,14 @@ expression FxLoad615 =
 				        MissingField.UseNull
 				    ),
 				    Ren = Table.RenameColumns(Keep,{
-				        {"COORDINACION","Facultad"},{"CARRERA","Carrera"},{"MODALIDAD","Modalidad"},{"IDENTIFICACION","Identificacion"},
+				        {"COORDINACION","Facultad"},{"CARRERA","CarreraSGAOrigen"},{"MODALIDAD","Modalidad"},{"IDENTIFICACION","Identificacion"},
 				        {"ESTUDIANTE","Estudiante"},{"CORREO PERSONAL","Email"},{"NUMERO DE TELEFONO","Telefono"},{"CANTON DE RESIDENCIA","CantonResidencia"},
 				        {"FECHA INSCRIPCION","FechaInscripcion"},{"FECHA MATRICULA","FechaMatricula"},{"ASESOR","Asesor"},{"RESPONSABLE DEL GRUPO","ResponsableGrupo"},
 				        {"Prematricula","Prematricula"},{"MATRICULA EN PRIMERO","MatriculaEnPrimero"},{"PERSONA MATRICULO","PersonaMatriculo"},
 				        {"FORMALIZADO","Formalizado"},{"RETIRADO CARRERA","RetiradoCarrera"},{"FUENTE","Fuente"},{"NIVEL MATRICULA","NivelMatricula"},{"CENTRO","Centro"},{"HOMOLOGA","Homologacion"}
 				    }, MissingField.Ignore),
 				    Cleaned = Table.TransformColumns(Ren,{
-				        {"Periodo", FxCleanText, type text},{"Sede", FxCleanText, type text},{"Facultad", FxCleanText, type text},{"Carrera", FxCleanText, type text},{"Modalidad", FxCleanText, type text},
+				        {"Periodo", FxCleanText, type text},{"Sede", FxCleanText, type text},{"Facultad", FxCleanText, type text},{"CarreraSGAOrigen", FxCleanText, type text},{"Modalidad", FxCleanText, type text},
 				        {"Identificacion", FxCleanText, type text},{"Estudiante", FxCleanText, type text},{"Email", FxCleanText, type text},{"Telefono", FxCleanText, type text},
 				        {"CantonResidencia", FxCleanText, type text},{"Asesor", FxCleanText, type text},{"ResponsableGrupo", FxCleanText, type text},{"Prematricula", FxCleanText, type text},
 				        {"MatriculaEnPrimero", FxCleanText, type text},{"PersonaMatriculo", FxCleanText, type text},{"Formalizado", FxCleanText, type text},
@@ -132,8 +136,12 @@ expression FxLoad615 =
 				        {"FechaInscripcion", each try Date.From(_) otherwise null, type date},
 				        {"FechaMatricula", each try Date.From(_) otherwise null, type date}
 				    }),
-				    Canon = Table.TransformColumns(Dates,{{"Carrera", each FxCarreraCanonica(_), type text}}),
-				    AddAsesor = Table.AddColumn(Canon, "AsesorFinal", each
+				    AddSGA = Table.AddColumn(Dates, "CarreraSGA", each FxNormalizeName([CarreraSGAOrigen]), type text),
+				    Catalog = FxLoadCarreraCatalog(),
+				    MergeCarrera = Table.NestedJoin(AddSGA,{"CarreraSGA"},Catalog,{"CarreraSGA"},"CarreraCatalog",JoinKind.LeftOuter),
+				    ExpandCarrera = Table.ExpandTableColumn(MergeCarrera,"CarreraCatalog",{"CarreraVisual"},{"CarreraVisual"}),
+				    AddCarrera = Table.AddColumn(ExpandCarrera, "Carrera", each if [CarreraVisual] <> null then [CarreraVisual] else FxCarreraCanonica([CarreraSGAOrigen]), type text),
+				    AddAsesor = Table.AddColumn(AddCarrera, "AsesorFinal", each
 				        if [Asesor] <> null then [Asesor]
 				        else if [ResponsableGrupo] <> null then [ResponsableGrupo]
 				        else if [PersonaMatriculo] <> null then [PersonaMatriculo]
@@ -149,7 +157,7 @@ expression FxLoad615 =
 				        [Identificacion] <> null
 				    ),
 				    AddFile = Table.AddColumn(BusinessFilter, "ArchivoOrigen", each FileName, type text),
-				    Cols = {"Periodo","Sede","Facultad","Carrera","Modalidad","Identificacion","Estudiante","Email","Telefono","CantonResidencia",
+				    Cols = {"Periodo","Sede","Facultad","CarreraSGA","Carrera","Modalidad","Identificacion","Estudiante","Email","Telefono","CantonResidencia",
 				            "FechaInscripcion","FechaMatricula","Asesor","ResponsableGrupo","Prematricula","MatriculaEnPrimero","PersonaMatriculo",
 				            "Formalizado","RetiradoCarrera","Fuente","NivelMatricula","Centro","Homologacion","AsesorFinal","TipoPrograma","TipoCarrera","ArchivoOrigen"},
 				    Result0 = Table.SelectColumns(AddFile, Cols, MissingField.UseNull),
@@ -287,4 +295,33 @@ expression FxOfertaMap =
 		in
 		    R
 	lineageTag: 242920e8-4e8d-4c38-98bd-dde324982300
+
+expression FxLoadCarreraCatalog =
+		() as table =>
+		let
+		    Files0 = FxSharePointAdmisionesFiles(),
+		    Files = Table.Sort(
+		        Table.SelectRows(Files0, each
+		            Text.Contains(Text.Lower([Folder Path]), "/general/paneles/admisiones/actual/") and
+		            Text.Lower([Name]) = "metasbase.xlsx" and
+		            not Text.StartsWith([Name], "~$")
+		        ),
+		        {{"Date modified", Order.Descending}}
+		    ),
+		    Latest = if Table.RowCount(Files)=0 then error "No se encontro MetasBase.xlsx en SharePoint /General/Paneles/Admisiones/Actual/." else Files{0},
+		    Raw = FxReadNamedSheet(Latest[Content], "Carrera"),
+		    Names = Table.ColumnNames(Raw),
+		    ColVisual = List.First(List.Select(Names, each let n=FxNormalizeName(_) in n = "CARRERA VISUAL" or n = "CARRERAVISUAL"), null),
+		    ColSGA = List.First(List.Select(Names, each let n=FxNormalizeName(_) in n = "SGA" or n = "CARRERA SGA" or n = "CARRERASGA"), null),
+		    Checked = if ColVisual=null or ColSGA=null then error "La hoja Carrera de MetasBase.xlsx debe contener Carrera Visual y SGA/Carrera SGA." else Raw,
+		    Keep = Table.SelectColumns(Checked,{ColVisual,ColSGA},MissingField.Error),
+		    Ren = Table.RenameColumns(Keep,{{ColVisual,"CarreraVisual"},{ColSGA,"CarreraSGAOrigen"}}),
+		    Clean = Table.TransformColumns(Ren,{{"CarreraVisual", FxCleanText, type nullable text},{"CarreraSGAOrigen", FxCleanText, type nullable text}}),
+		    AddSGA = Table.AddColumn(Clean,"CarreraSGA",each FxNormalizeName([CarreraSGAOrigen]),type text),
+		    AddVisualNorm = Table.AddColumn(AddSGA,"CarreraVisualNorm",each FxNormalizeName([CarreraVisual]),type text),
+		    Valid = Table.SelectRows(AddVisualNorm, each [CarreraSGA]<>null and [CarreraSGA]<>"" and [CarreraVisual]<>null and [CarreraVisual]<>""),
+		    Result = Table.Distinct(Table.SelectColumns(Valid,{"CarreraSGA","CarreraVisual","CarreraVisualNorm"}),{"CarreraSGA"})
+		in
+		    Result
+	lineageTag: 3f2ab89a-fb29-4e78-a72e-000000000101
 

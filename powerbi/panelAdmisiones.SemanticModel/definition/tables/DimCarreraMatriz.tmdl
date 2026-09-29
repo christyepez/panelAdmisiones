@@ -1,0 +1,37 @@
+table DimCarreraMatriz
+	lineageTag: 7d9f5c5b-8b52-4c76-b31a-202609290001
+
+	column CarreraSGA
+		dataType: string
+		isKey
+		lineageTag: 7d9f5c5b-8b52-4c76-b31a-202609290002
+		sourceColumn: CarreraSGA
+
+	column CarreraVisual
+		dataType: string
+		lineageTag: 7d9f5c5b-8b52-4c76-b31a-202609290003
+		sourceColumn: CarreraVisual
+
+	column TipoPrograma
+		dataType: string
+		lineageTag: 7d9f5c5b-8b52-4c76-b31a-202609290004
+		sourceColumn: TipoPrograma
+
+	column TipoCarrera
+		dataType: string
+		lineageTag: 7d9f5c5b-8b52-4c76-b31a-202609290005
+		sourceColumn: TipoCarrera
+
+	partition DimCarreraMatriz = m
+		mode: import
+		source =
+				let
+				    Catalog = FxLoadCarreraCatalog(),
+				    Base0 = Table.SelectColumns(Catalog,{"CarreraSGA","CarreraVisual"},MissingField.Error),
+				    Base = Table.TransformColumns(Base0,{{"CarreraSGA", each if _ = "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEL DEPORTE" then "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEPORTE" else _, type text}}),
+				    AddTipoPrograma = Table.AddColumn(Base,"TipoPrograma",each FxTipoPrograma([CarreraVisual]),type text),
+				    AddTipoCarrera = Table.AddColumn(AddTipoPrograma,"TipoCarrera",each FxTipoCarrera([CarreraVisual]),type text),
+				    R = Table.Sort(AddTipoCarrera,{{"CarreraVisual",Order.Ascending}})
+				in
+				    R
+

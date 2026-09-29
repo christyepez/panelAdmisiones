@@ -131,12 +131,17 @@ table FactAdmision615
 		dataType: string
 		lineageTag: 05e93ba4-a96a-4b9b-ae74-6001e47f7bdb
 
+	column CarreraSGA
+		dataType: string
+		lineageTag: 94314b5a-2f2b-4e27-8190-5ace9bf8b42b
+		sourceColumn: CarreraSGA
+
 	partition FactAdmision615 = m
 		mode: import
 		source =
 				let
 				    Base = FxLoad615(),
-				    KeepFact = Table.SelectColumns(Base,{"Periodo","Sede","Carrera","Modalidad","Identificacion","FechaInscripcion","FechaMatricula","MatriculaEnPrimero","Formalizado","Fuente","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
+				    KeepFact = Table.SelectColumns(Base,{"Periodo","Sede","CarreraSGA","Carrera","Modalidad","Identificacion","FechaInscripcion","FechaMatricula","MatriculaEnPrimero","Formalizado","Fuente","TipoPrograma","TipoCarrera","ArchivoOrigen"},MissingField.UseNull),
 				    I = Table.AddColumn(KeepFact,"FechaInscripcionDay", each try DateTime.From(Date.From([FechaInscripcion])) otherwise null, type nullable datetime),
 				    M = Table.AddColumn(I,"FechaMatriculaDay", each try DateTime.From(Date.From([FechaMatricula])) otherwise null, type nullable datetime),
 				    AddAnio = Table.AddColumn(M,"AnioMatricula", each if [FechaMatriculaDay]=null then null else Date.Year(Date.From([FechaMatriculaDay])), Int64.Type),
@@ -145,7 +150,7 @@ table FactAdmision615
 				    AddMesIns = Table.AddColumn(AddYM,"MesInscripcionNumero", each if [FechaInscripcionDay]=null then null else Date.Month(Date.From([FechaInscripcionDay])), Int64.Type),
 				    R0 = Table.RemoveColumns(AddMesIns,{"FechaInscripcion","FechaMatricula"}),
 				    R = Table.TransformColumnTypes(R0,{
-				        {"Periodo", type text},{"Sede", type text},{"Carrera", type text},{"Modalidad", type text},{"Identificacion", type text},
+				        {"Periodo", type text},{"Sede", type text},{"CarreraSGA", type text},{"Carrera", type text},{"Modalidad", type text},{"Identificacion", type text},
 				        {"FechaInscripcionDay", type datetime},{"FechaMatriculaDay", type datetime},
 				        {"AnioMatricula", Int64.Type},{"MesNumero", Int64.Type},{"AnioMesKey", Int64.Type},{"MesInscripcionNumero", Int64.Type},
 				        {"MatriculaEnPrimero", type text},{"Formalizado", type text},{"Fuente", type text},{"TipoPrograma", type text},{"TipoCarrera", type text},{"ArchivoOrigen", type text}

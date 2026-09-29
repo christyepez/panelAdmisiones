@@ -7,7 +7,7 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
-annotation PBI_QueryOrder = ["PanelesPowerBISiteUrl","FxSharePointAdmisionesFiles","FxCleanText","FxReadNamedSheet","FxNormalizeName","FxCarreraCanonica","FxCanal","FxFindColumn","FxTipoPrograma","FxTipoCarrera","FxLoad387","FxLoad615","FxLoadMetas","FxOfertaMap","DimPeriodo","DimDiaPeriodo","DimMesPeriodo","DimFecha","DimMatrixColumn","DimCarreraAdm","DimSedeAdm","DimModalidadAdm","DimOfertaMap","DimOfertaAdm","FactAdmision615","FactMatriculaHistorica","FactMetaAdmision","DimSeguimientoAnualColumn","DimSeguimientoSemanalMetric","DimSeguimientoResumenColumn"]
+annotation PBI_QueryOrder = ["PanelesPowerBISiteUrl","FxSharePointAdmisionesFiles","FxCleanText","FxReadNamedSheet","FxNormalizeName","FxCarreraCanonica","FxCanal","FxFindColumn","FxTipoPrograma","FxTipoCarrera","FxLoadCarreraCatalog","FxLoad387","FxLoad615","FxLoadMetas","FxOfertaMap","DimPeriodo","DimDiaPeriodo","DimMesPeriodo","DimFecha","DimMatrixColumn","DimCarreraAdm","DimCarreraMatriz","DimSedeAdm","DimModalidadAdm","DimOfertaMap","DimOfertaAdm","FactAdmision615","FactMatriculaHistorica","FactMetaAdmision","FactMetaMatriz","DimSeguimientoAnualColumn","DimSeguimientoSemanalMetric","DimSeguimientoResumenColumn"]
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
@@ -29,4 +29,6 @@ ref table FactMetaAdmision
 ref table DimSeguimientoAnualColumn
 ref table DimSeguimientoSemanalMetric
 ref table DimSeguimientoResumenColumn
+ref table DimCarreraMatriz
+ref table FactMetaMatriz
 

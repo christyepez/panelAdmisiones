@@ -1,0 +1,51 @@
+table FactMetaMatriz
+	lineageTag: 0a8a36dd-4d5f-4476-b25b-202609290001
+
+	column CarreraVisual
+		dataType: string
+		lineageTag: 0a8a36dd-4d5f-4476-b25b-202609290002
+		sourceColumn: CarreraVisual
+
+	column Sede
+		dataType: string
+		lineageTag: 0a8a36dd-4d5f-4476-b25b-202609290003
+		sourceColumn: Sede
+
+	column Modalidad
+		dataType: string
+		lineageTag: 0a8a36dd-4d5f-4476-b25b-202609290004
+		sourceColumn: Modalidad
+
+	column Meta
+		dataType: double
+		formatString: #,0
+		lineageTag: 0a8a36dd-4d5f-4476-b25b-202609290005
+		sourceColumn: Meta
+
+	column OfertaB26
+		dataType: string
+		lineageTag: 0a8a36dd-4d5f-4476-b25b-202609290006
+		sourceColumn: OfertaB26
+
+	partition FactMetaMatriz = m
+		mode: import
+		source =
+				let
+				    Files0 = FxSharePointAdmisionesFiles(),
+				    Files = Table.Sort(Table.SelectRows(Files0, each Text.Contains(Text.Lower([Folder Path]), "/general/paneles/admisiones/actual/") and Text.Lower([Name]) = "metasbase.xlsx" and not Text.StartsWith([Name], "~$")), {{"Date modified", Order.Descending}}),
+				    Latest = if Table.RowCount(Files)=0 then error "No se encontro MetasBase.xlsx." else Files{0},
+				    Raw = FxReadNamedSheet(Latest[Content], "Meta"),
+				    Keep = Table.SelectColumns(Raw,{"Carrera","Sede","Modalidad","Meta Ventas","Oferta B26"},MissingField.UseNull),
+				    Clean0 = Table.TransformColumns(Keep,{{"Carrera",FxCleanText,type nullable text},{"Sede",FxCleanText,type nullable text},{"Modalidad",FxCleanText,type nullable text},{"Meta Ventas",each try Number.From(_) otherwise try Number.FromText(Text.From(_),"es-EC") otherwise null,type nullable number},{"Oferta B26",each let v=FxCleanText(_) in if v=null then "NO" else Text.Upper(v),type text}}),
+				    AddVisualNorm = Table.AddColumn(Clean0,"CarreraVisualNorm",each FxNormalizeName([Carrera]),type text),
+				    Catalog = FxLoadCarreraCatalog(),
+				    Merge = Table.NestedJoin(AddVisualNorm,{"CarreraVisualNorm"},Catalog,{"CarreraVisualNorm"},"Cat",JoinKind.LeftOuter),
+				    Expand = Table.ExpandTableColumn(Merge,"Cat",{"CarreraVisual"},{"CarreraVisualCatalog"}),
+				    AddVisual = Table.AddColumn(Expand,"CarreraVisual",each if [CarreraVisualCatalog]<>null then [CarreraVisualCatalog] else [Carrera],type nullable text),
+				    Clean = Table.TransformColumns(AddVisual,{{"Sede",each let n=FxNormalizeName(_) in if n="AMBATO" or n="AMB" then "MATRIZ" else if n="UIO" then "QUITO" else if n="LTG" then "LATACUNGA" else n,type nullable text},{"Modalidad",each let n=FxNormalizeName(_) in if Text.StartsWith(n,"HIBRIDA") then "HIBRIDA" else if Text.StartsWith(n,"EN LINEA") then "EN LINEA" else if Text.StartsWith(n,"PRESENCIAL") then "PRESENCIAL" else if Text.StartsWith(n,"SEMIPRESENCIAL") then "SEMIPRESENCIAL" else n,type nullable text}}),
+				    Valid = Table.SelectRows(Clean,each [CarreraVisual]<>null and [Meta Ventas]<>null),
+				    Ren = Table.RenameColumns(Valid,{{"Meta Ventas","Meta"},{"Oferta B26","OfertaB26"}},MissingField.Ignore),
+				    Result = Table.SelectColumns(Ren,{"CarreraVisual","Sede","Modalidad","Meta","OfertaB26"},MissingField.UseNull)
+				in
+				    Result
+
