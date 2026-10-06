@@ -51,7 +51,26 @@ table FactMetaAdmision
 		lineageTag: 3e04af53-b5ed-4a45-a58f-4f86af864b8b
 
 	measure 'Meta Excel B26 Matriz' = ```
-				VAR CarreraVisual = VALUES(DimCarreraMatriz[CarreraVisual])
+				VAR TiposAdm = VALUES(DimCarreraAdm[TipoPrograma])
+				VAR CarrerasAdm = VALUES(DimCarreraAdm[Carrera])
+				VAR HayFiltroTipoAdm = ISFILTERED(DimCarreraAdm[TipoPrograma]) || ISFILTERED(DimCarreraAdm[TipoCarrera])
+				VAR HayFiltroCarreraAdm = ISFILTERED(DimCarreraAdm[Carrera])
+				VAR CarreraVisual =
+					CALCULATETABLE(
+						VALUES(DimCarreraMatriz[CarreraVisual]),
+						KEEPFILTERS(
+							FILTER(
+								VALUES(DimCarreraMatriz[TipoPrograma]),
+								NOT HayFiltroTipoAdm || DimCarreraMatriz[TipoPrograma] IN TiposAdm
+							)
+						),
+						KEEPFILTERS(
+							FILTER(
+								VALUES(DimCarreraMatriz[CarreraSGA]),
+								NOT HayFiltroCarreraAdm || DimCarreraMatriz[CarreraSGA] IN CarrerasAdm
+							)
+						)
+					)
 				VAR Sedes = VALUES(DimSedeAdm[Sede])
 				VAR Modalidades = VALUES(DimModalidadAdm[Modalidad])
 				VAR Ofertas = VALUES(DimOfertaAdm[Oferta])
