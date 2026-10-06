@@ -3,7 +3,7 @@
   "name": "semanal_slicer_tipo_carrera",
   "position": {
     "x": 785,
-    "y": 20,
+    "y": 14.7509765625,
     "z": 4000,
     "height": 72,
     "width": 190,
@@ -104,6 +104,13 @@
                           }
                         ],
                         "Values": [
+                          [
+                            {
+                              "Literal": {
+                                "Value": "'POSGRADO'"
+                              }
+                            }
+                          ],
                           [
                             {
                               "Literal": {

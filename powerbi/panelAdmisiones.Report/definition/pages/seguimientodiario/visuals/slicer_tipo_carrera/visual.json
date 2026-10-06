@@ -3,7 +3,7 @@
   "name": "slicer_tipo_carrera",
   "position": {
     "x": 860,
-    "y": 18,
+    "y": 5.2187500027939677,
     "z": 4000,
     "height": 65,
     "width": 270,
@@ -107,7 +107,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'Grado'"
+                                "Value": "'POSGRADO'"
                               }
                             }
                           ]

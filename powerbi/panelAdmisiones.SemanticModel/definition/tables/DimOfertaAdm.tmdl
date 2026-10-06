@@ -9,5 +9,13 @@ table DimOfertaAdm
 
 	partition DimOfertaAdm = m
 		mode: import
-		source = #table(type table [Oferta = text], {{"SI"},{"NO"}})
+		source =
+				let
+				    Metas = FxLoadMetas(),
+				    Keep = Table.SelectColumns(Metas,{"Oferta B26"},MissingField.UseNull),
+				    Ren = Table.RenameColumns(Keep,{{"Oferta B26","Oferta"}},MissingField.Error),
+				    Valid = Table.SelectRows(Ren, each [Oferta]<>null and Text.Trim(Text.From([Oferta]))<>""),
+				    R = Table.Sort(Table.Distinct(Valid,{"Oferta"}),{{"Oferta",Order.Ascending}})
+				in
+				    R
 

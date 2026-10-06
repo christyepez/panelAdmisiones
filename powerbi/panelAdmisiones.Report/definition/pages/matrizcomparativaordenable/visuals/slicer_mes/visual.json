@@ -3,9 +3,9 @@
   "name": "slicer_mes",
   "position": {
     "x": 990,
-    "y": 20,
+    "y": 16.25,
     "z": 3000,
-    "height": 72,
+    "height": 86.25,
     "width": 190,
     "tabOrder": 5000
   },
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimMesPeriodo"
+                      "Entity": "DimFecha"
                     }
                   },
-                  "Property": "Mes"
+                  "Property": "FechaMatriculaB26"
                 }
               },
-              "queryRef": "DimMesPeriodo.Mes",
+              "queryRef": "DimFecha.FechaMatriculaB26",
               "active": true
             }
           ]
@@ -86,7 +86,7 @@
             "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dropdown'"
+                  "Value": "'Between'"
                 }
               }
             }
@@ -170,7 +170,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Mes'"
+                  "Value": "'Fecha Matrícula'"
                 }
               }
             },

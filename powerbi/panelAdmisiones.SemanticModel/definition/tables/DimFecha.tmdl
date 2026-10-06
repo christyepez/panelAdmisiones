@@ -147,6 +147,13 @@ table DimFecha
 		lineageTag: a96f57d4-5d12-47ad-8c3b-fc4e7c8a857f
 		sortByColumn: SemanaPeriodoNumero
 
+	column FechaMatriculaB26 = IF(DimFecha[PeriodoSeguimiento] = "B26", DimFecha[Date], BLANK())
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6b5c7e41-2026-1006-0011-000000000001
+
+		annotation UnderlyingDateTimeDataType = Date
+
 	partition DimFecha = m
 		mode: import
 		source =
@@ -155,8 +162,8 @@ table DimFecha
 				    Current = FxLoad615(),
 				    HistDates = List.RemoveNulls(Hist[FechaMatricula]),
 				    CurrentDates = List.RemoveNulls(Current[FechaMatricula]),
-				    FinDatos = if List.Count(CurrentDates)=0 then #date(2026,10,31) else List.Max(CurrentDates),
-				    Fin = List.Max({#date(2026,10,31), FinDatos}),
+				    FinDatos = if List.Count(CurrentDates)=0 then #date(2026,11,30) else List.Max(CurrentDates),
+				    Fin = List.Max({#date(2026,11,30), FinDatos}),
 				    Inicio = List.Min(List.Combine({
 				        if List.Count(HistDates)=0 then {#date(2024,1,1)} else HistDates,
 				        if List.Count(CurrentDates)=0 then {#date(2026,5,1)} else CurrentDates

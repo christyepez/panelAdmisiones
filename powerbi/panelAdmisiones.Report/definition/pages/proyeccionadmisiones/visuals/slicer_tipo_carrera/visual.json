@@ -2,8 +2,8 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "slicer_tipo_carrera",
   "position": {
-    "x": 835,
-    "y": 20,
+    "x": 833.47058237935653,
+    "y": 8.42835420383619,
     "z": 4000,
     "height": 65,
     "width": 190,
@@ -107,7 +107,7 @@
                           [
                             {
                               "Literal": {
-                                "Value": "'Grado'"
+                                "Value": "'POSGRADO'"
                               }
                             }
                           ]

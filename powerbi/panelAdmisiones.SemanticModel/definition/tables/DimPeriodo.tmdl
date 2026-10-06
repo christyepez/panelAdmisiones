@@ -65,18 +65,88 @@ table DimPeriodo
 		summarizeBy: none
 		sourceColumn: OrigenFechaFin
 
+	column FechaInicioGrado
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6b5c7e41-2026-1006-0010-000000000001
+		summarizeBy: none
+		sourceColumn: FechaInicioGrado
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FechaFinGrado
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6b5c7e41-2026-1006-0010-000000000002
+		summarizeBy: none
+		sourceColumn: FechaFinGrado
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FechaInicioPosgrado
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6b5c7e41-2026-1006-0010-000000000003
+		summarizeBy: none
+		sourceColumn: FechaInicioPosgrado
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column FechaFinPosgrado
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6b5c7e41-2026-1006-0010-000000000004
+		summarizeBy: none
+		sourceColumn: FechaFinPosgrado
+
+		annotation UnderlyingDateTimeDataType = Date
+
 	partition DimPeriodo = m
 		mode: import
 		source =
 				let
 				    Today = Date.From(DateTime.LocalNow()),
-				    Base = #table(
-				        type table [Periodo=text,Ciclo=text,Anio=Int64.Type,FechaInicio=date,FechaFin=date,Orden=Int64.Type,OrigenFechaFin=text],
-				        {
-				            {"B25","B",2025,#date(2025,5,1),#date(2025,10,31),20252,"CIERRE_OFICIAL_31_OCT"},
-				            {"B26","B",2026,#date(2026,5,1),#date(2026,10,31),20262,"CIERRE_OFICIAL_31_OCT"}
-				        }
+				    Files0 = FxSharePointAdmisionesFiles(),
+				    Files = Table.Sort(
+				        Table.SelectRows(Files0, each
+				            Text.Contains(Text.Lower([Folder Path]), "/general/paneles/admisiones/actual/") and
+				            Text.Lower([Name]) = "metasbase.xlsx" and
+				            not Text.StartsWith([Name], "~$")
+				        ),
+				        {{"Date modified", Order.Descending}}
 				    ),
+				    Latest = if Table.RowCount(Files)=0 then error "No se encontro MetasBase.xlsx." else Files{0},
+				    Raw = FxReadNamedSheet(Latest[Content], "Tipo"),
+				    Tipo0 = Table.SelectColumns(Raw,{"Tipo","Fecha Inicio","Fecha Fin"},MissingField.Error),
+				    Tipo = Table.TransformColumns(Tipo0,{
+				        {"Tipo", each Text.Upper(FxCleanText(_)), type text},
+				        {"Fecha Inicio", each try Date.From(_) otherwise try Date.FromText(Text.From(_),[Culture="en-US"]) otherwise try Date.FromText(Text.From(_),[Culture="es-EC"]) otherwise null, type date},
+				        {"Fecha Fin", each try Date.From(_) otherwise try Date.FromText(Text.From(_),[Culture="en-US"]) otherwise try Date.FromText(Text.From(_),[Culture="es-EC"]) otherwise null, type date}
+				    }),
+				    FilaGrado = Table.SelectRows(Tipo, each [Tipo] = "GRADO"),
+				    FilaPosgrado = Table.SelectRows(Tipo, each [Tipo] = "POSGRADO"),
+				    FilaB26 = Table.SelectRows(Tipo, each [Tipo] = "B26"),
+				    InicioGOrigen = FilaGrado{0}[Fecha Inicio],
+				    FinGOrigen = FilaGrado{0}[Fecha Fin],
+				    InicioPOrigen = FilaPosgrado{0}[Fecha Inicio],
+				    FinPOrigen = FilaPosgrado{0}[Fecha Fin],
+				    InicioB26Origen = FilaB26{0}[Fecha Inicio],
+				    FinB26Origen = FilaB26{0}[Fecha Fin],
+				    InicioG = List.First(List.RemoveNulls({InicioGOrigen,#date(2026,5,4)})),
+				    FinG = List.First(List.RemoveNulls({FinGOrigen,#date(2026,10,27)})),
+				    InicioP = List.First(List.RemoveNulls({InicioPOrigen,#date(2026,5,4)})),
+				    FinP = List.First(List.RemoveNulls({FinPOrigen,#date(2026,11,20)})),
+				    InicioB26 = List.First(List.RemoveNulls({InicioB26Origen,#date(2026,5,4)})),
+				    FinB26 = List.First(List.RemoveNulls({FinB26Origen,#date(2026,11,30)})),
+				    Base0 = Table.FromRecords({
+				        [Periodo="B25",Ciclo="B",Anio=2025,FechaInicio=#date(2025,5,1),FechaFin=#date(2025,10,31),FechaInicioGrado=null,FechaFinGrado=null,FechaInicioPosgrado=null,FechaFinPosgrado=null,Orden=20252,OrigenFechaFin="CIERRE_B25"],
+				        [Periodo="B26",Ciclo="B",Anio=2026,FechaInicio=#date(2026,5,4),FechaFin=#date(2026,11,30),FechaInicioGrado=#date(2026,5,4),FechaFinGrado=#date(2026,10,27),FechaInicioPosgrado=#date(2026,5,4),FechaFinPosgrado=#date(2026,11,20),Orden=20262,OrigenFechaFin="METASBASE_TIPO_FALLBACK"]
+				    }),
+				    Base = Table.TransformColumnTypes(Base0,{
+				        {"Periodo",type text},{"Ciclo",type text},{"Anio",Int64.Type},{"FechaInicio",type date},{"FechaFin",type date},
+				        {"FechaInicioGrado",type date},{"FechaFinGrado",type date},{"FechaInicioPosgrado",type date},{"FechaFinPosgrado",type date},
+				        {"Orden",Int64.Type},{"OrigenFechaFin",type text}
+				    }),
 				    AddActive = Table.AddColumn(Base,"EsPeriodoActivo", each Today >= [FechaInicio] and Today <= [FechaFin], type logical),
 				    AddCut = Table.AddColumn(AddActive,"FechaFinFiltro", each if [EsPeriodoActivo] then Today else [FechaFin], type date)
 				in

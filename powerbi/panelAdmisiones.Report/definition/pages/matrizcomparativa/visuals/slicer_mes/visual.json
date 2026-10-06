@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimMesPeriodo"
+                      "Entity": "DimFecha"
                     }
                   },
-                  "Property": "Mes"
+                  "Property": "FechaMatriculaB26"
                 }
               },
-              "queryRef": "DimMesPeriodo.Mes",
+              "queryRef": "DimFecha.FechaMatriculaB26",
               "active": true
             }
           ]
@@ -86,7 +86,7 @@
             "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dropdown'"
+                  "Value": "'Between'"
                 }
               }
             }
@@ -170,7 +170,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Mes'"
+                  "Value": "'Fecha Matrícula'"
                 }
               }
             },

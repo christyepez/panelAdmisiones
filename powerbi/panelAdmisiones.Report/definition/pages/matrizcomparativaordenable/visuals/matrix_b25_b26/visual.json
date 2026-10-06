@@ -281,16 +281,42 @@
         "sort": [
           {
             "field": {
-              "Measure": {
+              "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "FactMatriculaHistorica"
+                    "Entity": "DimCarreraMatriz"
                   }
                 },
-                "Property": "Matrix B25 Real % Contexto"
+                "Property": "CarreraVisual"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
+          },
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimSedeAdm"
+                  }
+                },
+                "Property": "Sede"
+              }
+            },
+            "direction": "Ascending"
+          },
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "DimModalidadAdm"
+                  }
+                },
+                "Property": "Modalidad"
+              }
+            },
+            "direction": "Ascending"
           }
         ]
       }

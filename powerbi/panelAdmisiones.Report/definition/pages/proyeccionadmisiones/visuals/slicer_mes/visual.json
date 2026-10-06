@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.12.0/schema.json",
   "name": "slicer_mes",
   "position": {
-    "x": 1039.57925957206,
-    "y": 20.043301919769792,
+    "x": 1040.4335022735563,
+    "y": 8.42835420383619,
     "z": 3000,
-    "height": 65.474786271247993,
-    "width": 195.0881386857593,
+    "height": 86.156509639214377,
+    "width": 194.78863048865858,
     "tabOrder": 4000
   },
   "visual": {
@@ -20,13 +20,13 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "DimMesPeriodo"
+                      "Entity": "DimFecha"
                     }
                   },
-                  "Property": "Mes"
+                  "Property": "FechaMatriculaB26"
                 }
               },
-              "queryRef": "DimMesPeriodo.Mes",
+              "queryRef": "DimFecha.FechaMatriculaB26",
               "active": true
             }
           ]
@@ -86,7 +86,7 @@
             "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dropdown'"
+                  "Value": "'Between'"
                 }
               }
             }
@@ -170,7 +170,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Mes'"
+                  "Value": "'Fecha Matrícula'"
                 }
               }
             },

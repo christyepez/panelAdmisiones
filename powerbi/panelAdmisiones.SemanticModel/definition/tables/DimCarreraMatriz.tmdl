@@ -26,12 +26,21 @@ table DimCarreraMatriz
 		mode: import
 		source =
 				let
-				    Catalog = FxLoadCarreraCatalog(),
-				    Base0 = Table.SelectColumns(Catalog,{"CarreraSGA","CarreraVisual"},MissingField.Error),
+				    Catalog0 = FxLoadCarreraCatalog(),
+				    Catalog = Table.SelectColumns(Catalog0,{"CarreraSGA","CarreraVisual","CarreraVisualNorm"},MissingField.Error),
+				    Metas0 = FxLoadMetas(),
+				    MetaCarreras0 = Table.Distinct(Table.SelectColumns(Metas0,{"Carrera"},MissingField.Error)),
+				    MetaCarreras1 = Table.RenameColumns(MetaCarreras0,{{"Carrera","CarreraVisual"}}),
+				    MetaCarreras = Table.AddColumn(MetaCarreras1,"CarreraVisualNorm",each FxNormalizeName([CarreraVisual]),type text),
+				    MetaSolo = Table.NestedJoin(MetaCarreras,{"CarreraVisualNorm"},Catalog,{"CarreraVisualNorm"},"Cat",JoinKind.LeftAnti),
+				    MetaConSGA = Table.AddColumn(MetaSolo,"CarreraSGA",each FxNormalizeName([CarreraVisual]),type text),
+				    MetaCols = Table.SelectColumns(MetaConSGA,{"CarreraSGA","CarreraVisual","CarreraVisualNorm"},MissingField.Error),
+				    Union = Table.Combine({Catalog,MetaCols}),
+				    Base0 = Table.Distinct(Union,{"CarreraSGA"}),
 				    Base = Table.TransformColumns(Base0,{{"CarreraSGA", each if _ = "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEL DEPORTE" then "PEDAGOGIA DE LA ACTIVIDAD FISICA Y DEPORTE" else _, type text}}),
 				    AddTipoPrograma = Table.AddColumn(Base,"TipoPrograma",each FxTipoPrograma([CarreraVisual]),type text),
 				    AddTipoCarrera = Table.AddColumn(AddTipoPrograma,"TipoCarrera",each FxTipoCarrera([CarreraVisual]),type text),
-				    R = Table.Sort(AddTipoCarrera,{{"CarreraVisual",Order.Ascending}})
+				    R = Table.Sort(Table.SelectColumns(AddTipoCarrera,{"CarreraSGA","CarreraVisual","TipoPrograma","TipoCarrera"},MissingField.Error),{{"CarreraVisual",Order.Ascending}})
 				in
 				    R
 
