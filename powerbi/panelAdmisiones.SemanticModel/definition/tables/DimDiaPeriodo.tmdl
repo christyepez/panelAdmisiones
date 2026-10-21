@@ -27,11 +27,10 @@ table DimDiaPeriodo
 		mode: import
 		source =
 				let
-				    InicioB26 = #date(2026,5,1),
+				    InicioB26 = #date(2026,5,4),
 				    T = Table.FromList({1..260}, Splitter.SplitByNothing(), {"DiaPeriodo"}, null, ExtraValues.Error),
 				    Types = Table.TransformColumnTypes(T, {{"DiaPeriodo", Int64.Type}}),
 				    AddFecha = Table.AddColumn(Types, "FechaB26", each Date.AddDays(InicioB26, [DiaPeriodo]-1), type date),
 				    AddEtiqueta = Table.AddColumn(AddFecha, "EtiquetaDia", each Date.ToText([FechaB26], "dd-MMM", "es-ES"), type text)
 				in
 				    AddEtiqueta
-
